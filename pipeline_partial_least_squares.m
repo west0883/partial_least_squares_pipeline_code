@@ -33,18 +33,34 @@ parameters.yDim = 256;
 parameters.xDim = 256;
 number_of_sources = 32; 
 
-% Load the appropriate periods_nametable 
-
+% Load periods_nametable_PLSR.m, if it exists yet. (Otherwise is created in
+% first step).
+if isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'])
+    load([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat']);
+end
 
 % Put relevant variables into loop_variables.
 parameters.loop_variables.mice_all = parameters.mice_all;
-parameters.loop_variables.periods = periods_nametable.condition; 
+parameters.loop_variables.periods = periods.condition; 
 parameters.loop_variables.conditions = {'motorized'; 'spontaneous'};
 parameters.loop_variables.conditions_stack_locations = {'stacks'; 'spontaneous'};
 
-%% RUN ONLY ONCE
-% Start by organizing response (behavior/task) & explanatory (brain) variables.
-% Use a script for this? 
-create_periods_nametable_forPLSR.m 
+%% Create periods_nametable_forPLSR.m
+% If hasn't been created already. 
+if ~isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'])
+    create_periods_nametable_forPLSR
+end
 
-%%
+%% Remove correlations for periods you don't want to use. 
+
+%% Remove correlations for first 2 seconds of motorized warning/ prep periods.
+
+%% Replicate static response variables per instance. 
+% Ones that are static across instances. Put into a new table/cell array/matrix. 
+% (Motorized vs spontaneous, type,  motorized speed & accel, motorized & spontaneous duration
+
+
+%% Put in varying response variables. 
+% Ones that vary by instance: spontaneous speed, accel. Are save 
+% elsewhere & need to be loaded in.
+

@@ -25,8 +25,13 @@ load([parameters.dir_exper 'periods_nametable_spontaneous.mat']);
 periods_spontaneous = periods;
 clear periods; 
 
-% Create a shared motorized & spontaneous list.
-periods_bothConditions = [periods_motorized; periods_spontaneous]; 
+% Create a shared motorized & spontaneous list to edit as your new
+% nametable.
+periods = [periods_motorized; periods_spontaneous]; 
+
+fps = 20;
+window_size = 20;
+window_step_size = 5; 
 
 % Make a partial least squares regression folder. 
 if ~isdir([parameters.dir_exper 'PLSR\'])
@@ -41,39 +46,225 @@ categories.type = {'rest', 'walk', 'prep', 'start', 'stop', 'accel', 'decel', 'f
 
 save([parameters.dir_exper 'PLSR\response_categories.mat'], 'categories');
 
+%% Make values for speed, accel into numerics. 
+speeds = periods{:,'speed'};
+periods.speed = cellfun(@str2num, speeds, 'UniformOutput', false); 
+
+accels = periods{:,'accel'};
+periods.accel = cellfun(@str2num, accels, 'UniformOutput', false); 
+
+clear speeds accels; 
+
+%% Remove behavior fields you don't need.
+% previous speed, two speeds ago, previous accel.
+columns_to_remove = {'previous_speed', 'previous_accel', 'two_speeds_ago'};
+for coli = 1:numel(columns_to_remove)
+    periods.(columns_to_remove{coli}) = [];
+end
+
+clear columns_to_remove; 
 %% Create labels for "spontaneous" vs "motorized"
+% Do this before removing periods you don't need so you can use size of
+% periods_motorized and periods_spontaneous.
+motorized_vs_spon = cell(size(periods,1),1);
+motorized_vs_spon([1:size(periods_motorized,1)]) = repmat({'motorized'}, size(periods_motorized,1) , 1);
+motorized_vs_spon([size(periods_motorized,1) + 1:end]) = repmat({'spontaneous'}, size(periods_spontaneous,1) , 1);
+
+periods.motorized_vs_spon = motorized_vs_spon;
+clear motorized_vs_spon;
 
 %% Keep only the set of periods you want to use for PLS regression 
 % For first-pass of PLSR, don't use probe trials, maintaining, or full onset/offset. 
 % Save the indices you removed, too, so you can easily remove them from
 % correlation data variables later. 
+% DON'T re-number the index field--> that would make it very hard to find
+% the corresponding velocities and accels later. 
+conditions_to_remove = {'m_maint', 'w_maint',  'm_p', 'w_p', 'full_onset', 'full_offset'};
 
+% Also include some of the meaningless ones.
+indices_to_remove = [71; 76; 80; 81; 82; 175]; 
+
+for i = 1:size(periods,1)
+
+    if contains(cell2mat(periods{i, 'condition'}), conditions_to_remove)
+        indices_to_remove = [indices_to_remove; i];
+    end
+end 
+
+periods(indices_to_remove, :) = [];
+save([parameters.dir_exper 'PLSR\indices_to_remove.mat'], 'indices_to_remove');
+
+clear indices_to_remove conditions_to_remove;
 
 %% Label by "super-type"
 % prep, start, stop, accel, decel, rest, walk, or finished. For 
 % spontaneous: prewalk = prep, startwalk = start, stopwalk = stop, postwalk 
 % = finished.
+look_for = {'m_start','startwalk', 'm_stop', 'stopwalk', 'm_accel', 'm_decel',...
+          'c_rest', 'rest', 'c_walk', 'walk', 'prewalk', 'postwalk'}; 
+look_for_pattern = {'w_',  'm_f'};
+           
+types = cell(size(periods,1), 1);
 
+for i = 1:size(periods, 1)
+   
+    this_condition = repmat(periods{i, 'condition'}, 1, numel(look_for));
+    type1 = cellfun(@strcmp, this_condition, look_for);
+    this_condition = repmat(periods{i, 'condition'}, 1, numel(look_for_pattern));
+    type2 = cellfun(@contains, this_condition, look_for_pattern);
+
+    type = find([type1, type2]);
+
+        switch type
+   
+            case {1, 2}   % start
+                types{i} = 'start';
+        
+            case {3, 4} % stop
+                types{i} = 'stop';
+
+            case 5
+                 types{i} = 'accel';
+
+            case 6 % decel
+                types{i} = 'decel';     
+
+            case {7, 8} 
+                types{i} = 'rest';
+
+            case {9, 10} % walk
+                types{i} = 'walk';
+
+            case 11
+                types{i} = 'prep';
+    
+            case 12  % finished
+                types{i} = 'finished'; 
+   
+            case 13
+                types{i} = 'prep';
+    
+            case 14  % finished
+                types{i} = 'finished'; 
+            
+        end
+end
+periods.type = types; 
+clear types type type1 type2 look_for_pattern look_for this_condition;
+
+%% Put in accel = 0 for motorized prep, finished, & walk periods
+% Leave spontaneous blank (Nan) for now
+for i = 1:size(periods,1)
+
+    if strcmp(periods{i, 'motorized_vs_spon'}, 'motorized') 
+        
+       if strcmp(periods{i, 'type'}, 'prep') || strcmp(periods{i, 'type'}, 'finished') || strcmp(periods{i, 'type'}, 'walk') || strcmp(periods{i, 'type'}, 'rest')
+       
+           periods{i, 'accel'} = {0} ;      
+       end
+    end
+end
+
+clear i;
+%% Make speed = 0 for motorized stop, finished stop, warning start, c_rest
+% Leave spontaneous blank (Nan) for now
+look_for = {'m_stop', 'm_fstop', 'w_start', 'c_rest'};
+for i = 1:size(periods,1)
+    this_condition = repmat(periods{i, 'condition'}, 1, numel(look_for));
+
+    change = any(cellfun(@strcmp, this_condition, look_for));
+
+    if change
+           periods{i, 'speed'} = {0} ;    
+    end
+end
+
+clear look_for i this_condition change;
 %% If a motorized prep, take off the first 2 seconds of "duration"
 % Save the indices of the motorized prep, so you can easily find them &
 % remove data from correlation data variables later. 
+indices_to_shorten = [];
+for i = 1:size(periods,1)
+
+    if strcmp(periods{i, 'motorized_vs_spon'}, 'motorized') && strcmp(periods{i, 'type'}, 'prep') 
+        
+        periods{i, 'duration'} = {periods{i, 'duration'}{1} - fps *2};
+        indices_to_shorten = [indices_to_shorten; i];
+    end
+end
+save([parameters.dir_exper 'PLSR\indices_to_shorten.mat'], 'indices_to_shorten');
 
 %% Calculate new "roll numbers" for periods & duration you have left. 
+% Figure out how many rolls you can get out of it (should be a whole number). 
+number_of_rolls = cell(size(periods,1), 1);
+for i = 1:size(periods,1)
+   number_of_rolls{i} = CountRolls(periods{i, 'duration'}{1}, window_size, window_step_size);
+end
+periods.number_of_rolls = number_of_rolls;
 
 %% Create "instantaneous" duration vectors 
-% Based on duration, roll numbers for all periods.
+% Based on roll numbers for all periods.
+% The time of a given roll is the center of the roll window.
+duration_vector = cellfun(@(x) ([1:x] + 1) * (window_step_size/fps) , number_of_rolls, 'UniformOutput', false);
+periods.duration_vector = duration_vector;
 
 %% Convert the rest & walk periods' duration vectors to just the average duration of motorized walk.
 % (the average duration from actual Arduino code)
+% Leave spontaneous blank (Nan) for now
+% Max tansition duration is 6.5s, so going up to the next full window for the continued.
+max_duration = 7.5;
+
+for i = 1:size(periods,1)
+    if strcmp(periods{i, 'type'}{1}, 'walk') || strcmp(periods{i, 'type'}{1}, 'rest')
+        periods{i, 'duration_vector'} = {max_duration}; 
+    end
+end 
 
 %% For motorized, calculate "instantaneous" speed 
 % For certain periods, based on speed, previous speed, accel. (or duration,
 % roll number, speed, accel)/ Leave spontaneous blank for now. 
+ speed_vector = cell(size(periods,1),1);
+
+% The current speeds are where the motor is GOING to. 
+for i = 1:size(periods,1)
+    if strcmp(periods{i, 'type'}{1}, 'start') || strcmp(periods{i, 'type'}{1}, 'accel') 
+
+        % The time is the center of the roll window
+        duration_vector = periods{i, "duration_vector"}{1};
+        speed_vector{i} = fliplr(periods{i, 'speed'}{1} - duration_vector * periods{i, 'accel'}{1});
 
 
-%% Put in accel = 0 for prep, finished, motorized rest, motorized walk periods. 
-% Leave spontaneous non-continued blank ('Nan') for now. 
+    elseif strcmp(periods{i, 'type'}{1}, 'stop') || strcmp(periods{i, 'type'}{1}, 'decel')
+        % The time is the center of the roll window
+        duration_vector = periods{i, "duration_vector"}{1};
+        speed_vector{i} = fliplr(periods{i, 'speed'}{1} + duration_vector * periods{i, 'accel'}{1});
 
+    else
+        % If not one of those special transitions, replicate by
+        % roll_number.
+        speed_vector(i) = {repmat(periods{i, 'speed'}{1}, 1, periods{i,'number_of_rolls'}{1})};
+        
+    end
+end 
+periods.speed_vector = speed_vector;
+
+%% Replicate accels, motorized vs spontaneous, & type by roll number.
+accel_vector = cell(size(periods,1),1);
+motorized_vs_spon_vector = cell(size(periods,1),1);
+type_vector = cell(size(periods,1),1);
+
+for i = 1:size(periods,1)
+   
+    accel_vector(i) = {repmat(periods{i, 'accel'}{1}, 1, periods{i,'number_of_rolls'}{1})};
+    motorized_vs_spon_vector{i} = repmat(periods{i, 'motorized_vs_spon'}, 1, periods{i,'number_of_rolls'}{1});
+    type_vector{i} = repmat(periods{i, 'type'}, 1, periods{i,'number_of_rolls'}{1});
+
+end 
+periods.accel_vector = accel_vector;
+periods.motorized_vs_spon_vector = motorized_vs_spon_vector;
+periods.type_vector = type_vector;
 
 %% Save 
+save([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'], 'periods', '-v7.3');
 
+clear all;
