@@ -15,6 +15,12 @@ parameters.experiment_name='Random Motorized Treadmill';
 parameters.dir_base='Y:\Sarah\Analysis\Experiments\';
 parameters.dir_exper=[parameters.dir_base parameters.experiment_name '\']; 
 
+% Load mice_all, pass into parameters structure
+load([parameters.dir_exper '\mice_all.mat']);
+parameters.mice_all = mice_all;
+
+% ****Change here if there are specific mice, days, and/or stacks you want to work with**** 
+parameters.mice_all = parameters.mice_all([1:6 8]);
 
 % Load names of motorized periods
 load([parameters.dir_exper 'periods_nametable.mat']);
@@ -41,8 +47,9 @@ end
 %% Make a list of dummy variable categories for using later. 
 % What to put the creation of this here in this script to keep it with the
 % other organizing period_nametable code.
+% No prep for now.
 categories.motorized_vs_spon = {'motorized', 'spontaneous'};
-categories.type = {'rest', 'walk', 'prep', 'start', 'stop', 'accel', 'decel', 'finished'};
+categories.type = {'rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished'}; % 'prep'
 
 save([parameters.dir_exper 'PLSR\response_categories.mat'], 'categories');
 
@@ -79,7 +86,8 @@ clear motorized_vs_spon;
 % correlation data variables later. 
 % DON'T re-number the index field--> that would make it very hard to find
 % the corresponding velocities and accels later. 
-conditions_to_remove = {'m_maint', 'w_maint',  'm_p', 'w_p', 'full_onset', 'full_offset'};
+% No prep periods for now.
+conditions_to_remove = {'m_maint', 'w_',  'm_p', 'full_onset', 'full_offset', 'prewalk'};
 
 % Also include some of the meaningless ones.
 indices_to_remove = [71; 76; 80; 81; 82; 175]; 
@@ -95,12 +103,13 @@ periods(indices_to_remove, :) = [];
 save([parameters.dir_exper 'PLSR\indices_to_remove.mat'], 'indices_to_remove');
 
 %% Label by "super-type"
-% prep, start, stop, accel, decel, rest, walk, or finished. For 
+% start, stop, accel, decel, rest, walk, or finished. For 
 % spontaneous: prewalk = prep, startwalk = start, stopwalk = stop, postwalk 
 % = finished.
+% No prep for now.
 look_for = {'m_start','startwalk', 'm_stop', 'stopwalk', 'm_accel', 'm_decel',...
-          'c_rest', 'rest', 'c_walk', 'walk', 'prewalk', 'postwalk'}; 
-look_for_pattern = {'w_',  'm_f'};
+          'c_rest', 'rest', 'c_walk', 'walk', 'postwalk'}; 
+look_for_pattern = { 'm_f'};
            
 types = cell(size(periods,1), 1);
 
@@ -133,16 +142,16 @@ for i = 1:size(periods, 1)
             case {9, 10} % walk
                 types{i} = 'walk';
 
-            case 11
-                types{i} = 'prep';
+%             case 11
+%                 types{i} = 'prep';
     
-            case 12  % finished
+            case 11  % finished
                 types{i} = 'finished'; 
    
-            case 13
-                types{i} = 'prep';
+%             case 13
+%                 types{i} = 'prep';
     
-            case 14  % finished
+            case 12  % finished
                 types{i} = 'finished'; 
             
         end
@@ -152,11 +161,12 @@ clear types type type1 type2 look_for_pattern look_for this_condition;
 
 %% Put in accel = 0 for motorized prep, finished, & walk periods
 % Leave spontaneous blank (Nan) for now
+% No prep periods for now.
 for i = 1:size(periods,1)
 
     if strcmp(periods{i, 'motorized_vs_spon'}, 'motorized') 
         
-       if strcmp(periods{i, 'type'}, 'prep') || strcmp(periods{i, 'type'}, 'finished') || strcmp(periods{i, 'type'}, 'walk') || strcmp(periods{i, 'type'}, 'rest')
+       if strcmp(periods{i, 'type'}, 'finished') || strcmp(periods{i, 'type'}, 'walk') || strcmp(periods{i, 'type'}, 'rest')  % strcmp(periods{i, 'type'}, 'prep') ||
        
            periods{i, 'accel'} = {0} ;      
        end
@@ -165,8 +175,8 @@ end
 
 clear i;
 %% Make speed = 0 for motorized stop, finished stop, warning start, c_rest
-% Leave spontaneous blank (Nan) for now
-look_for = {'m_stop', 'm_fstop', 'w_start', 'c_rest'};
+% Leave spontaneous blank (Nan) for now. No prep periods for now.
+look_for = {'m_stop', 'm_fstop', 'c_rest'}; % w_start
 for i = 1:size(periods,1)
     this_condition = repmat(periods{i, 'condition'}, 1, numel(look_for));
 
@@ -181,16 +191,17 @@ clear look_for i this_condition change;
 %% If a motorized prep, take off the first 2 seconds of "duration"
 % Save the indices of the motorized prep, so you can easily find them &
 % remove data from correlation data variables later. 
-indices_to_shorten = [];
-for i = 1:size(periods,1)
-
-    if strcmp(periods{i, 'motorized_vs_spon'}, 'motorized') && strcmp(periods{i, 'type'}, 'prep') 
-        
-        periods{i, 'duration'} = {periods{i, 'duration'}{1} - fps *2};
-        indices_to_shorten = [indices_to_shorten; i];
-    end
-end
-save([parameters.dir_exper 'PLSR\indices_to_shorten.mat'], 'indices_to_shorten');
+% No prep periods for now.
+% indices_to_shorten = [];
+% for i = 1:size(periods,1)
+% 
+%     if strcmp(periods{i, 'motorized_vs_spon'}, 'motorized') && strcmp(periods{i, 'type'}, 'prep') 
+%         
+%         periods{i, 'duration'} = {periods{i, 'duration'}{1} - fps *2};
+%         indices_to_shorten = [indices_to_shorten; i];
+%     end
+% end
+% save([parameters.dir_exper 'PLSR\indices_to_shorten.mat'], 'indices_to_shorten');
 
 %% Calculate new "roll numbers" for periods & duration you have left. 
 % Figure out how many rolls you can get out of it (should be a whole number). 
@@ -294,13 +305,19 @@ periods.type_dummyvars_vector = type_dummyvars_vector;
 %% Replicate all variables by number of instances 
 % Instances in 3rd dimension. Dummy variables for categorical. 
 variables = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector'};
-% Load correlation values
 
-% Remove corelation periods you're not interested in (using
-% indices_to_remove)
+% for each mouse, 
+for mousei = 1:size(parameters.mice_all,2)
 
-% Use instances for replicating. 
 
+    % Load correlation values
+    load('Y:\Sarah\Analysis\Experiments\Random Motorized Treadmill\fluorescence analysis\correlations\Fisher transformed\1107\all concatenated\correlations_all_concatenated_mean_removed.mat')
+    % Remove corelation periods you're not interested in (using
+    % indices_to_remove)
+
+    % Use instances for replicating. 
+
+end
 
 %% Save 
 save([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'], 'periods', '-v7.3');
