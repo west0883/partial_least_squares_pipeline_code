@@ -22,7 +22,7 @@ periods_motorized = periods;
 
 % Load names of spontaneous periods
 load([parameters.dir_exper 'periods_nametable_spontaneous.mat']);
-periods_spontaneous = periods;
+periods_spontaneous = periods(1:6, :);
 clear periods; 
 
 % Create a shared motorized & spontaneous list to edit as your new
@@ -93,8 +93,6 @@ end
 
 periods(indices_to_remove, :) = [];
 save([parameters.dir_exper 'PLSR\indices_to_remove.mat'], 'indices_to_remove');
-
-clear indices_to_remove conditions_to_remove;
 
 %% Label by "super-type"
 % prep, start, stop, accel, decel, rest, walk, or finished. For 
@@ -248,23 +246,63 @@ for i = 1:size(periods,1)
 end 
 periods.speed_vector = speed_vector;
 
-%% Replicate accels, motorized vs spontaneous, & type by roll number.
+%% Replicate accels by roll number.
 accel_vector = cell(size(periods,1),1);
-motorized_vs_spon_vector = cell(size(periods,1),1);
-type_vector = cell(size(periods,1),1);
 
 for i = 1:size(periods,1)
    
     accel_vector(i) = {repmat(periods{i, 'accel'}{1}, 1, periods{i,'number_of_rolls'}{1})};
-    motorized_vs_spon_vector{i} = repmat(periods{i, 'motorized_vs_spon'}, 1, periods{i,'number_of_rolls'}{1});
-    type_vector{i} = repmat(periods{i, 'type'}, 1, periods{i,'number_of_rolls'}{1});
+end 
+
+%% Create dummy variables for categoricals -- motorized_vs_spon & type
+%categories.motorized_vs_spon = {'motorized', 'spontaneous'};
+%categories.type = {'rest', 'walk', 'prep', 'start', 'stop', 'accel', 'decel', 'finished'};
+motorized_vs_spon_dummyvars = cell(size(periods,1),1);
+type_dummyvars = cell(size(periods,1),1);
+
+for i = 1:size(periods,1)
+
+    % Motorized vs spon
+    motorized_vs_spon =  strcmp(repmat(periods{i, 'motorized_vs_spon'}, size(categories.motorized_vs_spon)), categories.motorized_vs_spon);
+    motorized_vs_spon_dummyvars{i} = double(motorized_vs_spon)';
+
+    % Type 
+    type = strcmp(repmat(periods{i, 'type'}, size(categories.type)), categories.type);
+    type_dummyvars{i} = double(type)';
 
 end 
-periods.accel_vector = accel_vector;
-periods.motorized_vs_spon_vector = motorized_vs_spon_vector;
-periods.type_vector = type_vector;
+periods.motorized_vs_spon_dummyvars = motorized_vs_spon_dummyvars;
+periods.type_dummyvars = type_dummyvars;
+
+%% Replicate dummy vars by roll number. 
+motorized_vs_spon_dummyvars_vector = cell(size(periods,1),1);
+type_dummyvars_vector = cell(size(periods,1),1);
+
+for i = 1:size(periods,1)
+
+    % Motorized vs spon
+    motorized_vs_spon_dummyvars_vector{i} =  repmat(periods{i, 'motorized_vs_spon_dummyvars'}{1}, [1 number_of_rolls{i}]);
+
+    % Type 
+    
+    type_dummyvars_vector{i} = repmat(periods{i, 'type_dummyvars'}{1}, [1 number_of_rolls{i}]);
+
+end 
+periods.motorized_vs_spon_dummyvars_vector = motorized_vs_spon_dummyvars_vector;
+periods.type_dummyvars_vector = type_dummyvars_vector;
+
+%% Replicate all variables by number of instances 
+% Instances in 3rd dimension. Dummy variables for categorical. 
+variables = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector'};
+% Load correlation values
+
+% Remove corelation periods you're not interested in (using
+% indices_to_remove)
+
+% Use instances for replicating. 
+
 
 %% Save 
 save([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'], 'periods', '-v7.3');
 
-clear all;
+%clear all;
