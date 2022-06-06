@@ -95,3 +95,40 @@ if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
 end
 
+% Iterators
+parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
+
+% Variables to replicate
+parameters.response_variable_names = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector'};
+parameters.variables_static = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'duration_vector'};
+parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
+
+% Original order of spontaneous (for velocity & accel indexing)
+parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 'stopwalk', 'postwalk'};
+
+% Input
+% Correlations (for instances count)
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'values_relevent_periods.mat'};
+parameters.loop_list.things_to_load.data.variable= {'values'}; 
+parameters.loop_list.things_to_load.data.level = 'mouse';
+
+% Spontaneous velocity
+parameters.loop_list.things_to_load.speed_vector.dir = {[parameters.dir_exper 'behavior\spontaneous\rolled concatenated velocity\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.speed_vector.filename= {'velocity_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.speed_vector.variable= {'velocity_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.speed_vector.level = 'mouse';
+
+% Spontaneous accel.
+parameters.loop_list.things_to_load.accel_vector.dir = {[parameters.dir_exper 'behavior\spontaneous\rolled concatenated velocity\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.accel_vector.filename= {'accel_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.accel_vector.variable= {'accel_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.accel_vector.level = 'mouse';
+
+% Output 
+parameters.loop_list.things_to_save.response_variables.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.response_variables.filename= {'response_variables.mat'};
+parameters.loop_list.things_to_save.response_variables.variable= {'response_variables'}; 
+parameters.loop_list.things_to_save.response_variables.level = 'mouse';
+
+RunAnalysis({@PopulateResponseVariables}, parameters);
