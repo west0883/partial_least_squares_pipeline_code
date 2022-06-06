@@ -37,6 +37,11 @@ number_of_sources = 32;
 % first step).
 if isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'])
     load([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat']);
+    parameters.periods = periods;
+
+    % Also load the indices to remove
+    load([parameters.dir_exper 'PLSR\indices_to_remove.mat']);
+    parameters.indices_to_remove = indices_to_remove;
 end
 
 % Put relevant variables into loop_variables.
@@ -49,6 +54,12 @@ parameters.loop_variables.conditions_stack_locations = {'stacks'; 'spontaneous'}
 % If hasn't been created already. 
 if ~isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'])
     create_periods_nametable_forPLSR
+    load([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat']);
+    parameters.periods = periods; 
+
+    % Also load the indices to remove
+    load([parameters.dir_exper 'PLSR\indices_to_remove.mat']);
+    parameters.indices_to_remove = indices_to_remove;
 end
 
 %% Remove correlations for periods you don't want to use. 
