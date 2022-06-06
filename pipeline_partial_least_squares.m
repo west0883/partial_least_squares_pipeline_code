@@ -63,15 +63,35 @@ if ~isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'])
 end
 
 %% Remove correlations for periods you don't want to use. 
+% From saved indices from creation of response variables .
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
 
-%% Remove correlations for first 2 seconds of motorized warning/ prep periods.
+% Iterators
+parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
 
-%% Replicate static response variables per instance. 
-% Ones that are static across instances. Put into a new table/cell array/matrix. 
-% (Motorized vs spontaneous, type,  motorized speed & accel, motorized & spontaneous duration
+% Evaluation instructions.
+parameters.evaluation_instructions = {{
+          'data_evaluated = parameters.data;'...
+          'data_evaluated(parameters.indices_to_remove) = [];'}};
+% Input 
+% The reshaped correlations per mouse from fluorescence analysis pipeline.
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'fluorescence analysis\correlations\Fisher transformed\'], 'mouse', '\instances reshaped\'};
+parameters.loop_list.things_to_load.data.filename= {'values.mat'};
+parameters.loop_list.things_to_load.data.variable= {'values'}; 
+parameters.loop_list.things_to_load.data.level = 'mouse';
 
+% Output
+parameters.loop_list.things_to_save.data_evaluated.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.data_evaluated.filename= {'values_relevent_periods.mat'};
+parameters.loop_list.things_to_save.data_evaluated.variable= {'values'}; 
+parameters.loop_list.things_to_save.data_evaluated.level = 'mouse';
 
-%% Put in varying response variables. 
-% Ones that vary by instance: spontaneous speed, accel. Are save 
-% elsewhere & need to be loaded in.
+RunAnalysis({@EvaluateOnData}, parameters); 
+
+%% Put in response variables. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
 
