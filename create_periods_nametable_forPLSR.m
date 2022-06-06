@@ -261,9 +261,9 @@ periods.speed_vector = speed_vector;
 accel_vector = cell(size(periods,1),1);
 
 for i = 1:size(periods,1)
-   
     accel_vector(i) = {repmat(periods{i, 'accel'}{1}, 1, periods{i,'number_of_rolls'}{1})};
 end 
+periods.accel_vector = accel_vector;
 
 %% Create dummy variables for categoricals -- motorized_vs_spon & type
 %categories.motorized_vs_spon = {'motorized', 'spontaneous'};
