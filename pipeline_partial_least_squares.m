@@ -49,6 +49,7 @@ parameters.loop_variables.mice_all = parameters.mice_all;
 parameters.loop_variables.periods = periods.condition; 
 parameters.loop_variables.conditions = {'motorized'; 'spontaneous'};
 parameters.loop_variables.conditions_stack_locations = {'stacks'; 'spontaneous'};
+parameters.loop_variables.variable_type = {'response variables', 'correlations'};
 
 %% Create periods_nametable_forPLSR.m
 % If hasn't been created already. 
@@ -84,7 +85,7 @@ parameters.loop_list.things_to_load.data.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.data_evaluated.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
-parameters.loop_list.things_to_save.data_evaluated.filename= {'values_relevent_periods.mat'};
+parameters.loop_list.things_to_save.data_evaluated.filename= {'values.mat'};
 parameters.loop_list.things_to_save.data_evaluated.variable= {'values'}; 
 parameters.loop_list.things_to_save.data_evaluated.level = 'mouse';
 
@@ -127,8 +128,283 @@ parameters.loop_list.things_to_load.accel_vector.level = 'mouse';
 
 % Output 
 parameters.loop_list.things_to_save.response_variables.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
-parameters.loop_list.things_to_save.response_variables.filename= {'response_variables.mat'};
-parameters.loop_list.things_to_save.response_variables.variable= {'response_variables'}; 
+parameters.loop_list.things_to_save.response_variables.filename= {'values.mat'};
+parameters.loop_list.things_to_save.response_variables.variable= {'values'}; 
 parameters.loop_list.things_to_save.response_variables.level = 'mouse';
 
 RunAnalysis({@PopulateResponseVariables}, parameters);
+
+%% Reshape & concatenate data across periods within mice.
+% Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'variable_type', {'loop_variables.variable_type'}, 'vaiable_type_iterator';
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'period', {'loop_variables.periods'}, 'period_iterator';            
+               };
+
+% Dimensions for reshaping, before removing data & before cnocatenation.
+% Turning it into 2 dims. 
+parameters.toReshape = {'parameters.data'};
+parameters.reshapeDims = {'{size(parameters.data, 1), []}'};
+
+% Concatenation dimension (post reshaping & removal)
+parameters.concatDim = 2; 
+parameters.concatenate_across_cells = false; 
+
+% Input 
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\'] 'variable_type', '\', 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'values.mat'};
+parameters.loop_list.things_to_load.data.variable= {'values{', 'period_iterator', '}'}; 
+parameters.loop_list.things_to_load.data.level = 'mouse';
+
+% Output
+parameters.loop_list.things_to_save.concatenated_data.dir = {[parameters.dir_exper 'PLSR\variable prep\'], 'variable_type', '\', 'mouse', '\'};
+parameters.loop_list.things_to_save.concatenated_data.filename= {'values_all_concatenated.mat'};
+parameters.loop_list.things_to_save.concatenated_data.variable= {'values_all_concatenated'}; 
+parameters.loop_list.things_to_save.concatenated_data.level = 'mouse';
+
+parameters.loop_list.things_to_save.concatenated_origin.dir = {[parameters.dir_exper 'PLSR\variable prep\'] 'variable_type', '\', 'mouse', '\'};
+parameters.loop_list.things_to_save.concatenated_origin.filename= {'values_all_concatenated_origin.mat'};
+parameters.loop_list.things_to_save.concatenated_origin.variable= {'values_origin'}; 
+parameters.loop_list.things_to_save.concatenated_origin.level = 'mouse';
+
+% Things to rename/reassign between the two functions (frist column renamed to
+% second column. Pairs for each level. Each row is a level.
+parameters.loop_list.things_to_rename = {{'data_reshaped', 'data'}};
+
+RunAnalysis({@ReshapeData, @ConcatenateData}, parameters);  
+
+%% For correlations: Transpose, remove mean by mouse, concatenate across mice.
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
+
+% Evaluate (transposing-> now observations x correlations)
+parameters.evaluation_instructions = {'data_evaluated = transpose(parameters.data);'};
+
+% Averaging (post transposing)
+parameters.averageDim = 1; % row vector of mean of each column/each correlation
+
+% Concatenation dimension (post reshaping, across observarions)
+parameters.concatDim = 1; 
+
+% Input
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'values_all_concatenated.mat'};
+parameters.loop_list.things_to_load.data.variable= {'values_all_concatenated'}; 
+parameters.loop_list.things_to_load.data.level = 'mouse';
+
+% Output
+parameters.loop_list.things_to_save.concatenated_data.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\concatenated across mice\']};
+parameters.loop_list.things_to_save.concatenated_data.filename= {'correlations_all_concatenated.mat'};
+parameters.loop_list.things_to_save.concatenated_data.variable= {'correlations_all_concatenated'}; 
+parameters.loop_list.things_to_save.concatenated_data.level = 'end';
+
+parameters.loop_list.things_to_rename = {{'data_evaluated', 'data'}; % Evaluate to Average
+                                         {'average', 'subtract_this'; 'data', 'subtract_from_this'}; % Average to subtraction. Are both on same function level.
+                                         {'data_subtracted', 'data'}}; % Subtraction to concatenation
+                                                                   
+RunAnalysis({@EvaluateOnData, @AverageData, @SubtractData, @ConcatenateData}, parameters);
+
+%% For response: Transpose, concatenate across mice.
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
+
+% Evaluate (transposing-> now observations x correlations)
+parameters.evaluation_instructions = {'data_evaluated = transpose(parameters.data);'};
+
+% Concatenation dimension (post reshaping, across observarions)
+parameters.concatDim = 1; 
+
+% Input
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'values_all_concatenated.mat'};
+parameters.loop_list.things_to_load.data.variable= {'values_all_concatenated'}; 
+parameters.loop_list.things_to_load.data.level = 'mouse';
+
+% Output
+parameters.loop_list.things_to_save.concatenated_data.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\concatenated across mice\']};
+parameters.loop_list.things_to_save.concatenated_data.filename= {'responses_all_concatenated.mat'};
+parameters.loop_list.things_to_save.concatenated_data.variable= {'responses_all_concatenated'}; 
+parameters.loop_list.things_to_save.concatenated_data.level = 'end';
+
+parameters.loop_list.things_to_rename = {{'data_evaluated', 'data'}}; % Evaluate to concatenations                                        
+                                                                   
+RunAnalysis({@EvaluateOnData, @ConcatenateData}, parameters);
+
+%% 
+% Take zscore. Run response & correlations separately so you have
+% different variable names for loading into PLS regression, just in case.
+
+%% Zscore correlations
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = 'none';
+
+parameters.zscoreDim = 1; % 1 = zscore by columns (variables) 
+
+% Input 
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\concatenated across mice\']};
+parameters.loop_list.things_to_load.data.filename= {'correlations_all_concatenated.mat'};
+parameters.loop_list.things_to_load.data.variable= {'correlations_all_concatenated'}; 
+parameters.loop_list.things_to_load.data.level = 'start';
+
+% Output 
+parameters.loop_list.things_to_save.data_zscored.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\concatenated across mice\']};
+parameters.loop_list.things_to_save.data_zscored.filename= {'correlations_zscored.mat'};
+parameters.loop_list.things_to_save.data_zscored.variable= {'correlations'}; 
+parameters.loop_list.things_to_save.data_zscored.level = 'end';
+
+RunAnalysis({@ZScoreData}, parameters);
+
+%% Zscore response
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = 'none';
+
+parameters.zscoreDim = 1; % 1 = zscore by columns (variables) 
+
+% Input 
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\concatenated across mice\']};
+parameters.loop_list.things_to_load.data.filename= {'responses_all_concatenated.mat'};
+parameters.loop_list.things_to_load.data.variable= {'responses_all_concatenated'}; 
+parameters.loop_list.things_to_load.data.level = 'start';
+
+% Output 
+parameters.loop_list.things_to_save.data_zscored.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\concatenated across mice\']};
+parameters.loop_list.things_to_save.data_zscored.filename= {'responses_zscored.mat'};
+parameters.loop_list.things_to_save.data_zscored.variable= {'responses'}; 
+parameters.loop_list.things_to_save.data_zscored.level = 'end';
+
+RunAnalysis({@ZScoreData}, parameters);
+
+%% Run PLS regression
+
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = 'none';
+
+parameters.numComponents = 30;
+
+% Input 
+% Response variables
+parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\concatenated across mice\']};
+parameters.loop_list.things_to_load.response.filename= {'responses_zscored.mat'};
+parameters.loop_list.things_to_load.response.variable= {'responses'}; 
+parameters.loop_list.things_to_load.response.level = 'start';
+% Correlations 
+parameters.loop_list.things_to_load.explanatory.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\concatenated across mice\']};
+parameters.loop_list.things_to_load.explanatory.filename= {'correlations_zscored.mat'};
+parameters.loop_list.things_to_load.explanatory.variable= {'correlations'}; 
+parameters.loop_list.things_to_load.explanatory.level = 'start';
+
+% Output 
+parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\']};
+parameters.loop_list.things_to_save.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_save.results.variable= {'results'}; 
+parameters.loop_list.things_to_save.results.level = 'end';
+
+RunAnalysis({@PLSR_forRunAnalysis}, parameters);
+
+
+%% Plot some X loadings
+
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = 'none';
+
+parameters.components_to_plot = 1:30; 
+parameters.number_of_sources = 32;
+parameters.color_range = [-200 200];
+
+% Input 
+parameters.loop_list.things_to_load.XL.dir = {[parameters.dir_exper 'PLSR\results\']};
+parameters.loop_list.things_to_load.XL.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.XL.variable= {'results.XL'}; 
+parameters.loop_list.things_to_load.XL.level = 'start';
+
+% Output
+parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\']};
+parameters.loop_list.things_to_save.fig.filename= {'PLSR_XLs.fig'};
+parameters.loop_list.things_to_save.fig.variable= {'fig'}; 
+parameters.loop_list.things_to_save.fig.level = 'end';
+
+RunAnalysis({@PlotXLs}, parameters);
+
+%% Plot some Beta values
+% First row of Betas is constant estimate.
+
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = 'none';
+
+parameters.components_to_plot = {'motorized', 'spontaneous','rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished', 'speed', 'accel', 'duration'};
+parameters.number_of_sources = 32;
+%parameters.color_range = [-0.03 0.03];
+
+% Input 
+parameters.loop_list.things_to_load.BETA.dir = {[parameters.dir_exper 'PLSR\results\']};
+parameters.loop_list.things_to_load.BETA.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.BETA.variable= {'results.BETA'}; 
+parameters.loop_list.things_to_load.BETA.level = 'start';
+
+% Output
+parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\']};
+parameters.loop_list.things_to_save.fig.filename= {'PLSR_Betas.fig'};
+parameters.loop_list.things_to_save.fig.variable= {'fig'}; 
+parameters.loop_list.things_to_save.fig.level = 'end';
+
+RunAnalysis({@PlotBetas}, parameters);
+
+%% Plot Projections
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = 'none';
+
+parameters.components_to_plot = {'motorized', 'spontaneous','rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished', 'speed', 'acceleration rate', 'duration'};
+parameters.number_of_sources = 32;
+
+% Input 
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\']};
+parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.results.variable= {'results'}; 
+parameters.loop_list.things_to_load.results.level = 'start';
+
+% Output
+parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\']};
+parameters.loop_list.things_to_save.fig.filename= {'PLSR_Projections.fig'};
+parameters.loop_list.things_to_save.fig.variable= {'fig'}; 
+parameters.loop_list.things_to_save.fig.level = 'end';
+
+RunAnalysis({@PlotProjections}, parameters);
+
