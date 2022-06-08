@@ -54,11 +54,13 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % zscore
      
 
-    % Run plsregress, using a maximal number of components (somewhat
+    % Run plsregress to find the optimal number of components, using a maximal number of components (somewhat
     % arbitrary -- start with 20)
     ncomponents_max = 20; 
 
-    [~, ~, ~, ~, ~, ~, MSE_original, stats_original] ...
+    disp(['Finding best number of components (max of ' num2str(ncomponents_max) ' components.']);
+
+    [~, ~, ~, ~, ~, ~, MSEP_original, stats_original] ...
        = plsregress(brainData, responseVariables, ncomponents_max, 'cv', 10, 'mcreps', 10, 'Options', statset('UseParallel',true) );
     
     % Save the original weights of Y for later (in case you want to look at
@@ -66,16 +68,54 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     W_original = stats_original.W;
 
     % Find component with minimum MSE
-    [ncomponents] = min(MSE_original);
+    [~ , ncomponents] = min(MSEP_original);
 
     % Now run with optimal number of components.
-    [results.XL, results.YL, results.XS, results.YS, results.BETA, results.PCTVAR, results.MSE, results.stats] ...
+
+    disp(['Running PLSR with ' num2str(ncomponents) ' components.']);
+
+    [results.XL, results.YL, results.XS, results.YS, results.BETA, results.PCTVAR, results.MSEP, results.stats] ...
        = plsregress(brainData, responseVariables, ncomponents, 'cv', 10, 'mcreps', 10, 'Options', statset('UseParallel',true) );
     
     % Put MSE_original, ncomponents, & W_original into the results.
-    results.maximal_components.MSE = MSE_original;
+    results.maximal_components.MSEP = MSEP_original;
     results.maximal_components.W = W_original;
     results.best_ncomponents = ncomponents; 
+
+
+    % Run iterative confidence intervals with permutation testing. Randomly
+    % permute the order of the response variables. 
+
+    % If user says so
+    if isfield(parameters.n_permutations) 
+
+        disp('Running permutations'); 
+
+        % Make a holding matrix for beta permutations.
+        betas_permutations = NaN(size(results.BETA,1), size(restuls.BETA, 2), parameters.n_permutations); 
+
+        parfor repi = 1:parameters.n_permutaions 
+
+            % Make a mixing vector that's made up of a random
+            % permutation of the number oF periods inclucded
+            vect_mix = randperm(size(responseVariables, 1));
+
+
+            % Mix/permute response varables. 
+            responseVariables_mixed = responseVariables(vect_mix, :); 
+
+            % Run the plsregress on the mixed/permuted data.
+            [~, ~, ~, ~, BETA] = plsregress(brainData, responseVariables_mixed, ncomponents);
+            
+            % Put into holding matrix.
+            betas_permutations(:, :, repi) = BETA; 
+            
+        end 
+
+        % Put betas_permutations into results structure.
+        results.betas_permutations = betas_permutations;
+
+    end 
 
     % Put into output structure;
     parameters.results = results; 
