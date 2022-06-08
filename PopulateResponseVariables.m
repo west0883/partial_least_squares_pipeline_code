@@ -9,8 +9,17 @@ function [parameters] = PopulateResponseVariables(parameters)
 
     MessageToUser('Populating ', parameters);
 
-    % Make a new empty response variable cell array
-    response_variables = cell(size(parameters.periods, 1), 1);
+    % If vertically concatenating, make a new empty response variable cell array
+    if isfield(parameters, 'concatenate_vertically') && parameters.concatenate_vertically
+        response_variables = cell(size(parameters.periods, 1), 1);
+    else
+        % Otherwise, 
+        % Make a new table out of periods.
+        response_variables = parameters.periods; 
+
+        % Make a holder cell that has a column each response variable.
+        response_variables_cellholder = cell(size(parameters.periods, 1), numel(parameters.response_variable_names));
+    end 
 
     % For each period
     for periodi = 1:size(parameters.periods, 1)
@@ -67,21 +76,40 @@ function [parameters] = PopulateResponseVariables(parameters)
             end 
         end
 
-        % Concatenate vertically (dimension 1) so all variables are together, like with the correlations.
-
         % Put variables into a cell format, 
-        cell_holder = cell(numel(parameters.response_variable_names),1); 
+        cell_holder = cell(1,numel(parameters.response_variable_names)); 
         for variablei = 1:numel(parameters.response_variable_names) 
-
-            cell_holder{variablei} = response_variables_structure.(parameters.response_variable_names{variablei});
-
-        end 
     
-        % Vertically concatenate holder cells.
-        response_variables{periodi} = vertcat(cell_holder{:});
+            cell_holder{variablei} = response_variables_structure.(parameters.response_variable_names{variablei});
+    
+        end 
 
+        % Concatenate vertically (dimension 1) so all variables are together, like with the correlations. 
+        if isfield(parameters, 'concatenate_vertically') && parameters.concatenate_vertically
+        
+            % Vertically concatenate holder cells.
+            response_variables{periodi} = vertcat(cell_holder{:});
+
+        else
+            % Put into the response variable cell holder
+            for variablei = 1:numel(parameters.response_variable_names)
+                response_variables_cellholder{periodi, variablei} = cell_holder{variablei};
+            end
+
+        end
     end
 
+    % If not vertically concatenated, make each column of
+    % response_variables_cellholder its own variable in the
+    % response_variables table. 
+    if (~isfield(parameters, 'concatenate_vertically')) || (isfield(parameters, 'concatenate_vertically') & ~parameters.concatenate_vertically)
+       
+        % Put into the response variable cell holder
+        for variablei = 1:numel(parameters.response_variable_names)
+            response_variables.(parameters.response_variable_names{variablei}) =  response_variables_cellholder(:,variablei);
+        end
+
+    end
     % Pass response variables to output structure
     parameters.response_variables = response_variables;
 
