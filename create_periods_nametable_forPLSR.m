@@ -49,7 +49,7 @@ end
 % other organizing period_nametable code.
 % No prep for now.
 categories.motorized_vs_spon = {'motorized', 'spontaneous'};
-categories.type = {'rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished'}; % 'prep'
+categories.type = {'rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished', 'finished_stop'}; % 'prep'
 
 save([parameters.dir_exper 'PLSR\response_categories.mat'], 'categories');
 
@@ -103,7 +103,7 @@ periods(indices_to_remove, :) = [];
 save([parameters.dir_exper 'PLSR\indices_to_remove.mat'], 'indices_to_remove');
 
 %% Label by "super-type"
-% start, stop, accel, decel, rest, walk, or finished. For 
+% start, stop, accel, decel, rest, walk, finished, or finished stop. For 
 % spontaneous: prewalk = prep, startwalk = start, stopwalk = stop, postwalk 
 % = finished.
 % No prep for now.
@@ -145,28 +145,33 @@ for i = 1:size(periods, 1)
 %             case 11
 %                 types{i} = 'prep';
     
-            case 11  % finished
-                types{i} = 'finished'; 
+            case 11  % postwalk --> finished_stop
+                types{i} = 'finished_stop'; 
    
 %             case 13
 %                 types{i} = 'prep';
     
-            case 12  % finished
-                types{i} = 'finished'; 
-            
+            case 12  % finished, all others.
+
+                % Check if this condition is specifically finished stop 
+                if strcmp(periods{i, 'condition'}, 'm_fstop')
+                     types{i} = 'finished_stop'; 
+                else
+                    types{i} = 'finished'; 
+                end
         end
 end
 periods.type = types; 
 clear types type type1 type2 look_for_pattern look_for this_condition;
 
-%% Put in accel = 0 for motorized prep, finished, & walk periods
+%% Put in accel = 0 for motorized prep, finished, finished_stop, & walk periods
 % Leave spontaneous blank (Nan) for now
 % No prep periods for now.
 for i = 1:size(periods,1)
 
     if strcmp(periods{i, 'motorized_vs_spon'}, 'motorized') 
         
-       if strcmp(periods{i, 'type'}, 'finished') || strcmp(periods{i, 'type'}, 'walk') || strcmp(periods{i, 'type'}, 'rest')  % strcmp(periods{i, 'type'}, 'prep') ||
+       if strcmp(periods{i, 'type'}, 'finished') || strcmp(periods{i, 'type'}, 'finished_stop') || strcmp(periods{i, 'type'}, 'walk') || strcmp(periods{i, 'type'}, 'rest')  % strcmp(periods{i, 'type'}, 'prep') ||
        
            periods{i, 'accel'} = {0} ;      
        end
@@ -229,7 +234,7 @@ for i = 1:size(periods,1)
     end
 end 
 
-%% For motorized, calculate "instantaneous" speed 
+%% For motorized transitions, calculate "instantaneous" speed 
 % For certain periods, based on speed, previous speed, accel. (or duration,
 % roll number, speed, accel)/ Leave spontaneous blank for now. 
  speed_vector = cell(size(periods,1),1);
