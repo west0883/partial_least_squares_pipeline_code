@@ -42,6 +42,12 @@ if isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'])
     % Also load the indices to remove
     load([parameters.dir_exper 'PLSR\indices_to_remove.mat']);
     parameters.indices_to_remove = indices_to_remove;
+
+    % Load lists of response categories
+    load([parameters.dir_exper 'PLSR\response_categories.mat']);
+    parameters.loop_variables.response_categories = categories;
+    parameters.categories = categories;
+
 end
 
 % Put relevant variables into loop_variables.
@@ -61,6 +67,11 @@ if ~isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'])
     % Also load the indices to remove
     load([parameters.dir_exper 'PLSR\indices_to_remove.mat']);
     parameters.indices_to_remove = indices_to_remove;
+
+     % Also load lists of response categories
+    load([parameters.dir_exper 'PLSR\response_catecories.mat'])
+    parameters.loop_variables.response_categories = categories;
+    parameters.categories = categories;
 end
 
 %% Remove correlations for periods you don't want to use. 
@@ -106,6 +117,8 @@ parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % Thes
 
 % Original order of spontaneous (for velocity & accel indexing)
 parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 'stopwalk', 'postwalk'};
+
+parameters.concatenate_vertically = true;
 
 % Input
 % Correlations (for instances count)
@@ -327,7 +340,6 @@ parameters.loop_list.things_to_save.results.level = 'end';
 
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);
 
-
 %% Plot some X loadings
 
 if isfield(parameters, 'loop_list')
@@ -408,3 +420,109 @@ parameters.loop_list.things_to_save.fig.level = 'end';
 
 RunAnalysis({@PlotProjections}, parameters);
 
+%% **********************************************************************
+% Try this all again but with the multi-level approach.
+
+%% %% Put in response variables, no vertical concatenation
+
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
+
+% Variables to replicate
+parameters.response_variable_names = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector'};
+parameters.variables_static = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'duration_vector'};
+parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
+
+% Original order of spontaneous (for velocity & accel indexing)
+parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 'stopwalk', 'postwalk'};
+
+parameters.concatenate_vertically = false;
+
+% Input
+% Correlations (for instances count)
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'values_relevent_periods.mat'};
+parameters.loop_list.things_to_load.data.variable= {'values'}; 
+parameters.loop_list.things_to_load.data.level = 'mouse';
+
+% Spontaneous velocity
+parameters.loop_list.things_to_load.speed_vector.dir = {[parameters.dir_exper 'behavior\spontaneous\rolled concatenated velocity\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.speed_vector.filename= {'velocity_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.speed_vector.variable= {'velocity_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.speed_vector.level = 'mouse';
+
+% Spontaneous accel.
+parameters.loop_list.things_to_load.accel_vector.dir = {[parameters.dir_exper 'behavior\spontaneous\rolled concatenated velocity\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.accel_vector.filename= {'accel_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.accel_vector.variable= {'accel_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.accel_vector.level = 'mouse';
+
+% Output 
+parameters.loop_list.things_to_save.response_variables.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.response_variables.filename= {'response_variables_table.mat'};
+parameters.loop_list.things_to_save.response_variables.variable= {'response_variables'}; 
+parameters.loop_list.things_to_save.response_variables.level = 'mouse';
+
+RunAnalysis({@PopulateResponseVariables}, parameters);
+
+%% Multi-level -- Level 1 (speed, accel rate, duration within each condition & type per mouse)
+% need to make a special function for this
+
+% Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'motorized_vs_spon', {'loop_variables.categories.motorized_vs_spon'}, 'motorized_vs_spon_iterator';
+               'type', {'loop_variables.categories.type'}, 'type_iterator';        
+               };
+
+parameters.loop_variables.response_variables = parameters.response_variable_names;
+
+% No regressions on rest by itself.
+% Walk only regress on speed
+% finished only regress on speed & duration.
+% start, stop, accel, decel regress on all 
+
+% The level of multi-level regression you're running.
+parameters.PLSR_level = 1; 
+
+% Input 
+parameters.loop_list.things_to_load.response_variables.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.response_variables.filename= {'response_variables_table.mat'};
+parameters.loop_list.things_to_load.response_variables.variable= {'response_variables'}; 
+parameters.loop_list.things_to_load.response_variables.level = 'mouse';
+
+parameters.loop_list.things_to_load.brain_data.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.brain_data.filename= {'values.mat'};
+parameters.loop_list.things_to_load.brain_data.variable= {'values'}; 
+parameters.loop_list.things_to_load.brain_data.level = 'mouse';
+
+% Output
+parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1\'], 'motorized_vs_spon', '\', 'type', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_save.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_save.results.level = 'type';
+
+RunAnalysis({@PLSR_Multilevel}, parameters);  
+
+%% Plot the Betas, XLs, Projections for all level 1s
+
+%% Multi-level -- Level 2 (effect of type on Betas from level 1)
+% Betas from level 1 are now the predictors, not the brain data. 
+% [Does that mean there are now  (# continuous response variables) * (496 + 1 (for intercept)) total predictors?]    
+% Different mice = different observations
+% Do for motorized & spontaneous each.
+
+
+%% Multi-level-- Level 3 (ish)
+% Effect of motorized vs spontaneous.
+% only have 1 beta matrix for each of these, right? Can just take the
+% difference...?
