@@ -31,7 +31,8 @@ parameters.mice_all = parameters.mice_all([1:6 8]);
 parameters.digitNumber = 2;
 parameters.yDim = 256;
 parameters.xDim = 256;
-number_of_sources = 32; 
+parameters.number_of_sources = 32; 
+parameters.indices = find(tril(ones(parameters.number_of_sources), -1));
 
 % Load periods_nametable_PLSR.m, if it exists yet. (Otherwise is created in
 % first step).
@@ -350,7 +351,6 @@ end
 parameters.loop_list.iterators = 'none';
 
 parameters.components_to_plot = 1:30; 
-parameters.number_of_sources = 32;
 parameters.color_range = [-200 200];
 
 % Input 
@@ -378,7 +378,6 @@ end
 parameters.loop_list.iterators = 'none';
 
 parameters.components_to_plot = {'motorized', 'spontaneous','rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished', 'speed', 'accel', 'duration'};
-parameters.number_of_sources = 32;
 %parameters.color_range = [-0.03 0.03];
 
 % Input 
@@ -404,7 +403,6 @@ end
 parameters.loop_list.iterators = 'none';
 
 parameters.components_to_plot = {'motorized', 'spontaneous','rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished', 'speed', 'acceleration rate', 'duration'};
-parameters.number_of_sources = 32;
 
 % Input 
 parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\']};
