@@ -13,7 +13,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     ncomponents_original = 20; 
 
     [~, ~, ~, ~, ~, ~, MSE_original, stats_original] ...
-       = plsregress(parameters.explanatory, parameters.response, ncomponents_original, 'cv', 5, 'Options', statset('UseParallel',true) );
+       = plsregress(parameters.explanatory, parameters.response, ncomponents_original, 'cv', 10, 'mcreps', 10, 'Options', statset('UseParallel',true) );
     
     % Save the original weights of Y for later (in case you want to look at
     % what those components look like later)
@@ -24,7 +24,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     % Now run with optimal number of components.
     [results.XL, results.YL, results.XS, results.YS, results.BETA, results.PCTVAR, results.MSE, results.stats] ...
-       = plsregress(parameters.explanatory, parameters.response, ncomponents, 'cv', 5, 'Options', statset('UseParallel',true) );
+       = plsregress(parameters.explanatory, parameters.response, ncomponents, 'cv', 10, 'mcreps', 10, 'Options', statset('UseParallel',true) );
     
     % Put MSE_original, ncomponents, & W_original into the results.
     results.maximal_components.MSE = MSE_original;
