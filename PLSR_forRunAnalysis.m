@@ -48,6 +48,8 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % transpose
 
     % concatenate
+
+    % Remove unnecessary columns of dummy variables.
     
     % zscore
      
