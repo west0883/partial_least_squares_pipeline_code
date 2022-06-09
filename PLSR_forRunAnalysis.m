@@ -6,7 +6,20 @@
 
 function [parameters] = PLSR_forRunAnalysis(parameters)
 
-    MessageToUser('Regressing ', parameters);
+    MessageToUser('PLS regressing ', parameters);
+
+    % Tell user all the parameters they sent in (so they can cancel before 
+    % it runs for a long time if they made a mistake).
+    message = {['Finding best number of components with maximum ' num2str(parameters.ncomponents_max) ...
+        ' components, ' num2str(parameters.crossValidationReps) ' cross-validation reps, ' ...
+         num2str(parameters.MonteCarloReps) , ' Monte Carlo repetitions']};
+    disp(message);
+
+    if isfield(parameters, 'permutationGeneration') && parameters.permutationGeneration
+
+        disp(['Will run ' num2str(parameters.parameters.n_permutaions) ' permutations.'])
+
+    end
 
     % Find the location & value of the comparison iterator in
     % parameters.values
