@@ -394,7 +394,7 @@ parameters.loop_list.things_to_save.fig.level = 'end';
 
 RunAnalysis({@PlotBetas}, parameters);
 
-%% Plot Projections
+%% Plot Weights
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
 end
@@ -402,7 +402,7 @@ end
 % Iterators
 parameters.loop_list.iterators = 'none';
 
-parameters.components_to_plot = {'motorized', 'spontaneous','rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished', 'speed', 'acceleration rate', 'duration'};
+parameters.components_to_plot = 1:30;
 
 % Input 
 parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\']};
@@ -412,11 +412,11 @@ parameters.loop_list.things_to_load.results.level = 'start';
 
 % Output
 parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\']};
-parameters.loop_list.things_to_save.fig.filename= {'PLSR_Projections.fig'};
+parameters.loop_list.things_to_save.fig.filename= {'PLSR_weights.fig'};
 parameters.loop_list.things_to_save.fig.variable= {'fig'}; 
 parameters.loop_list.things_to_save.fig.level = 'end';
 
-RunAnalysis({@PlotProjections}, parameters);
+RunAnalysis({@PlotWeights}, parameters);
 
 %% **********************************************************************
 % Try this all again but with the multi-level approach.
@@ -509,9 +509,33 @@ parameters.loop_list.things_to_save.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_save.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_save.results.level = 'type';
 
-RunAnalysis({@PLSR_Multilevel}, parameters);  
+RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
 
-%% Plot the Betas, XLs, Projections for all level 1s
+%% Plot Weights
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = 'none';
+
+parameters.components_to_plot = {'motorized', 'spontaneous','rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished', 'speed', 'acceleration rate', 'duration'};
+
+% Input 
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\']};
+parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.results.variable= {'results'}; 
+parameters.loop_list.things_to_load.results.level = 'start';
+
+% Output
+parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\']};
+parameters.loop_list.things_to_save.fig.filename= {'PLSR_Projections.fig'};
+parameters.loop_list.things_to_save.fig.variable= {'fig'}; 
+parameters.loop_list.things_to_save.fig.level = 'end';
+
+RunAnalysis({@PlotWeights}, parameters);
+
+%% Plot the Betas, XLs, weights, for all level 1s
 
 %% Multi-level -- Level 2 (effect of type on Betas from level 1)
 % Betas from level 1 are now the predictors, not the brain data. 

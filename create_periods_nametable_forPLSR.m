@@ -270,11 +270,26 @@ for i = 1:size(periods,1)
 end 
 periods.accel_vector = accel_vector;
 
-%% Create dummy variables for categoricals -- motorized_vs_spon & type
+%% Make a column that says if this period is one of the "active" transitions 
+% Is for later when you want to compare all transitions to other things. 
+transition_or_not = cell(size(periods, 1), 1); 
+for i = 1:size(periods,1)
+
+    if strcmp(periods{i, 'type'}{1}, 'start') || strcmp(periods{i, 'type'}{1}, 'accel') || strcmp(periods{i, 'type'}{1}, 'decel') || strcmp(periods{i, 'type'}{1}, 'stop')
+        transition_or_not{i} = 1;
+    else 
+        transition_or_not{i} = 0;
+    end
+    
+end
+periods.transition_or_not = transition_or_not; 
+
+%% Create dumy variables for categoricals -- motorized_vs_spon, type, & transition or not
 %categories.motorized_vs_spon = {'motorized', 'spontaneous'};
 %categories.type = {'rest', 'walk', 'prep', 'start', 'stop', 'accel', 'decel', 'finished'};
 motorized_vs_spon_dummyvars = cell(size(periods,1),1);
 type_dummyvars = cell(size(periods,1),1);
+transition_or_not_dummyvars = cell(size(periods,1),1);
 
 for i = 1:size(periods,1)
 
@@ -286,43 +301,53 @@ for i = 1:size(periods,1)
     type = strcmp(repmat(periods{i, 'type'}, size(categories.type)), categories.type);
     type_dummyvars{i} = double(type)';
 
+    % Transition or not. 
+    if periods{i, 'transition_or_not'}{1}
+        transition_or_not_dummyvars{i} = [1; 0];
+    else
+       transition_or_not_dummyvars{i} = [0; 1];
+    end
+
 end 
 periods.motorized_vs_spon_dummyvars = motorized_vs_spon_dummyvars;
 periods.type_dummyvars = type_dummyvars;
-
+periods.transition_or_not_dummyvars = transition_or_not_dummyvars;
 %% Replicate dummy vars by roll number. 
 motorized_vs_spon_dummyvars_vector = cell(size(periods,1),1);
 type_dummyvars_vector = cell(size(periods,1),1);
-
+transition_or_not_dummyvars_vector = cell(size(periods,1),1);
 for i = 1:size(periods,1)
 
     % Motorized vs spon
     motorized_vs_spon_dummyvars_vector{i} =  repmat(periods{i, 'motorized_vs_spon_dummyvars'}{1}, [1 number_of_rolls{i}]);
 
     % Type 
-    
     type_dummyvars_vector{i} = repmat(periods{i, 'type_dummyvars'}{1}, [1 number_of_rolls{i}]);
+
+    % Transition or not 
+    transition_or_not_dummyvars_vector{i} = repmat(periods{i, 'transition_or_not_dummyvars'}{1}, [1 number_of_rolls{i}]);
 
 end 
 periods.motorized_vs_spon_dummyvars_vector = motorized_vs_spon_dummyvars_vector;
 periods.type_dummyvars_vector = type_dummyvars_vector;
-
+periods.transition_or_not_dummyvars_vector = transition_or_not_dummyvars_vector;
 %% Replicate all variables by number of instances 
 % Instances in 3rd dimension. Dummy variables for categorical. 
-variables = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector'};
-
-% for each mouse, 
-for mousei = 1:size(parameters.mice_all,2)
-
-
-    % Load correlation values
-    load('Y:\Sarah\Analysis\Experiments\Random Motorized Treadmill\fluorescence analysis\correlations\Fisher transformed\1107\all concatenated\correlations_all_concatenated_mean_removed.mat')
-    % Remove corelation periods you're not interested in (using
-    % indices_to_remove)
-
-    % Use instances for replicating. 
-
-end
+% variables = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', ...
+%     'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector'};
+% 
+% % for each mouse, 
+% for mousei = 1:size(parameters.mice_all,2)
+% 
+% 
+%     % Load correlation values
+%     load('Y:\Sarah\Analysis\Experiments\Random Motorized Treadmill\fluorescence analysis\correlations\Fisher transformed\1107\all concatenated\correlations_all_concatenated_mean_removed.mat')
+%     % Remove corelation periods you're not interested in (using
+%     % indices_to_remove)
+% 
+%     % Use instances for replicating. 
+% 
+% end
 
 %% Save 
 save([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'], 'periods', '-v7.3');
