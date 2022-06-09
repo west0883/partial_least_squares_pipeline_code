@@ -77,9 +77,9 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     dataset.zscoring.responseVariables.sigma = sigma_response;
 
     % For convenience, put both variable sets for this comparison into a stucture for saving. 
-    dataset.brainData = brainData;
-    dataset.responseVariables = responseVariables;
-    dataset.variable_category_column_numbers = variable_category_column_numbers; % For telling which columns belong to which category later
+    %dataset.brainData = brainData;
+    %dataset.responseVariables = responseVariables;
+    %dataset.variable_category_column_numbers = variable_category_column_numbers; % For telling which columns belong to which category later
      
     % Run plsregress to find the optimal number of components, using a maximal number of components (somewhat
     % arbitrary -- start with 20)
