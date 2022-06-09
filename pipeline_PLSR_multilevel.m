@@ -187,7 +187,7 @@ parameters.permutationGeneration = false;
 % Parameters for calculating best number of components.
 parameters.ncomponents_max = 20; 
 parameters.crossValidationReps = 10;
-parameters.MonteCarloReps = 10; 
+parameters.MonteCarloReps = 10;
 
 % Input 
 parameters.loop_list.things_to_load.response_variables.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
