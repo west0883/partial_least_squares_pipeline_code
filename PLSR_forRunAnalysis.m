@@ -144,11 +144,11 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     [results.XL, results.YL, results.XS, results.YS, results.BETA, results.PCTVAR, results.MSEP, results.stats] ...
        = plsregress(brainData, responseVariables, ncomponents); 
 
-    % Run iterative confidence intervals with permutation testing. Randomly
+    % Run iterative permutations for permutation significance testing. Randomly
     % permute the order of the response variables. 
 
     % If user says so
-    if isfield(parameters.n_permutations) 
+    if isfield(parameters, 'permutationGeneration') && parameters.permutationGeneration
 
         disp('Running permutations'); 
 
@@ -189,7 +189,6 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     end 
 
-    % Put into output structure;
     parameters.results = results; 
     parameters.dataset = dataset;
 
