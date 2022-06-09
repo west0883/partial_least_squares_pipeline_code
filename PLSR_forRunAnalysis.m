@@ -114,16 +114,16 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % For convenience, put both variable sets for this comparison into a stucture for saving. 
     %dataset.brainData = brainData;
     %dataset.responseVariables = responseVariables;
+    dataset.responseVariables_separateVariables = responseVariables_separateVariables;
     dataset.variable_category_column_numbers = variable_category_column_numbers; % For telling which columns belong to which category later
      
     % Run plsregress to find the optimal number of components, using a maximal number of components (somewhat
     % arbitrary -- start with 20)
-    ncomponents_max = 20; 
-
-    disp(['Finding best number of components (max of ' num2str(ncomponents_max) ' components.']);
+  
+    disp(['Finding best number of components (max of ' num2str(parameters.ncomponents_max) ' components.']);
 
     [~, ~, ~, ~, ~, ~, MSEP_original, stats_original] ...
-       = plsregress(brainData, responseVariables, ncomponents_max, 'cv', 10, 'mcreps', 10, 'Options', statset('UseParallel',true) );
+       = plsregress(brainData, responseVariables, parameters.ncomponents_max, 'cv', parameters.crossValidationReps, 'mcreps', parameters.MonteCarloReps, 'Options', statset('UseParallel',true) );
     
     % Save the original weights of Y for later (in case you want to look at
     % what those components look like later)
