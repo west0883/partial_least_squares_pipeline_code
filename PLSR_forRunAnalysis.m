@@ -58,18 +58,39 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     end 
 
-    % Transpose
+    % **Transpose
     brainData = cellfun(@transpose, brainData, 'UniformOutput', false);
     responseVariables = cellfun(@transpose, responseVariables, 'UniformOutput', false);
 
-    % concatenate brain data & response variables vertically across periods.  
+    % **Concatenate brain data & response variables vertically across periods. 
 
-    % Remove unnecessary columns of dummy variables.
+    % brainData has only one cell array column, so can be done all at once.
+    brainData = vertcat(brainData{:});
 
+    % Each variable in responseVariables is own cell array column, so have
+    % to do each of those first before horizontally concatenating the
+    % different variables into  same matrix. Keep the separated variables
+    % for later.
+    responseVariables_separateVariables = cell(1, numel(comparison_variablesToUse));
+    for variablei =  1:numel(comparison_variablesToUse)
+        responseVariables_separateVariables{variablei} = vertcat(responseVariables{:, variablei});
+    end
+   
+    % **Remove unnecessary columns of variables.
+    for variablei =  1:numel(comparison_variablesToUse)
+
+        % Find if there are AREN'T any non-zero elements in each column.
+        columns_to_remove = ~any(responseVariables_separateVariables{variablei});
+
+        % If there are columns to remove, remove them.
+        if ~isempty(columns_to_remove)
+            responseVariables_separateVariables{variablei}(:, columns_to_remove) = [];  
+        end
+    end
 
     % Get number of remaining response columns per category, for permuting
     % independently later. 
-    variable_category_column_numbers = cellfun(@size, responseVariables, 2);
+    variable_category_column_numbers = cellfun(@size, responseVariables_separateVariables, 2);
 
     columns_to_use = cell(1, numel(comparison_variablesToUse)); 
     column_counter = 0;
@@ -78,9 +99,8 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         column_counter = column_counter + variable_category_column_numbers(variablesi);
     end
 
-    % Concatenate response variables horizontally across variable category 
-
-    
+    % Horizontally concatenate the different response variable categories.
+    responseVariables = horzcat(responseVariables_separateVariables{:}); 
 
     % Zscore both variable sets. Keep mu & sigmas for better interprebility
     % of betas later.
