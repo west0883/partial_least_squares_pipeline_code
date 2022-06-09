@@ -17,7 +17,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     if isfield(parameters, 'permutationGeneration') && parameters.permutationGeneration
 
-        disp(['Will run ' num2str(parameters.parameters.n_permutaions) ' permutations.'])
+        disp(['Will run ' num2str(parameters.n_permutaions) ' permutations.'])
 
     end
 
