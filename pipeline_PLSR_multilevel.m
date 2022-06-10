@@ -58,7 +58,7 @@ if isfile([parameters.dir_exper 'PLSR\comparisons_firstlevel.mat'])
 end
 
 % Change here if you only want to do some comparisons.
-parameters.comparisons_firstlevel = parameters.comparisons_firstlevel(10:11);
+parameters.comparisons_firstlevel = parameters.comparisons_firstlevel(11);
 
 % Put relevant variables into loop_variables.
 parameters.loop_variables.mice_all = parameters.mice_all;
@@ -203,39 +203,152 @@ parameters.loop_list.things_to_load.brain_data.variable= {'values'};
 parameters.loop_list.things_to_load.brain_data.level = 'mouse';
 
 % Output
-parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 with max ' num2str(parameters.ncomponents_max)  ' components\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_save.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_save.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_save.results.level = 'comparison';
 
-RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 with max ' num2str(parameters.ncomponents_max)  ' components\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
-%% Plot Weights
+profile off
+profile on
+RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+profile viewer
+
+%% Plot Betas
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
 end
 
 % Iterators
-parameters.loop_list.iterators = 'none';
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_firstlevel(:).name'}, 'comparison_iterator'     
+               };
 
-parameters.components_to_plot = {'motorized', 'spontaneous','rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished', 'speed', 'acceleration rate', 'duration'};
+parameters.ncomponents_max = 3; 
 
 % Input 
-parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\']};
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 with max ' num2str(parameters.ncomponents_max)  ' components\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.results.variable= {'results'}; 
-parameters.loop_list.things_to_load.results.level = 'start';
+parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_load.results.level = 'comparison';
+
+% Also load in dataset values for the zscore sigma.
+parameters.loop_list.things_to_load.dataset_info.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 with max ' num2str(parameters.ncomponents_max)  ' components\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset_info.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset_info.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset_info.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\']};
-parameters.loop_list.things_to_save.fig.filename= {'PLSR_Projections.fig'};
+parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 with max ' num2str(parameters.ncomponents_max)  ' components\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.fig.filename= {'PLSR_betas.fig'};
 parameters.loop_list.things_to_save.fig.variable= {'fig'}; 
-parameters.loop_list.things_to_save.fig.level = 'end';
+parameters.loop_list.things_to_save.fig.level = 'comparison';
+
+RunAnalysis({@PlotBetas}, parameters);
+
+close all;
+
+%% Plot weights
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_firstlevel(:).name'}, 'comparison_iterator'     
+               };
+
+
+parameters.ncomponents_max = 20; 
+
+% Input 
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 with max ' num2str(parameters.ncomponents_max)  ' components\\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_load.results.level = 'comparison';
+
+% Output
+parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 with max ' num2str(parameters.ncomponents_max)  ' components\\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.fig.filename= {'PLSR_weights.fig'};
+parameters.loop_list.things_to_save.fig.variable= {'fig'}; 
+parameters.loop_list.things_to_save.fig.level = 'comparison';
 
 RunAnalysis({@PlotWeights}, parameters);
 
-%% Plot the Betas, XLs, weights, for all level 1s
+%% Plot MSEPs per mouse, up to 20 components.
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
 
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_firstlevel(:).name'}, 'comparison_iterator'     
+               };
+
+parameters.ncomponents_max = 20; 
+
+% Input 
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 with max ' num2str(parameters.ncomponents_max)  ' components\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_load.results.level = 'comparison';
+
+% Output
+parameters.loop_list.things_to_save.xfig.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 with max ' num2str(parameters.ncomponents_max) ' components\MSEPs\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.xfig.filename= {'PLSR_MSEPs_explanatory.fig'};
+parameters.loop_list.things_to_save.xfig.variable= {'xfig'}; 
+parameters.loop_list.things_to_save.xfig.level = 'mouse';
+
+parameters.loop_list.things_to_save.yfig.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 with max ' num2str(parameters.ncomponents_max)  ' components\MSEPs\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.yfig.filename= {'PLSR_MSEPs_response.fig'};
+parameters.loop_list.things_to_save.yfig.variable= {'yfig'}; 
+parameters.loop_list.things_to_save.yfig.level = 'mouse';
+
+RunAnalysis({@PlotMSEPs}, parameters);
+
+close all;
+
+
+%% Plot percent variance per mouse
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_firstlevel(:).name'}, 'comparison_iterator'     
+               };
+
+parameters.ncomponents_max = 20;
+
+% Input 
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 with max ' num2str(parameters.ncomponents_max) ' components\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_load.results.level = 'comparison';
+
+% Output
+parameters.loop_list.things_to_save.xfig.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 with max ' num2str(parameters.ncomponents_max) ' components\MSEPs\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.xfig.filename= {'PLSR_PCTVAR_explanatory.fig'};
+parameters.loop_list.things_to_save.xfig.variable= {'xfig'}; 
+parameters.loop_list.things_to_save.xfig.level = 'mouse';
+
+parameters.loop_list.things_to_save.yfig.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 with max ' num2str(parameters.ncomponents_max) ' components\MSEPs\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.yfig.filename= {'PLSR_PCTVAR_response.fig'};
+parameters.loop_list.things_to_save.yfig.variable= {'yfig'}; 
+parameters.loop_list.things_to_save.yfig.level = 'mouse';
+
+RunAnalysis({@PlotPCTVAR}, parameters);
+
+close all;
 %% Multi-level -- Level 2 (effect of type on Betas from level 1)
 % Betas from level 1 are now the predictors, not the brain data. 
 % [Does that mean there are now  (# continuous response variables) * (496 + 1 (for intercept)) total predictors?]    
