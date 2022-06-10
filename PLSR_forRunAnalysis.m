@@ -10,10 +10,12 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     % Tell user all the parameters they sent in (so they can cancel before 
     % it runs for a long time if they made a mistake).
-    message = {['Finding best number of components with maximum ' num2str(parameters.ncomponents_max) ...
-        ' components, ' num2str(parameters.crossValidationReps) ' cross-validation reps, ' ...
-         num2str(parameters.MonteCarloReps) , ' Monte Carlo repetitions']};
-    disp(message);
+    if isfield(parameters, 'findBestNComponents') && parameters.findBestNComponents
+        message = ['Finding best number of components with maximum ' num2str(parameters.ncomponents_max) ...
+            ' + 1 components, ' num2str(parameters.crossValidationReps) ' cross-validation reps, ' ...
+             num2str(parameters.MonteCarloReps) , ' Monte Carlo repetitions'];
+        disp(message);
+    end
 
     if isfield(parameters, 'permutationGeneration') && parameters.permutationGeneration
 
@@ -118,26 +120,33 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     dataset.variable_category_column_numbers = variable_category_column_numbers; % For telling which columns belong to which category later
      
     % Run plsregress to find the optimal number of components, using a maximal number of components (somewhat
-    % arbitrary -- start with 20)
-  
-    disp(['Finding best number of components (max of ' num2str(parameters.ncomponents_max) ' components.']);
+    % arbitrary)
 
-    [~, ~, ~, ~, ~, ~, MSEP_original, stats_original] ...
-       = plsregress(brainData, responseVariables, parameters.ncomponents_max, 'cv', parameters.crossValidationReps, 'mcreps', parameters.MonteCarloReps, 'Options', statset('UseParallel',true) );
+    % If user says so
+    if isfield(parameters, 'findBestNComponents') && parameters.findBestNComponents
+        [~, ~, ~, ~, ~, ~, MSEP_original, stats_original] ...
+           = plsregress(brainData, responseVariables, parameters.ncomponents_max, 'cv', parameters.crossValidationReps, 'mcreps', parameters.MonteCarloReps, 'Options', statset('UseParallel',true) );
+        
+        % Save the original weights of Y for later (in case you want to look at
+        % what those components look like later)
+        W_original = stats_original.W; 
     
-    % Save the original weights of Y for later (in case you want to look at
-    % what those components look like later)
-    W_original = stats_original.W; 
+        % Find component with minimum response-variable MSEP
+        [~ , ncomponents] = min(MSEP_original(2,:));
+    
+        % Put MSE_original, ncomponents, & W_original into the results.
+        results.maximal_components.MSEP = MSEP_original;
+        results.maximal_components.W = W_original;
+        results.ncomponents_used = ncomponents;
 
-    % Find component with minimum MSE
-    [~ , ncomponents] = min(MSEP_original);
+    % Otherwise, just run with ncomponents as parameters.ncomponents_max.
+    else
+        ncomponents = parameters.ncomponents_max;
+        results.ncomponents_used = ncomponents;
+        
+    end
 
-    % Put MSE_original, ncomponents, & W_original into the results.
-    results.maximal_components.MSEP = MSEP_original;
-    results.maximal_components.W = W_original;
-    results.best_ncomponents = ncomponents;
-
-    % Now run with optimal number of components.
+    % Now run with optimal (or user given) number of components.
 
     disp(['Running PLSR with ' num2str(ncomponents) ' components.']);
 
