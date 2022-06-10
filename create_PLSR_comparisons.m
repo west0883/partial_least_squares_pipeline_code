@@ -123,6 +123,32 @@ comparisons(counter + 1).indices = find(indices_spontaneous & indices_type);
 
 counter = counter + 1; 
 
+%% Continuous variables, walk with speed
+% Motorized
+comparisons(counter + 1).name = ['motorized_walk_continuousVars'];
+comparisons(counter + 1).variablesToUse = {'speed_vector'};
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'walk');
+
+% Get intersection of motorized & type. 
+comparisons(counter + 1).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1; 
+
+% Spontaneous
+comparisons(counter + 1).name = ['spontaneous_walk_continuousVars'];
+comparisons(counter + 1).variablesToUse = {'speed_vector'};
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'walk');
+
+% Get intersection of spontaneous & type. 
+comparisons(counter + 1).indices = find(indices_spontaneous & indices_type);
+
+counter = counter + 1; 
+
+
 %% 
 % From here down is categorical comparisons. 
 
