@@ -169,7 +169,7 @@ parameters.loop_list.things_to_save.response_variables.level = 'mouse';
 RunAnalysis({@PopulateResponseVariables}, parameters);
 
 %% Multi-level -- Level 1
-
+% Run a first-pass to see the results before you run any permutations.
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -184,8 +184,10 @@ parameters.loop_list.iterators = {
 % Do you want permutations?
 parameters.permutationGeneration = false;
 
-% Parameters for calculating best number of components.
-parameters.ncomponents_max = 20; 
+% Parameters for calculating best number of components. If
+% "findBestNComponents" = false, just run the ncomponents_max
+parameters.findBestNComponents = false;
+parameters.ncomponents_max = 3; 
 parameters.crossValidationReps = 10;
 parameters.MonteCarloReps = 10;
 
