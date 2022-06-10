@@ -25,13 +25,13 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     % Find the location & value of the comparison iterator in
     % parameters.values
-    iterator_location = find(cellfun(@strcmp, parameters.keywords, repmat({'comparison'}, size(parameters.keywords)))); 
+    iterator_location = find(cellfun(@strcmp, parameters.keywords, repmat({'comparison_iterator'}, size(parameters.keywords)))); 
     comparison_iterator = parameters.values{iterator_location};
 
     % Grab comparison name, indices, variables to use.
-    %comparison_name = parameters.comparisons(comparison_iterator).name; % Might not need (is really only for saving files)
-    comparison_indices = parameters.comparisons(comparison_iterator).indices;
-    comparison_variablesToUse = parameters.comparisons(comparison_iterator).variablesToUse; 
+    %comparison_name = parameters.comparisons_firstlevel(comparison_iterator).name; % Might not need (is really only for saving files)
+    comparison_indices = parameters.comparisons_firstlevel(comparison_iterator).indices;
+    comparison_variablesToUse = parameters.comparisons_firstlevel(comparison_iterator).variablesToUse; 
 
     % Get the brain data period indices you're interested in. 
     brainData = parameters.brain_data(comparison_indices);
@@ -39,8 +39,13 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % Get the response variables period indices & variables you're
     % interested in. 
     % responseVariables is now an array
-    responseVariables = parameters.response_variables{comparison_indices, [comparison_variablesToUse{:}]}; 
-   
+    holder = cell(1, numel(comparison_variablesToUse));
+    for i = 1:numel(comparison_variablesToUse)
+        holder{i} = parameters.response_variables{comparison_indices, comparison_variablesToUse{i}}; 
+
+    end
+    responseVariables = horzcat(holder{:}); 
+
     % Reshape brainData to make each roll into an instance, inside each period cell. 
     % The 2 reshape inputs 
     input1 =  repmat({size(brainData{1}, 1)}, size(brainData));
@@ -92,13 +97,13 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     % Get number of remaining response columns per category, for permuting
     % independently later. 
-    variable_category_column_numbers = cellfun(@size, responseVariables_separateVariables, 2);
+    variable_category_column_numbers = cellfun('size', responseVariables_separateVariables, 2);
 
     columns_to_use = cell(1, numel(comparison_variablesToUse)); 
     column_counter = 0;
     for variablei = 1:numel(comparison_variablesToUse)
         columns_to_use{variablei} = column_counter + 1:variable_category_column_numbers(variablei); % Defined this separately for clarity.
-        column_counter = column_counter + variable_category_column_numbers(variablesi);
+        column_counter = column_counter + variable_category_column_numbers(variablei);
     end
 
     % Horizontally concatenate the different response variable categories.
@@ -162,7 +167,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         disp('Running permutations'); 
 
         % Make a holding matrix for beta permutations.
-        betas_permutations = NaN(size(results.BETA,1), size(restuls.BETA, 2), parameters.n_permutations); 
+        betas_permutations = NaN(size(results.BETA,1), size(results.BETA, 2), parameters.n_permutations); 
 
         parfor repi = 1:parameters.n_permutaions 
 
