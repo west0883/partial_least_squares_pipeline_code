@@ -28,7 +28,7 @@ function [parameters] = PopulateResponseVariables(parameters)
         instances = size(parameters.data{periodi}, 3);
 
         % For each of the static categories (static across different
-        % instances: motorized_vs_spon, type, duration
+        % instances: motorized_vs_spon, type, duration, transition or not
         for statici = 1:numel(parameters.variables_static)
 
            % Replicate by number of instancs in 3rd dimension.
