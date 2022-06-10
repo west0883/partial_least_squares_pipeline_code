@@ -4,26 +4,33 @@
 
 % Plot a number of Betas from partial least squares regression. Run by RunAnalysis.
 
-function [parameters] = PlotXLs(parameters)
+function [parameters] = PlotBetas(parameters)
 
-    [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(numel(parameters.components_to_plot),4/5);
+    [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(parameters.results.BETA, 2),4/5);
 
-    indices = logical(tril(ones(parameters.number_of_sources), -1));
-
+    % Adjust Betas based on z-score sigma. % First row is constant estimate
+    betas_adjusted = parameters.results.BETA(2:end, :) .* parameters.dataset_info.zscoring.brainData.sigma';
+    
     fig = figure;
     fig.WindowState = 'maximized';
-    for componenti = 1:numel(parameters.components_to_plot)
+    for componenti = 1:size(betas_adjusted, 2)
 
         holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
 
-        % First row is constant estimate
-        holder(indices) = parameters.BETA(2:end, componenti);
+        
+        holder(parameters.indices) = betas_adjusted(:, componenti);
 
-        subplot(subplot_rows, subplot_columns, componenti); imagesc(holder); colorbar; %caxis(parameters.color_range)
-        title(['Beta ' (parameters.components_to_plot{componenti})]); axis square;
+        extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
+        color_range = [-extreme extreme]; 
+
+        subplot(subplot_rows, subplot_columns, componenti); imagesc(holder); colorbar; 
+        caxis(color_range);
+        title(['Variable ' num2str(componenti)]); axis square;
 
     end
-    sgtitle(['Betas ' strjoin(parameters.values(1:numel(parameters.values)/2), ', ')])
+    title_string = ['Betas ' strjoin(parameters.values(1:numel(parameters.values)/2), ', ')];
+    title_string = strrep(title_string, '_', ' ');
+    sgtitle(title_string);
 
     % Put into output structure.
     parameters.fig = fig;
