@@ -38,7 +38,9 @@ function [parameters] = PlotMSEPs(parameters)
         hold on; 
     end
     hold on;
+
+    component_vector = 0:size(parameters.results.maximal_components.MSEP,2) - 1;
     
-    plot(parameters.x_axis, parameters.results.maximal_components.MSEP(1,:));
-    plot(parameters.y_axis, parameters.results.maximal_components.MSEP(2,:));
+    plot(parameters.x_axis, component_vector, parameters.results.maximal_components.MSEP(1,:));
+    plot(parameters.y_axis, component_vector, parameters.results.maximal_components.MSEP(2,:));
 end 
