@@ -1,17 +1,19 @@
 
 function [parameters] = DatasetPrep(parameters)
 
+    MessageToUser('Prepping ' , parameters);
+
     % Find the location & value of the comparison iterator in
     % parameters.values
     iterator_location = find(cellfun(@strcmp, parameters.keywords, repmat({'comparison_iterator'}, size(parameters.keywords)))); 
     comparison_iterator = parameters.values{iterator_location};
 
     % Grab comparison name, indices, variables to use.
-    %comparison_name = parameters.comparisons_firstlevel(comparison_iterator).name; % Might not need (is really only for saving files)
-    comparison_indices = parameters.comparisons_firstlevel(comparison_iterator).indices;
-    comparison_variablesToUse = parameters.comparisons_firstlevel(comparison_iterator).variablesToUse; 
+    %comparison_name = parameters.this_comparison_set(comparison_iterator).name; % Might not need (is really only for saving files)
+    comparison_indices = parameters.this_comparison_set(comparison_iterator).indices;
+    comparison_variablesToUse = parameters.this_comparison_set(comparison_iterator).variablesToUse; 
 
-    % Get the brain data period indices you're interested in. 
+    % Get the explanatory data period indices you're interested in. 
     explanatoryVariables = parameters.explanatory(comparison_indices);
 
     % Get the response variables period indices & variables you're
@@ -19,7 +21,7 @@ function [parameters] = DatasetPrep(parameters)
     % responseVariables is now an array
     holder = cell(1, numel(comparison_variablesToUse));
     for i = 1:numel(comparison_variablesToUse)
-        holder{i} = parameters.response_variables{comparison_indices, comparison_variablesToUse{i}}; 
+        holder{i} = parameters.response{comparison_indices, comparison_variablesToUse{i}}; 
 
     end
     responseVariables = horzcat(holder{:}); 
@@ -47,7 +49,7 @@ function [parameters] = DatasetPrep(parameters)
     explanatoryVariables = cellfun(@transpose, explanatoryVariables, 'UniformOutput', false);
     responseVariables = cellfun(@transpose, responseVariables, 'UniformOutput', false);
 
-    % **Concatenate brain data & response variables vertically across periods. 
+    % **Concatenate explanatory data & response variables vertically across periods. 
 
     % explanatoryVariables has only one cell array column, so can be done all at once.
     explanatoryVariables = vertcat(explanatoryVariables{:});
@@ -83,16 +85,18 @@ function [parameters] = DatasetPrep(parameters)
         columns_to_use{variablei} = column_counter + 1:variable_category_column_numbers(variablei); % Defined this separately for clarity.
         column_counter = column_counter + variable_category_column_numbers(variablei);
     end
+    % Put number of columns into dataset.
+    dataset.columns_to_use = columns_to_use;
 
     % Horizontally concatenate the different response variable categories.
     responseVariables = horzcat(responseVariables_separateVariables{:}); 
 
     % Zscore both variable sets. Keep mu & sigmas for better interprebility
     % of betas later.
-    [explanatoryVariables, mu_brain, sigma_brain] = zscore(explanatoryVariables);
+    [explanatoryVariables, mu_explanatory, sigma_explanatory] = zscore(explanatoryVariables);
     [responseVariables, mu_response, sigma_response] = zscore(responseVariables);
-    dataset.zscoring.explanatoryVariables.mu = mu_brain;
-    dataset.zscoring.explanatoryVariables.sigma = sigma_brain;
+    dataset.zscoring.explanatoryVariables.mu = mu_explanatory;
+    dataset.zscoring.explanatoryVariables.sigma = sigma_explanatory;
     dataset.zscoring.responseVariables.mu = mu_response;
     dataset.zscoring.responseVariables.sigma = sigma_response;
 
