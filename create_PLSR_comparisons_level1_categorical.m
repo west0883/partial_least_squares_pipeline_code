@@ -55,13 +55,13 @@ counter = 0;
 
 %% Set up list of variables to subtract from each behavior type. 
 variablesToSubtract.rest = [];
-variablesToSubtract.walk = {'speed'};
-variablesToSubtract.start = {'speed', 'accel', 'duration'};
-variablesToSubtract.stop = {'speed', 'accel', 'duration'};
-variablesToSubtract.accel = {'speed', 'accel', 'duration'};
-variablesToSubtract.decel = {'speed', 'accel', 'duration'};
-variablesToSubtract.finished = {'speed', 'duration'};
-variablesToSubtract.finished_stop = {'duration'};
+variablesToSubtract.walk = {'speed_vector'};
+variablesToSubtract.start = {'speed_vector', 'accel_vector', 'duration_vector'};
+variablesToSubtract.stop = {'speed_vector', 'accel_vector', 'duration_vector'};
+variablesToSubtract.accel = {'speed_vector', 'accel_vector', 'duration_vector'};
+variablesToSubtract.decel = {'speed_vector', 'accel_vector', 'duration_vector'};
+variablesToSubtract.finished = {'speed_vector', 'duration_vector'};
+variablesToSubtract.finished_stop = {'duration_vector'};
 
 save(filename_out_variablesToSubtract, 'variablesToSubtract');
 
@@ -135,8 +135,6 @@ counter = counter + 1;
 % Spontaneous
 comparisons(counter + 1).name = 'spontaneous_transitionsvswalk';
 comparisons(counter + 1).variablesToUse = {'transition_or_not_dummyvars_vector'};
-comparisons(counter + 1).variablesToSubtract.walk = {'speed'};
-comparisons(counter + 1).variablesToSubtract.transitions = {'speed', 'accel', 'duration'};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'start') ...
@@ -165,8 +163,6 @@ counter = counter + 1;
 % Spontaneous
 comparisons(counter + 1).name = 'spontaneous_startvsstop_categorical';
 comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
-comparisons(counter + 1).variablesToSubtract.start = {'speed', 'accel', 'duration'};
-comparisons(counter + 1).variablesToSubtract.stop = {'speed', 'accel', 'duration'};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'start') | strcmp(period_types, 'stop');
@@ -193,8 +189,6 @@ counter = counter + 1;
 % Motorized
 comparisons(counter + 1).name = 'motorized_startvsaccel_categorical';
 comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
-comparisons(counter + 1).variablesToSubtract.start = {'speed', 'accel', 'duration'};
-comparisons(counter + 1).variablesToSubtract.accel = {'speed', 'accel', 'duration'};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'start') | strcmp(period_types, 'accel');
@@ -208,8 +202,6 @@ counter = counter + 1;
 % Motorized
 comparisons(counter + 1).name = 'motorized_stopvsdecel_categorical';
 comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
-comparisons(counter + 1).variablesToSubtract.stop = {'speed', 'accel', 'duration'};
-comparisons(counter + 1).variablesToSubtract.decel = {'speed', 'accel', 'duration'};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'stop') | strcmp(period_types, 'decel');
