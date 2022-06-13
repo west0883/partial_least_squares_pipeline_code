@@ -62,6 +62,21 @@ periods.accel = cellfun(@str2num, accels, 'UniformOutput', false);
 
 clear speeds accels; 
 
+%% Make all speeds & accels into cm/s 
+% Only values in here so far are motorized, so can apply to all speed
+% values.
+original_speeds = [1600, 2000, 2400, 2800];
+cms_speeds = [2.25, 2.77, 3.33, 3.88];
+conversion_factor = round(mean(original_speeds./cms_speeds),-1);
+
+speeds = periods{:,'speed'};
+periods.speed = cellfun(@(x) x/conversion_factor , speeds, 'UniformOutput', false); 
+
+accels = periods{:,'accel'};
+periods.accel = cellfun(@(x) x/conversion_factor, accels, 'UniformOutput', false); 
+
+
+
 %% Remove behavior fields you don't need.
 % previous speed, two speeds ago, previous accel.
 columns_to_remove = {'previous_speed', 'previous_accel', 'two_speeds_ago'};
