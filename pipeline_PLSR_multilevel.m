@@ -241,38 +241,28 @@ end
 % Iterators
 parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-               'comparison', {'loop_variables.comparisons_firstlevel(:).name'}, 'comparison_iterator'     
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator'     
                };
-
-% Do you want permutations?
-parameters.permutationGeneration = false;
 
 % Parameters for calculating best number of components. If
 % "findBestNComponents" = false, just run the ncomponents_max
 parameters.findBestNComponents = false;
 parameters.ncomponents_max = 3; 
 
-% Input 
-parameters.loop_list.things_to_load.response_variables.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.response_variables.filename= {'response_variables_table.mat'};
-parameters.loop_list.things_to_load.response_variables.variable= {'response_variables'}; 
-parameters.loop_list.things_to_load.response_variables.level = 'mouse';
+% Do you want permutations?
+parameters.permutationGeneration = false;
 
-parameters.loop_list.things_to_load.brain_data.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.brain_data.filename= {'values.mat'};
-parameters.loop_list.things_to_load.brain_data.variable= {'values'}; 
-parameters.loop_list.things_to_load.brain_data.level = 'mouse';
+% Input 
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_save.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_save.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_save.results.level = 'comparison';
-
-parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\multilevel results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info.mat'};
-parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
-parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
 
