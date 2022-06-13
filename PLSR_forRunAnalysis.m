@@ -15,7 +15,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         if isnumeric(parameters.crossValidationReps)
        
         message = ['Finding best number of components with maximum ' num2str(parameters.ncomponents_max) ...
-            ' + 1 components, ' num2str(parameters.crossValidationReps) ' cross-validation reps, ' ...
+            ' components, ' num2str(parameters.crossValidationReps) ' cross-validation reps, ' ...
              num2str(parameters.MonteCarloReps) , ' Monte Carlo repetitions'];
         disp(message);
         end
@@ -51,7 +51,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         if ncomponents ~= 1
             ncomponents = ncomponents - 1;
         end 
-        
+
         % Put MSE_original, ncomponents, & W_original into the results.
         results.maximal_components.MSEP = MSEP_original;
         results.maximal_components.W = W_original;
