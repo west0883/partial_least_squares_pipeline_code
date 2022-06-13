@@ -15,10 +15,10 @@ XL = PLSR_results.XL;
 YL = PLSR_results.YL;
 W = PLSR_results.stats.W;
 BETA = PLSR_results.BETA;
-Y = responseVariables;
-X = brainData;
+Y = dataset_info.responseVariables;
+X = dataset_info.explanatoryVariables;
 
-X_sigma = dataset_info.zscoring.brainData.sigma;
+X_sigma = dataset_info.zscoring.explanatoryVariables.sigma;
 
 beta_diag = XS' * YS;
 beta_PLSR = pinv(XL') * beta_diag * YL'; 
@@ -39,6 +39,15 @@ R = X' * Y;
 % Matlab's version?
 BETA_calc = pinv(W') * beta_diag * Wy; 
 
-BETA_sigma_adjusted = BETA(2:end,:) .* X_sigma'; 
+holder = NaN(32);
+holder(parameters.indices) = BETA(2:end,:);
 
-beta_PLSR_sigma_adjusted = beta_PLSR .* X_sigma';
+figure; imagesc(holder); title('BETA'); colorbar;
+
+holder(parameters.indices) = BETA_calc;
+figure; imagesc(holder); title('BETA_calc'); colorbar;
+%BETA_sigma_adjusted = BETA(2:end,:) .* X_sigma'; 
+
+%beta_PLSR_sigma_adjusted = beta_PLSR .* X_sigma';
+
+
