@@ -49,24 +49,40 @@ if isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'])
     parameters.loop_variables.response_categories = categories;
     parameters.categories = categories;
 
+    clear periods indices_to_remove categories;
+
 end
 
-% Load comparisons for first level, if it exists yet.
-if isfile([parameters.dir_exper 'PLSR\comparisons_firstlevel.mat'])
-    load([parameters.dir_exper 'PLSR\comparisons_firstlevel.mat']);
-    parameters.comparisons_firstlevel = comparisons;
+% Load comparisons for first level continuous, if it exists yet.
+if isfile([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat'])
+    load([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat']);
+    parameters.comparisons_continuous = comparisons;
+    parameters.loop_variables.comparisons_continuous = parameters.comparisons_continuous;
+    clear comparisons;
 end
 
-% Change here if you only want to do some comparisons.
-parameters.comparisons_firstlevel = parameters.comparisons_firstlevel;
+% Load comparisons for first level categorical, if it exists yet.
+if isfile([parameters.dir_exper 'PLSR\comparisons_level1_categorical.mat'])
+    load([parameters.dir_exper 'PLSR\comparisons_level1_categorical.mat']);
+    parameters.comparisons_categorical = comparisons;
+    parameters.loop_variables.comparisons_categorical = parameters.comparisons_categorical;
+    clear comparisons;
+end
+
+% Load list of variables to subtract from level 1 categoricals, if it
+% exists yet.
+if isfile([parameters.dir_exper 'PLSR\variablesToSubtract_level1_categorical.mat'])
+    load([parameters.dir_exper 'PLSR\variablesToSubtract_level1_categorical.mat']);
+    parameters.variablesToSubtract = variablesToSubtract;
+    clear variablesToSubtract;
+end
 
 % Put relevant variables into loop_variables.
 parameters.loop_variables.mice_all = parameters.mice_all;
-parameters.loop_variables.periods = periods.condition; 
+parameters.loop_variables.periods = parameters.periods.condition; 
 parameters.loop_variables.conditions = {'motorized'; 'spontaneous'};
 parameters.loop_variables.conditions_stack_locations = {'stacks'; 'spontaneous'};
 parameters.loop_variables.variable_type = {'response variables', 'correlations'};
-parameters.loop_variables.comparisons_firstlevel = parameters.comparisons_firstlevel;
 
 %% Create periods_nametable_forPLSR.mat
 % If hasn't been created already. 
@@ -83,15 +99,28 @@ if ~isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'])
     load([parameters.dir_exper 'PLSR\response_catecories.mat'])
     parameters.loop_variables.response_categories = categories;
     parameters.categories = categories;
+
+    clear periods indices_to_remove categories;
 end
 
-%% Create comparisons_firstlevel.mat
+%% Create comparisons_continuous
 % If it hasn't been created already.
-if ~isfile([parameters.dir_exper 'PLSR\comparisons_firstlevel.mat'])
+if ~isfile([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat'])
     create_periods_nametable_forPLSR
-    load([parameters.dir_exper 'PLSR\comparisons_firstlevel.mat']);
-    parameters.comparisons_firstlevel = comparisons; 
-    parameters.loop_variables.comparisons_firstlevel = comparisons;
+    load([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat']);
+    parameters.comparisons_continuous = comparisons; 
+    parameters.loop_variables.comparisons_continuous= comparisons;
+    clear comparisons;
+end
+
+%% Create comparisons_categorical
+% If it hasn't been created already.
+if ~isfile([parameters.dir_exper 'PLSR\comparisons_level1_categorical.mat'])
+    create_periods_nametable_forPLSR
+    load([parameters.dir_exper 'PLSR\comparisons_level1_categorical.mat']);
+    parameters.comparisons_continuous = comparisons; 
+    parameters.loop_variables.comparisons_categorical = comparisons;
+    clear comparisons;
 end
 
 %% Remove correlations for periods you don't want to use. 
