@@ -198,11 +198,41 @@ parameters.loop_list.things_to_save.response_variables.level = 'mouse';
 RunAnalysis({@PopulateResponseVariables}, parameters);
 
 %% Prepare datasets per continuous comparison. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
 
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator'     
+               };
+
+% Specify which comparisons should be used for this dataset prep. 
+parameters.this_comparison_set = parameters.comparisons_continuous;
+
+% Input 
+parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.response.filename= {'response_variables_table.mat'};
+parameters.loop_list.things_to_load.response.variable= {'response_variables'}; 
+parameters.loop_list.things_to_load.response.level = 'mouse';
+
+parameters.loop_list.things_to_load.explanatory.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.explanatory.filename= {'values.mat'};
+parameters.loop_list.things_to_load.explanatory.variable= {'values'}; 
+parameters.loop_list.things_to_load.explanatory.level = 'mouse';
+
+% Output
+parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_save.dataset.level = 'comparison';
+
+RunAnalysis({@DatasetPrep}, parameters);
 
 %% Level 1, continuous
 
-% Run a first-pass to see the results before you run any permutations.
+% Don't run any permutations yet.
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
