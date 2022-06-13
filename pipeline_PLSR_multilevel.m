@@ -168,6 +168,9 @@ parameters.loop_list.things_to_save.response_variables.level = 'mouse';
 
 RunAnalysis({@PopulateResponseVariables}, parameters);
 
+%% Prepare datasets per continuous comparison. 
+
+
 %% Level 1, continuous
 
 % Run a first-pass to see the results before you run any permutations.
@@ -216,6 +219,9 @@ RunAnalysis({@PLSR_forRunAnalysis}, parameters);
 
 
 %% Subtract continuous variables effects from each behavior type. 
+
+
+%% Prepare datasets per categorical comparison, continuous subtracted.
 
 
 %% Level 1 categorical. 
