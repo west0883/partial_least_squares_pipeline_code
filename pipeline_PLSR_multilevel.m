@@ -83,6 +83,7 @@ parameters.loop_variables.periods = parameters.periods.condition;
 parameters.loop_variables.conditions = {'motorized'; 'spontaneous'};
 parameters.loop_variables.conditions_stack_locations = {'stacks'; 'spontaneous'};
 parameters.loop_variables.variable_type = {'response variables', 'correlations'};
+parameters.loop_variables.categories.type = parameters.categories.type;
 
 %% Create periods_nametable_forPLSR.mat
 % If hasn't been created already. 
@@ -230,7 +231,8 @@ parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrep}, parameters);
 
-%% Level 1, continuous
+%% PLSR Level 1, continuous
+% (Found the best number of latent variables previously)
 
 % Don't run any permutations yet.
 % Always clear loop list first. 
@@ -241,8 +243,7 @@ end
 % Iterators
 parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator'     
-               };
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 
 % Parameters for calculating best number of components. If
 % "findBestNComponents" = false, just run the ncomponents_max
@@ -266,14 +267,122 @@ parameters.loop_list.things_to_save.results.level = 'comparison';
 
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
 
-
 %% Subtract continuous variables effects from each behavior type. 
+% Continuous comparisons list is hard-coded in. 
 
+% Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+
+% Input 
+% The variables from the comparison
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset.level = 'comparison';
+% The results from the continuous regression (for the Betas)
+parameters.loop_list.things_to_load.PLSR_results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.PLSR_results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.PLSR_results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_load.PLSR_results.level = 'comparison';
+% Old correlation values 
+parameters.loop_list.things_to_load.values_old.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.values_old.filename= {'values.mat'};
+parameters.loop_list.things_to_load.values_old.variable= {'values'}; 
+parameters.loop_list.things_to_load.values_old.level = 'mouse';
+
+% Output
+parameters.loop_list.things_to_save.values_new.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.values_new.filename= {'correlations_continuousSubtracted.mat'};
+parameters.loop_list.things_to_save.values_new.variable= {'correlations'}; 
+parameters.loop_list.things_to_save.values_new.level = 'mouse';
+
+RunAnalysis({@SubtractContinuousVariables}, parameters); 
 
 %% Prepare datasets per categorical comparison, continuous subtracted.
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator'     
+               };
+
+% Specify which comparisons should be used for this dataset prep. 
+parameters.this_comparison_set = parameters.comparisons_categorical;
+
+% Input 
+parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.response.filename= {'response_variables_table.mat'};
+parameters.loop_list.things_to_load.response.variable= {'response_variables'}; 
+parameters.loop_list.things_to_load.response.level = 'mouse';
+
+parameters.loop_list.things_to_load.explanatory.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.explanatory.filename= {'correlations_continuousSubtracted.mat'};
+parameters.loop_list.things_to_load.explanatory.variable= {'correlations'}; 
+parameters.loop_list.things_to_load.explanatory.level = 'mouse';
+
+% Output
+parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_save.dataset.level = 'comparison';
+
+RunAnalysis({@DatasetPrep}, parameters);
+
+%% Level 1 categorical -- optimize number of components
+% Will look at the outputs from 20 calculated components.
+
+% Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
+
+% Parameters for calculating best number of components. If
+% "findBestNComponents" = false, just run the ncomponents_max
+parameters.findBestNComponents = true;
+parameters.ncomponents_max = 20; 
+parameters.crossValidationReps = 10;
+parameters.MonteCarloReps = 10;
+
+% Do you want permutations?
+parameters.permutationGeneration = false;
+
+% Input 
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset.level = 'comparison';
+
+% Output
+parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_save.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_save.results.level = 'comparison';
+
+RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+
+%% Level 1 categorical -- Plot MSEPs across mice
+
+%% Level 1 categorical -- plot percent variance across mice.
 
 
-%% Level 1 categorical. 
+%% PLSR -- Level 1 categorical 
+% For once you've found your best number of components 
+
 
 
 %% Level 2 continuous. 
