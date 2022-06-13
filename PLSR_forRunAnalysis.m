@@ -11,10 +11,16 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % Tell user all the parameters they sent in (so they can cancel before 
     % it runs for a long time if they made a mistake).
     if isfield(parameters, 'findBestNComponents') && parameters.findBestNComponents
+
+        if isnumeric(parameters.crossValidationReps)
+       
         message = ['Finding best number of components with maximum ' num2str(parameters.ncomponents_max) ...
             ' + 1 components, ' num2str(parameters.crossValidationReps) ' cross-validation reps, ' ...
              num2str(parameters.MonteCarloReps) , ' Monte Carlo repetitions'];
         disp(message);
+        end
+
+
     end
 
     if isfield(parameters, 'permutationGeneration') && parameters.permutationGeneration
