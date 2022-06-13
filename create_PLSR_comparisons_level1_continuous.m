@@ -16,6 +16,8 @@
 % to this comparison & will find the related brain data & response
 % variable pairs. Need these indices when you're first getting the comparison's
 % dataset from the larger 
+% type --> just the name of the behavior type in its own entry, to make it
+% easier to manipulate later.
 
 %% Initial setup
 clear all; 
@@ -54,6 +56,7 @@ types = {'start', 'stop', 'accel', 'decel'};
 for typei = 1:numel(types)
     comparisons(counter + typei).name = ['motorized_transitions_continuousVars_' types{typei}];
     comparisons(counter + typei).variablesToUse = continuous_variable_names;
+    comparisons(counter + typei).type = types{typei};
 
     % Get relevent indices for this type.
     indices_type = strcmp(period_types, types{typei});
@@ -72,6 +75,7 @@ types = {'start', 'stop'};
 for typei = 1:numel(types)
     comparisons(counter + typei).name = ['spontaneous_transitions_continuousVars_' types{typei}];
     comparisons(counter + typei).variablesToUse = continuous_variable_names;
+    comparisons(counter + typei).type = types{typei};
 
     % Get relevent indices for this type.
     indices_type = strcmp(period_types, types{typei});
@@ -87,8 +91,9 @@ counter = counter + typei;
 % Use speed & duration. 
 
 % Only relevant for motorized.
-comparisons(counter + 1).name = ['motorized_finished_continuousVars'];
-comparisons(counter + 1).variablesToUse = continuous_variable_names;
+comparisons(counter + 1).name = 'motorized_finished_continuousVars';
+comparisons(counter + 1).variablesToUse = {'speed_vector', 'duration_vector'};
+comparisons(counter + 1).type = 'finished';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'finished');
@@ -101,8 +106,9 @@ counter = counter + 1;
 %% Continuous variables, finished stop periods. 
 
 % Motorized
-comparisons(counter + 1).name = ['motorized_finished_stop_continuousVars'];
-comparisons(counter + 1).variablesToUse = {'speed_vector', 'duration_vector'};
+comparisons(counter + 1).name = 'motorized_finished_stop_continuousVars';
+comparisons(counter + 1).variablesToUse = {'duration_vector'};
+comparisons(counter + 1).type = 'finished_stop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'finished_stop');
@@ -113,8 +119,9 @@ comparisons(counter + 1).indices = find(indices_motorized & indices_type);
 counter = counter + 1; 
 
 % Spontaneous
-comparisons(counter + 1).name = ['spontaneous_finished_stop_continuousVars'];
-comparisons(counter + 1).variablesToUse = {'speed_vector', 'duration_vector'};
+comparisons(counter + 1).name = 'spontaneous_finished_stop_continuousVars';
+comparisons(counter + 1).variablesToUse = {'duration_vector'};
+comparisons(counter + 1).type = 'finished_stop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'finished_stop');
@@ -126,8 +133,9 @@ counter = counter + 1;
 
 %% Continuous variables, walk with speed
 % Motorized
-comparisons(counter + 1).name = ['motorized_walk_continuousVars'];
+comparisons(counter + 1).name = 'motorized_walk_continuousVars';
 comparisons(counter + 1).variablesToUse = {'speed_vector'};
+comparisons(counter + 1).type = 'walk';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk');
@@ -138,8 +146,9 @@ comparisons(counter + 1).indices = find(indices_motorized & indices_type);
 counter = counter + 1; 
 
 % Spontaneous
-comparisons(counter + 1).name = ['spontaneous_walk_continuousVars'];
+comparisons(counter + 1).name = 'spontaneous_walk_continuousVars';
 comparisons(counter + 1).variablesToUse = {'speed_vector'};
+comparisons(counter + 1).type = 'walk';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk');
