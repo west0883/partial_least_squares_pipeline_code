@@ -20,7 +20,6 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         disp(message);
         end
 
-
     end
 
     if isfield(parameters, 'permutationGeneration') && parameters.permutationGeneration
@@ -32,8 +31,8 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % Run plsregress to find the optimal number of components, using a maximal number of components (somewhat
     % arbitrary)
 
-    explanatoryVariables = parameters.explanatory;
-    responseVariables = parameters.response;
+    explanatoryVariables = parameters.dataset.explanatoryVariables;
+    responseVariables = parameters.dataset.responseVariables;
 
     % If user says so
     if isfield(parameters, 'findBestNComponents') && parameters.findBestNComponents
@@ -73,6 +72,8 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     if isfield(parameters, 'permutationGeneration') && parameters.permutationGeneration
 
         disp('Running permutations'); 
+
+        columns_to_use = parameters.dataset.columns_to_use;
 
         % Make a holding matrix for beta permutations.
         betas_permutations = NaN(size(results.BETA,1), size(results.BETA, 2), parameters.n_permutations); 
