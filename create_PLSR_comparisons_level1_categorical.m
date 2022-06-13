@@ -68,23 +68,23 @@ save(filename_out_variablesToSubtract, 'variablesToSubtract');
 %% All types 
 % A first-pass to see if this is viable at all? 
 
-% Motorized
-comparisons(counter + 1).name = 'motorized_alltypes';
-comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
-
-% Get relevent indices for this type. (all the motorized)
-comparisons(counter + 1).indices = find(indices_motorized);
-
-counter = counter + 1; 
-
-% Spontaneous
-comparisons(counter + 1).name = 'spontaneous_alltypes';
-comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
-
-% Get relevent indices for this type. (all the spontaneous)
-comparisons(counter + 1).indices = find(indices_spontaneous);
-
-counter = counter + 1; 
+% % Motorized
+% comparisons(counter + 1).name = 'motorized_alltypes';
+% comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+% 
+% % Get relevent indices for this type. (all the motorized)
+% comparisons(counter + 1).indices = find(indices_motorized);
+% 
+% counter = counter + 1; 
+% 
+% % Spontaneous
+% comparisons(counter + 1).name = 'spontaneous_alltypes';
+% comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+% 
+% % Get relevent indices for this type. (all the spontaneous)
+% comparisons(counter + 1).indices = find(indices_spontaneous);
+% 
+% counter = counter + 1; 
 
 
 %% Rest vs walk 
