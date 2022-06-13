@@ -6,20 +6,26 @@
 
 function [parameters] = PlotXLs(parameters)
 
-    [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(numel(parameters.components_to_plot),4/5);
-
-    indices = logical(tril(ones(parameters.number_of_sources), -1));
+    [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(parameters.results.XL, 2),4/5);
 
     fig = figure;
     fig.WindowState = 'maximized';
-    for componenti = 1:numel(parameters.components_to_plot)
+    for componenti = 1:size(parameters.results.XL, 2)
         holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
-        holder(indices) = parameters.XL(:, parameters.components_to_plot(componenti));
-        subplot(subplot_rows, subplot_columns, componenti); imagesc(holder); caxis(parameters.color_range)
-        title(['XL ' num2str(parameters.components_to_plot(componenti))]); axis square;
-    end
-    sgtitle(['X loadings ' strjoin(parameters.values(1:numel(parameters.values)/2), ', ')])
+        holder(parameters.indices) = parameters.results.XL(:, componenti);
 
+        extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
+        color_range = [-extreme extreme]; 
+
+        subplot(subplot_rows, subplot_columns, componenti); imagesc(holder); 
+        colorbar; caxis(color_range);
+
+        title(['XL ' num2str(componenti)]); axis square;
+    end
+    title_string = ['X loadings ' strjoin(parameters.values(1:numel(parameters.values)/2), ', ')];
+    title_string = strrep(title_string, '_', ' ');
+    sgtitle(title_string);
+ 
     % Put into output structure.
     parameters.fig = fig;
 end 
