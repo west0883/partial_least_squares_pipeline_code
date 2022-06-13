@@ -45,7 +45,13 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     
         % Find component with minimum response-variable MSEP
         [~ , ncomponents] = min(MSEP_original(2,:));
-    
+        
+        % MSEP is calculated for 0 components as well, so subtract 1 from
+        % the index.
+        if ncomponents ~= 1
+            ncomponents = ncomponents - 1;
+        end 
+        
         % Put MSE_original, ncomponents, & W_original into the results.
         results.maximal_components.MSEP = MSEP_original;
         results.maximal_components.W = W_original;
