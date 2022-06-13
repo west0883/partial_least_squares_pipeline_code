@@ -15,7 +15,7 @@ function [parameters] = PlotXLs(parameters)
         holder(parameters.indices) = parameters.results.XL(:, componenti);
 
         extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
-        color_range = [-extreme extreme]; 
+        color_range = [-extremes extreme]; 
 
         subplot(subplot_rows, subplot_columns, componenti); imagesc(holder); 
         colorbar; caxis(color_range);
