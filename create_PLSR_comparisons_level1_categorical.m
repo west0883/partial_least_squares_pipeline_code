@@ -273,5 +273,49 @@ comparisons(counter + 1).indices = find(indices_type);
 
 counter = counter + 1;
 
+%% Walks, motorized vs spon.
+comparisons(counter + 1).name = 'walk_motorizedvsspon_categorical';
+comparisons(counter + 1).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'walk');
+
+comparisons(counter + 1).indices = find(indices_type);
+
+counter = counter + 1;
+
+%% Starts, motorized vs spon
+comparisons(counter + 1).name = 'start_motorizedvsspon_categorical';
+comparisons(counter + 1).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'start');
+
+comparisons(counter + 1).indices = find(indices_type);
+
+counter = counter + 1;
+
+%% Stops, motorized vs spon
+comparisons(counter + 1).name = 'stop_motorizedvsspon_categorical';
+comparisons(counter + 1).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'stop');
+
+comparisons(counter + 1).indices = find(indices_type);
+
+counter = counter + 1;
+
+%% Finished stops, motorized vs spon
+comparisons(counter + 1).name = 'finished_stop_motorizedvsspon_categorical';
+comparisons(counter + 1).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'finished_stop');
+
+comparisons(counter + 1).indices = find(indices_type);
+
+counter = counter + 1;
+
 %% Save 
 save(filename_out, 'comparisons');
