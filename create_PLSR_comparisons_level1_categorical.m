@@ -91,8 +91,6 @@ save(filename_out_variablesToSubtract, 'variablesToSubtract');
 % Motorized
 comparisons(counter + 1).name = 'motorized_restvswalk';
 comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
-comparisons(counter + 1).variablesToSubtract.walk = {'speed'};
-comparisons(counter + 1).variablesToSubtract.rest = {};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'rest');
@@ -105,8 +103,6 @@ counter = counter + 1;
 % Spontaneous
 comparisons(counter + 1).name = 'spontaneous_restvswalk';
 comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
-comparisons(counter + 1).variablesToSubtract.walk = {'speed'};
-comparisons(counter + 1).variablesToSubtract.rest = {};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'rest');
