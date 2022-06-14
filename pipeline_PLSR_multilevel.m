@@ -57,7 +57,7 @@ end
 if isfile([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat'])
     load([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat']);
     parameters.comparisons_continuous = comparisons;
-    parameters.loop_variables.comparisons_continuous = parameters.comparisons_continuous;
+    parameters.loop_variables.comparisons_continuous = parameters.comparisons_continuous; 
     clear comparisons;
 end
 
@@ -267,7 +267,7 @@ parameters.loop_list.things_to_save.results.level = 'comparison';
 
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
 
-%% Subtract continuous variables effects from each behavior type. 
+%% Remove continuous variables effects from each behavior type. 
 % Continuous comparisons list is hard-coded in. 
 
 % Always clear loop list first. 
@@ -376,9 +376,70 @@ parameters.loop_list.things_to_save.results.level = 'comparison';
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
 
 %% Level 1 categorical -- Plot MSEPs across mice
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator'};
+
+parameters.ncomponents_max = 20; 
+
+% Input 
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_load.results.level = 'comparison';
+
+% Output
+parameters.loop_list.things_to_save.xfig.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\plots\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.xfig.filename= {'PLSR_MSEPs_explanatory.fig'};
+parameters.loop_list.things_to_save.xfig.variable= {'xfig'}; 
+parameters.loop_list.things_to_save.xfig.level = 'mouse';
+
+parameters.loop_list.things_to_save.yfig.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\plots\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.yfig.filename= {'PLSR_MSEPs_response.fig'};
+parameters.loop_list.things_to_save.yfig.variable= {'yfig'}; 
+parameters.loop_list.things_to_save.yfig.level = 'mouse';
+
+RunAnalysis({@PlotMSEPs}, parameters);
+
+close all;
 
 %% Level 1 categorical -- plot percent variance across mice.
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
 
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(4:end).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator'};
+
+parameters.ncomponents_max = 20; 
+
+% Input 
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_load.results.level = 'comparison';
+
+% Output
+parameters.loop_list.things_to_save.xfig.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\plots\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.xfig.filename= {'PLSR_percentVariance_explanatory.fig'};
+parameters.loop_list.things_to_save.xfig.variable= {'xfig'}; 
+parameters.loop_list.things_to_save.xfig.level = 'mouse';
+
+parameters.loop_list.things_to_save.yfig.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\plots\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.yfig.filename= {'PLSR_percentVariance_response.fig'};
+parameters.loop_list.things_to_save.yfig.variable= {'yfig'}; 
+parameters.loop_list.things_to_save.yfig.level = 'mouse';
+
+RunAnalysis({@PlotPCTVAR}, parameters);
+
+close all;
 
 %% PLSR -- Level 1 categorical 
 % For once you've found your best number of components 
