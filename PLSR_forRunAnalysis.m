@@ -51,7 +51,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         if ncomponents ~= 1
             ncomponents = ncomponents - 1;
         end 
-
+        
         % Put MSE_original, ncomponents, & W_original into the results.
         results.maximal_components.MSEP = MSEP_original;
         results.maximal_components.W = W_original;
