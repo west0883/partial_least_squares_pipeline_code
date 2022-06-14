@@ -29,7 +29,7 @@ Y0 = XS * YL';
 diffX = X - X0;
 diffY = Y - Y0;
 
-Wy = YS'/Y';
+%Wy = YS'/Y';
 
 
 
@@ -37,7 +37,7 @@ R = X' * Y;
 [U,S,V] = SVD(X,'econ');
 
 % Matlab's version?
-BETA_calc = pinv(W') * beta_diag * Wy; 
+BETA_calc = pinv(W') * beta_diag * YL; 
 
 holder = NaN(32);
 holder(parameters.indices) = BETA(2:end,:);
