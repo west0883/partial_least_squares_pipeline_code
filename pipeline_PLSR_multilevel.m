@@ -303,7 +303,7 @@ parameters.loop_list.things_to_save.values_new.filename= {'correlations_continuo
 parameters.loop_list.things_to_save.values_new.variable= {'correlations'}; 
 parameters.loop_list.things_to_save.values_new.level = 'mouse';
 
-RunAnalysis({@SubtractContinuousVariables}, parameters); 
+RunAnalysis({@ResidualsFromContinuous}, parameters); 
 
 %% Prepare datasets per categorical comparison, continuous subtracted.
 if isfield(parameters, 'loop_list')
