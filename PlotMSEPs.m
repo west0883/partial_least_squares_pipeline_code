@@ -22,6 +22,7 @@ function [parameters] = PlotMSEPs(parameters)
     end
 
     hold on; 
+    legend
 
 
     if ~isfield(parameters,'yfig')
@@ -38,6 +39,7 @@ function [parameters] = PlotMSEPs(parameters)
         hold on; 
     end
     hold on;
+    legend;
 
     component_vector = 0:size(parameters.results.maximal_components.MSEP,2) - 1;
     
