@@ -75,8 +75,6 @@ periods.speed = cellfun(@(x) x/conversion_factor , speeds, 'UniformOutput', fals
 accels = periods{:,'accel'};
 periods.accel = cellfun(@(x) x/conversion_factor, accels, 'UniformOutput', false); 
 
-
-
 %% Remove behavior fields you don't need.
 % previous speed, two speeds ago, previous accel.
 columns_to_remove = {'previous_speed', 'previous_accel', 'two_speeds_ago'};
@@ -179,6 +177,14 @@ end
 periods.type = types; 
 clear types type type1 type2 look_for_pattern look_for this_condition;
 
+%% Make column for pupil diameter 
+% All periods. Are all NaN for now, will be put in at "populate response
+% variables" step in main pipline.
+pupil_diameter = repmat({NaN}, size(periods,1),1);
+periods.pupil_diameter = pupil_diameter;
+
+clear pupil_diameter;
+
 %% Put in accel = 0 for motorized prep, finished, finished_stop, & walk periods
 % Leave spontaneous blank (Nan) for now
 % No prep periods for now.
@@ -277,13 +283,15 @@ for i = 1:size(periods,1)
 end 
 periods.speed_vector = speed_vector;
 
-%% Replicate accels by roll number.
+%% Replicate accels & pupil diameter by roll number.
 accel_vector = cell(size(periods,1),1);
-
+pupil_diameter_vector = cell(size(periods,1),1);
 for i = 1:size(periods,1)
     accel_vector(i) = {repmat(periods{i, 'accel'}{1}, 1, periods{i,'number_of_rolls'}{1})};
+    pupil_diameter_vector(i) = {repmat(periods{i, 'pupil_diameter'}{1}, 1, periods{i,'number_of_rolls'}{1})};
 end 
 periods.accel_vector = accel_vector;
+periods.pupil_diameter_vector = pupil_diameter_vector;
 
 %% Make a column that says if this period is one of the "active" transitions 
 % Is for later when you want to compare all transitions to other things. 
@@ -299,7 +307,8 @@ for i = 1:size(periods,1)
 end
 periods.transition_or_not = transition_or_not; 
 
-%% Create dumy variables for categoricals -- motorized_vs_spon, type, & transition or not
+
+%% Create dummy variables for categoricals -- motorized_vs_spon, type, & transition or not
 %categories.motorized_vs_spon = {'motorized', 'spontaneous'};
 %categories.type = {'rest', 'walk', 'prep', 'start', 'stop', 'accel', 'decel', 'finished'};
 motorized_vs_spon_dummyvars = cell(size(periods,1),1);
@@ -346,6 +355,7 @@ end
 periods.motorized_vs_spon_dummyvars_vector = motorized_vs_spon_dummyvars_vector;
 periods.type_dummyvars_vector = type_dummyvars_vector;
 periods.transition_or_not_dummyvars_vector = transition_or_not_dummyvars_vector;
+
 %% Replicate all variables by number of instances 
 % Instances in 3rd dimension. Dummy variables for categorical. 
 % variables = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', ...
