@@ -165,7 +165,7 @@ parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 
 parameters.response_variable_names = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector'};
 parameters.variables_static = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'duration_vector'};
 parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
-
+parameters.both_conditions_varying = {'pupil_diameter'};
 % Original order of spontaneous (for velocity & accel indexing)
 parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 'stopwalk', 'postwalk'};
 
@@ -189,6 +189,12 @@ parameters.loop_list.things_to_load.accel_vector.dir = {[parameters.dir_exper 'b
 parameters.loop_list.things_to_load.accel_vector.filename= {'accel_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.accel_vector.variable= {'accel_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.accel_vector.level = 'mouse';
+
+% Pupil diameter
+parameters.loop_list.things_to_load.diameter_vector.dir = {[parameters.dir_exper 'behavior\eye\rolled concatenated diameter\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.diameter_vector.filename= {'diameter_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.diameter_vector.variable= {'diameter_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.diameter_vector.level = 'mouse';
 
 % Output 
 parameters.loop_list.things_to_save.response_variables.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
