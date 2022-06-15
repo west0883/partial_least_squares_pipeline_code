@@ -36,6 +36,12 @@ function [parameters] = PopulateResponseVariables(parameters)
 
         end
 
+        % Put in pupil diameters
+
+        % Use original location in periods_nametable via index field.
+
+
+
         % If this period is motorized, 
         if strcmp(parameters.periods{periodi, 'motorized_vs_spon'}{1}, 'motorized')
             % For each of the motorized-specific static categories.
