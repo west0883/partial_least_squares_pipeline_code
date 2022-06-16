@@ -1,5 +1,5 @@
 function [Xloadings,Yloadings,Xscores,Yscores, ...
-                    beta,pctVar,mse,stats] = plsregress(X,Y,ncomp,varargin)
+                    beta,pctVar,mse,stats, mse_byvar] = plsregress_fullcode(X,Y,ncomp,varargin)
 %PLSREGRESS Partial least squares regression.
 %   [XLOADINGS,YLOADINGS] = PLSREGRESS(X,Y,NCOMP) computes a partial least
 %   squares regression of Y on X, using NCOMP PLS components or latent
@@ -211,11 +211,12 @@ else
                 mse(2,i+1) = sum(sum(abs(Y0 - Y0reconstructed).^2, 2));
             end
             mse = mse / n;
+            mse_byvar = [];
             % We now have the reconstructed values for the full model to use in
             % the residual calculation below
         else
             % Compute MSE for models with 0:ncomp PLS components, by cross-validation
-            mse = plscv(X,Y,ncomp,cvp,mcreps,ParOptions);
+            [mse, mse_byvar] = plscv(X,Y,ncomp,cvp,mcreps,ParOptions);
             if nargout > 7
                 % Need these for the residual calculation below
                 X0reconstructed = Xscores*Xloadings';
@@ -323,7 +324,7 @@ end
 
 %------------------------------------------------------------------------------
 %PLSCV Efficient cross-validation for X and Y mean squared error in PLS.
-function mse = plscv(X,Y,ncomp,cvp,mcreps,ParOptions)
+function [mse, mse_byvar] = plscv(X,Y,ncomp,cvp,mcreps,ParOptions)
 
 [n,dx] = size(X);
 
@@ -356,6 +357,10 @@ sumsqerr = crossval(CVfun,X,Y,cvpType,cvp,'mcreps',mcreps,'options',ParOptions);
 mse(:,1:ncomp+1) = reshape(sum(sumsqerr,1)/(nTest*mcreps), [2,ncomp+1]);
 
 
+CVfun = @(Xtr,Ytr,Xtst,Ytst) sseCV_byvar(Xtr,Ytr,Xtst,Ytst,ncomp);
+sumsqerr_byvar = crossval(CVfun,X,Y,cvpType,cvp,'mcreps',mcreps,'options',ParOptions);
+mse_byvar = reshape(sum(sumsqerr_byvar,1)/(nTest*mcreps), [size(Y,2), ncomp+1]);
+
 %------------------------------------------------------------------------------
 %SSECV Sum of squared errors for cross-validation
 function sumsqerr = sseCV(Xtrain,Ytrain,Xtest,Ytest,ncomp)
@@ -381,6 +386,10 @@ sumsqerr = zeros(2,ncomp+1,outClass); % this will get reshaped to a row by CROSS
 sumsqerr(1,1) = sum(sum(abs(X0test).^2, 2));
 sumsqerr(2,1) = sum(sum(abs(Y0test).^2, 2));
 
+sumsqerr_byvar = zeros(size(Y0test,2),ncomp+1,outClass); 
+sumsqerr_byvar(:,1) = sum(abs(Y0test).^2, 1);
+
+
 % Compute sum of squared errors for models with 1:ncomp components
 for i = 1:ncomp
     X0reconstructed = XscoresTest(:,1:i) * Xloadings(:,1:i)';
@@ -388,5 +397,38 @@ for i = 1:ncomp
 
     Y0reconstructed = XscoresTest(:,1:i) * Yloadings(:,1:i)';
     sumsqerr(2,i+1) = sum(sum(abs(Y0test - Y0reconstructed).^2, 2));
+
+    sumsqerr_byvar(:,i+1) = sum(abs(Y0test - Y0reconstructed).^2);
+
+end
+
+
+%SSECV Sum of squared errors for cross-validation
+function sumsqerr_byvar = sseCV_byvar(Xtrain,Ytrain,Xtest,Ytest,ncomp)
+
+XmeanTrain = mean(Xtrain);
+YmeanTrain = mean(Ytrain);
+X0train = Xtrain - XmeanTrain;
+Y0train = Ytrain - YmeanTrain;
+
+% Get and center the test data
+X0test = Xtest - XmeanTrain;
+Y0test = Ytest - YmeanTrain;
+
+% Fit the full model, models with 1:(ncomp-1) components are nested within
+[~,Yloadings,~,~,Weights] = simpls(X0train,Y0train,ncomp);
+XscoresTest = X0test * Weights;
+
+% Return error for as many components as the asked for.
+outClass = superiorfloat(Xtrain,Ytrain);
+sumsqerr_byvar = zeros(size(Y0test,2),ncomp+1,outClass); 
+sumsqerr_byvar(:,1) = sum(abs(Y0test).^2, 1);
+
+% Compute sum of squared errors for models with 1:ncomp components
+for i = 1:ncomp
+    Y0reconstructed = XscoresTest(:,1:i) * Yloadings(:,1:i)';
+
+    sumsqerr_byvar(:,i+1) = sum(abs(Y0test - Y0reconstructed).^2);
+
 end
 
