@@ -267,12 +267,50 @@ parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\with 20 components\' 'mouse', '\'};
 parameters.loop_list.things_to_save.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_save.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_save.results.level = 'comparison';
 
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+
+%% Plot Betas from continuous level 1 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator'     
+               };
+
+parameters.ncomponents_max = 2; 
+
+% Adjust beta values based on zscore sigmas?
+parameters.adjust_beta = false;
+
+% Input 
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_load.results.level = 'comparison';
+
+% Also load in dataset values for the zscore sigma.
+parameters.loop_list.things_to_load.dataset_info.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset_info.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset_info.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset_info.level = 'comparison';
+
+% Output
+parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.fig.filename= {'PLSR_betas.fig'};
+parameters.loop_list.things_to_save.fig.variable= {'fig'}; 
+parameters.loop_list.things_to_save.fig.level = 'comparison';
+
+RunAnalysis({@PlotBetas}, parameters);
+
+close all;
 
 %% Remove continuous variables effects from each behavior type. 
 % Continuous comparisons list is hard-coded in. 
