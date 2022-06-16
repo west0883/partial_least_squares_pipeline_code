@@ -2,7 +2,7 @@
 % Sarah West
 % 6/6/22
 
-% A wrapper that runs the Matlab function plsregress via RunAnalysis.m
+% A wrapper that runs the Matlab function plsregress_fullcode via RunAnalysis.m
 
 function [parameters] = PLSR_forRunAnalysis(parameters)
 
@@ -28,7 +28,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     end
      
-    % Run plsregress to find the optimal number of components, using a maximal number of components (somewhat
+    % Run plsregress_fullcode to find the optimal number of components, using a maximal number of components (somewhat
     % arbitrary)
 
     explanatoryVariables = parameters.dataset.explanatoryVariables;
@@ -36,8 +36,8 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     % If user says so
     if isfield(parameters, 'findBestNComponents') && parameters.findBestNComponents
-        [~, ~, ~, ~, ~, ~, MSEP_original, stats_original] ...
-           = plsregress(explanatoryVariables, responseVariables, parameters.ncomponents_max, 'cv', parameters.crossValidationReps, 'mcreps', parameters.MonteCarloReps, 'Options', statset('UseParallel',true) );
+        [~, ~, ~, ~, ~, ~, MSEP_original, stats_original, MSEP_byVars_original] ...
+           = plsregress_fullcode(explanatoryVariables, responseVariables, parameters.ncomponents_max, 'cv', parameters.crossValidationReps, 'mcreps', parameters.MonteCarloReps, 'Options', statset('UseParallel',true) );
         
         % Save the original weights of Y for later (in case you want to look at
         % what those components look like later)
@@ -54,6 +54,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         
         % Put MSE_original, ncomponents, & W_original into the results.
         results.maximal_components.MSEP = MSEP_original;
+        results.maximal_components.MSEP_byVars = MSEP_byVars_original;
         results.maximal_components.W = W_original;
         results.ncomponents_used = ncomponents;
 
@@ -68,8 +69,8 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     disp(['Running PLSR with ' num2str(ncomponents) ' components.']);
 
-    [results.XL, results.YL, results.XS, results.YS, results.BETA, results.PCTVAR, results.MSEP, results.stats] ...
-       = plsregress(explanatoryVariables, responseVariables, ncomponents); 
+    [results.XL, results.YL, results.XS, results.YS, results.BETA, results.PCTVAR, results.MSEP, results.stats, results.MSEP_byVars] ...
+       = plsregress_fullcode(explanatoryVariables, responseVariables, ncomponents); 
 
     % Run iterative permutations for permutation significance testing. Randomly
     % permute the order of the response variables. 
@@ -105,8 +106,8 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
             end
 
-            % Run the plsregress on the mixed/permuted data.
-            [~, ~, ~, ~, BETA] = plsregress(explanatoryVariables, responseVariables_mixed, ncomponents);
+            % Run the plsregress_fullcode on the mixed/permuted data.
+            [~, ~, ~, ~, BETA] = plsregress_fullcode(explanatoryVariables, responseVariables_mixed, ncomponents);
             
             % Put into holding matrix.
             betas_permutations(:, :, repi) = BETA; 
