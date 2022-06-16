@@ -237,7 +237,7 @@ parameters.loop_list.things_to_save.dataset.level = 'comparison';
 RunAnalysis({@DatasetPrep}, parameters);
 
 %% PLSR Level 1, continuous
-% (Found the best number of latent variables previously)
+% (Found the best number of latent variables previously -- 2?)
 
 % Don't run any permutations yet.
 % Always clear loop list first. 
@@ -252,8 +252,10 @@ parameters.loop_list.iterators = {
 
 % Parameters for calculating best number of components. If
 % "findBestNComponents" = false, just run the ncomponents_max
-parameters.findBestNComponents = false;
-parameters.ncomponents_max = 3; 
+parameters.findBestNComponents = true;
+parameters.ncomponents_max = 20; 
+parameters.crossValidationReps = 10;
+parameters.MonteCarloReps = 10;
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
