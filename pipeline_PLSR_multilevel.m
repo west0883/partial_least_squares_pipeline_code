@@ -236,9 +236,7 @@ parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrep}, parameters);
 
-%% PLSR Level 1, continuous
-% (Found the best number of latent variables previously -- 2?)
-
+%% PLSR Level 1, continuous: run PLSR up to 20 components to check best number of components
 % Don't run any permutations yet.
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
@@ -274,6 +272,100 @@ parameters.loop_list.things_to_save.results.level = 'comparison';
 
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
 
+%% PLSR Level 1, continuous: check components 
+% Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+
+% Tell functions not to plot MSEPs & PCTVAR for response unless it's by
+% individual variable.
+parameters.plot_MSEPs_response = false;
+parameters.plot_PCTVAR_response = false;
+
+parameters.this_comparison_set = parameters.comparisons_continuous;
+parameters.max_response_vars = 3;
+
+% Input
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\with 20 components\' 'mouse', '\'};
+parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_load.results.level = 'comparison';
+
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset.level = 'comparison';
+
+% Output
+parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\with 20 components\' 'mouse', '\'};
+parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
+parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
+parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
+
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.variable= {'fig_MSEPs_explanatory'}; 
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.level = 'mouse';
+
+parameters.loop_list.things_to_save.fig_MSEPs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_MSEPs_response.filename= {'PLSR_MSEPs_response.fig'};
+parameters.loop_list.things_to_save.fig_MSEPs_response.variable= {'fig_MSEPs_response'}; 
+parameters.loop_list.things_to_save.fig_MSEPs_response.level = 'mouse';
+
+parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
+parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
+parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'mouse';
+
+parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
+parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
+parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
+
+RunAnalysis({@CheckComponents}, parameters);
+
+close all;
+%% PLSR Level 1, continuous: Run PLSR with best number of components
+% Don't run any permutations yet.
+% Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+
+% Parameters for calculating best number of components. If
+% "findBestNComponents" = false, just run the ncomponents_max
+parameters.findBestNComponents = false;
+parameters.ncomponents_max = 4; 
+
+% Do you want permutations?
+parameters.permutationGeneration = false;
+
+% Input 
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset.level = 'comparison';
+
+% Output
+parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_save.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_save.results.level = 'comparison';
+
+RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+
+
 %% Plot Betas from continuous level 1 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -284,8 +376,6 @@ parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator'     
                };
-
-parameters.ncomponents_max = 2; 
 
 % Adjust beta values based on zscore sigmas?
 parameters.adjust_beta = false;
@@ -413,14 +503,16 @@ parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\with 20 components\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_save.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_save.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_save.results.level = 'comparison';
 
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
 
-%% Level 1 categorical -- Plot MSEPs across mice
+%% Level 1 categorical -- Check components
+
+% Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
 end
@@ -428,61 +520,54 @@ end
 % Iterators
 parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator'};
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
-parameters.ncomponents_max = 20; 
+% Tell functions not to plot MSEPs & PCTVAR for response unless it's by
+% individual variable.
+parameters.plot_MSEPs_response = false;
+parameters.plot_PCTVAR_response = false;
 
-% Input 
-parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\'], 'comparison', '\' 'mouse', '\'};
+parameters.this_comparison_set = parameters.comparisons_categorical;
+parameters.max_response_vars = 2;
+
+% Input
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\with 20 components\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_load.results.level = 'comparison';
 
-% Output
-parameters.loop_list.things_to_save.xfig.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\plots\'], 'mouse', '\'};
-parameters.loop_list.things_to_save.xfig.filename= {'PLSR_MSEPs_explanatory.fig'};
-parameters.loop_list.things_to_save.xfig.variable= {'xfig'}; 
-parameters.loop_list.things_to_save.xfig.level = 'mouse';
-
-parameters.loop_list.things_to_save.yfig.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\plots\'], 'mouse', '\'};
-parameters.loop_list.things_to_save.yfig.filename= {'PLSR_MSEPs_response.fig'};
-parameters.loop_list.things_to_save.yfig.variable= {'yfig'}; 
-parameters.loop_list.things_to_save.yfig.level = 'mouse';
-
-RunAnalysis({@PlotMSEPs}, parameters);
-
-close all;
-
-%% Level 1 categorical -- plot percent variance across mice.
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {
-               'mouse', {'loop_variables.mice_all(4:end).name'}, 'mouse_iterator'; 
-               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator'};
-
-parameters.ncomponents_max = 20; 
-
-% Input 
-parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
-parameters.loop_list.things_to_load.results.level = 'comparison';
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.xfig.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\plots\'], 'mouse', '\'};
-parameters.loop_list.things_to_save.xfig.filename= {'PLSR_percentVariance_explanatory.fig'};
-parameters.loop_list.things_to_save.xfig.variable= {'xfig'}; 
-parameters.loop_list.things_to_save.xfig.level = 'mouse';
+parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\with 20 components\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
+parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
+parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
 
-parameters.loop_list.things_to_save.yfig.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\component number tests\plots\'], 'mouse', '\'};
-parameters.loop_list.things_to_save.yfig.filename= {'PLSR_percentVariance_response.fig'};
-parameters.loop_list.things_to_save.yfig.variable= {'yfig'}; 
-parameters.loop_list.things_to_save.yfig.level = 'mouse';
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPS to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.variable= {'fig_MSEPs_explanatory'}; 
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.level = 'mouse';
 
-RunAnalysis({@PlotPCTVAR}, parameters);
+parameters.loop_list.things_to_save.fig_MSEPs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPS to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_MSEPs_response.filename= {'PLSR_MSEPs_response.fig'};
+parameters.loop_list.things_to_save.fig_MSEPs_response.variable= {'fig_MSEPs_response'}; 
+parameters.loop_list.things_to_save.fig_MSEPs_response.level = 'mouse';
+
+parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPS to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
+parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
+parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'mouse';
+
+parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPS to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
+parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
+parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
+
+RunAnalysis({@CheckComponents}, parameters);
 
 close all;
 
@@ -490,13 +575,20 @@ close all;
 % For once you've found your best number of components 
 
 
+%% Level 2 continuous-- prep betas & mouse variables
+% take difference of betas between 2 categories, concatenate, normalize
 
-%% Level 2 continuous. 
+%% Level 2 continuous -- optimize number of components 
 
-%% Level 2 categorical.
+%% Level 2 continuous -- check components
 
-%% Take differences between level 1 continuous 
+%% Level 2 continuous -- run PLSR wiht best number of components
 
+%% Level 2 categorical -- Prep betas & mouse variables
+% For any spontaneous, don't include mouse 1100
 
-%% Level 2 categorical against differences in continuous. 
+%% Level 2 categorical -- optimize number of components
 
+%% Level 2 categorical -- check components
+
+%% Level 2 categorical -- run PLSR with best number of components.
