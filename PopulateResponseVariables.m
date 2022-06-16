@@ -36,11 +36,19 @@ function [parameters] = PopulateResponseVariables(parameters)
 
         end
 
-        % Put in pupil diameters
+        % ***Put in pupil diameters
 
         % Use original location in periods_nametable via index field.
+        index = parameters.periods(periodi, 'index');
+        
+        % Get out the diameters
+        diameters = parameters.diameter_vector{index};
 
+        % Permute diameters so dimensions match other response variables (put in a 1 at the beginning for the number of variables)
+        diameters = permute(diameters, [3, 1, 2]);  % Use "3" as the first dimension, because it's a 1.
 
+        % Put into structure.
+        response_variables_structure.pupil_diameter_vector = diameters;
 
         % If this period is motorized, 
         if strcmp(parameters.periods{periodi, 'motorized_vs_spon'}{1}, 'motorized')
