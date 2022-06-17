@@ -39,20 +39,20 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
 
     % *** Handle the response variables (betas)*** 
 
-    % Transpose so each beta is its own variable 
-    responseVariables = parameters.response';
+    % Pull out of parameters structure for easier/safer use.
+    responseVariables = parameters.response;
 
     % If there was more than one response variable at level 1 (will have
-    % more than one row, after transposing)
-    if size(responseVariables, 1) > 1
+    % more than one column, before transposing)
+    if size(responseVariables, 2) > 1
         
         % Reshape so its all one big row vector
-        % (have to un-transpose first, re-transpose after)
-        responseVariables = responseVariables';
         responseVariables = reshape(responseVariables, [], 1);
-        responseVariables = responseVariables'; 
-
+ 
     end
+
+    % Transpose so each beta is its own variable 
+    responseVariables = responseVariables';
 
     % ***Handle the explanatory variables (mouse dummy variables)***
     explanatoryVariables = zeros(parameters.max_mice, 1); 
