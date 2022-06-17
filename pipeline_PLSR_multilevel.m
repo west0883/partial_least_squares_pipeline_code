@@ -571,9 +571,40 @@ RunAnalysis({@CheckComponents}, parameters);
 
 close all;
 
-%% PLSR -- Level 1 categorical 
-% For once you've found your best number of components 
+%% Level 1 categorical  -- run PLSR with best number of components
 
+%% Level 1 categorical -- plot betas
+
+
+
+%% Level 2 categorical -- Prep betas & mouse variables
+% For any spontaneous, don't include mouse 1100
+
+% Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
+
+
+parameters.max_mice = size(parameters.mice_all, 2);
+parameters.concatenation_level = 'mouse';
+
+%% Level 2 categorical -- optimize number of components
+
+%% Level 2 categorical -- check components
+
+%% Level 2 categorical -- run PLSR with best number of components.
+
+
+%% Level 2 continuous -- check significance 
+
+
+%% Level 2 categorical -- plot betas
 
 %% Level 2 continuous-- prep betas & mouse variables
 % take difference of betas between 2 categories, concatenate, normalize
@@ -582,13 +613,12 @@ close all;
 
 %% Level 2 continuous -- check components
 
+
 %% Level 2 continuous -- run PLSR wiht best number of components
 
-%% Level 2 categorical -- Prep betas & mouse variables
-% For any spontaneous, don't include mouse 1100
 
-%% Level 2 categorical -- optimize number of components
+%% Level 2 continuous -- check significance 
 
-%% Level 2 categorical -- check components
+%% Level 2 continuous -- plot betas
 
-%% Level 2 categorical -- run PLSR with best number of components.
+%% Un-normalize, plot betas of all comparisons
