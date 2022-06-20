@@ -40,7 +40,7 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
     % *** Handle the response variables (betas)*** 
 
     % Pull out of parameters structure for easier/safer use.
-    responseVariables = parameters.response; 
+    responseVariables = parameters.response;
 
     % If there was more than one response variable at level 1 (will have
     % more than one column, before transposing)
