@@ -51,7 +51,7 @@ filename_out_variablesToSubtract = [parameters.dir_exper 'PLSR\variablesToSubtra
 % can search tables like this:
 % g = periods_table(string(periods_table.condition)=="m_accel" & string(periods_table.speed)=="2000", :);
 
-counter = 0;
+counter = 1;
 
 %% Set up list of variables to subtract from each behavior type. 
 variablesToSubtract.rest = [];
@@ -69,46 +69,48 @@ save(filename_out_variablesToSubtract, 'variablesToSubtract');
 % A first-pass to see if this is viable at all? 
 
 % % Motorized
-% comparisons(counter + 1).name = 'motorized_alltypes';
-% comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+% comparisons(counter).name = 'motorized_alltypes';
+% comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 % 
 % % Get relevent indices for this type. (all the motorized)
-% comparisons(counter + 1).indices = find(indices_motorized);
+% comparisons(counter).indices = find(indices_motorized);
 % 
 % counter = counter + 1; 
 % 
 % % Spontaneous
-% comparisons(counter + 1).name = 'spontaneous_alltypes';
-% comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+% comparisons(counter).name = 'spontaneous_alltypes';
+% comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 % 
 % % Get relevent indices for this type. (all the spontaneous)
-% comparisons(counter + 1).indices = find(indices_spontaneous);
+% comparisons(counter).indices = find(indices_spontaneous);
 % 
 % counter = counter + 1; 
 
 
 %% Rest vs walk 
 % Motorized
-comparisons(counter + 1).name = 'motorized_restvswalk';
-comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).name = 'motorized_restvswalk';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'rest');
 
 % Get intersection of motorized & type. 
-comparisons(counter + 1).indices = find(indices_motorized & indices_type);
+comparisons(counter).indices = find(indices_motorized & indices_type);
 
 counter = counter + 1; 
 
 % Spontaneous
-comparisons(counter + 1).name = 'spontaneous_restvswalk';
-comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).name = 'spontaneous_restvswalk';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {'1100'};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'rest');
 
 % Get intersection of spontaneous & type. 
-comparisons(counter + 1).indices = find(indices_spontaneous & indices_type);
+comparisons(counter).indices = find(indices_spontaneous & indices_type);
 
 counter = counter + 1; 
 
@@ -116,28 +118,30 @@ counter = counter + 1;
 %% All transitions vs walk. 
 % A first-pass comparison to see if this is viable at all?
 % Motorized
-comparisons(counter + 1).name = 'motorized_walkvstransitions';
-comparisons(counter + 1).variablesToUse = {'transition_or_not_dummyvars_vector'};
+comparisons(counter).name = 'motorized_walkvstransitions';
+comparisons(counter).variablesToUse = {'transition_or_not_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'start') ...
     | strcmp(period_types, 'stop') | strcmp(period_types, 'accel') | strcmp(period_types, 'decel');
 
 % Get intersection of motorized & type. 
-comparisons(counter + 1).indices = find(indices_motorized & indices_type);
+comparisons(counter).indices = find(indices_motorized & indices_type);
 
 counter = counter + 1; 
 
 % Spontaneous
-comparisons(counter + 1).name = 'spontaneous_transitionsvswalk';
-comparisons(counter + 1).variablesToUse = {'transition_or_not_dummyvars_vector'};
+comparisons(counter).name = 'spontaneous_transitionsvswalk';
+comparisons(counter).variablesToUse = {'transition_or_not_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {'1100'};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'start') ...
     | strcmp(period_types, 'stop') | strcmp(period_types, 'accel') | strcmp(period_types, 'decel');
 
 % Get intersection of spontaneous & type. 
-comparisons(counter + 1).indices = find(indices_spontaneous & indices_type);
+comparisons(counter).indices = find(indices_spontaneous & indices_type);
 
 counter = counter + 1; 
 
@@ -145,175 +149,190 @@ counter = counter + 1;
 % (Not the betas of the continuous -- that will happen later)
 
 % Motorized
-comparisons(counter + 1).name = 'motorized_startvsstop_categorical';
-comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).name = 'motorized_startvsstop_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'start') | strcmp(period_types, 'stop');
 
 % Get intersection of motorized & type. 
-comparisons(counter + 1).indices = find(indices_motorized & indices_type);
+comparisons(counter).indices = find(indices_motorized & indices_type);
 
 counter = counter + 1; 
 
 % Spontaneous
-comparisons(counter + 1).name = 'spontaneous_startvsstop_categorical';
-comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).name = 'spontaneous_startvsstop_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {'1100'};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'start') | strcmp(period_types, 'stop');
 
 % Get intersection of spontaneous & type. 
-comparisons(counter + 1).indices = find(indices_spontaneous & indices_type);
+comparisons(counter).indices = find(indices_spontaneous & indices_type);
 
 counter = counter + 1; 
 
 %% Accel vs decel categorical.
 % Motorized
-comparisons(counter + 1).name = 'motorized_accelvsdecel_categorical';
-comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).name = 'motorized_accelvsdecel_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'accel') | strcmp(period_types, 'decel');
 
 % Get intersection of motorized & type. 
-comparisons(counter + 1).indices = find(indices_motorized & indices_type);
+comparisons(counter).indices = find(indices_motorized & indices_type);
 
 counter = counter + 1; 
 
 %% start vs accel categorical 
 
 % Motorized
-comparisons(counter + 1).name = 'motorized_startvsaccel_categorical';
-comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).name = 'motorized_startvsaccel_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'start') | strcmp(period_types, 'accel');
 
 % Get intersection of motorized & type. 
-comparisons(counter + 1).indices = find(indices_motorized & indices_type);
+comparisons(counter).indices = find(indices_motorized & indices_type);
 
-counter = counter + 1; 
+counter = counter + 1;
 
 %% stop vs decel categorical 
 % Motorized
-comparisons(counter + 1).name = 'motorized_stopvsdecel_categorical';
-comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).name = 'motorized_stopvsdecel_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'stop') | strcmp(period_types, 'decel');
 
 % Get intersection of motorized & type. 
-comparisons(counter + 1).indices = find(indices_motorized & indices_type);
+comparisons(counter).indices = find(indices_motorized & indices_type);
 
 counter = counter + 1; 
 
 %% Walk vs Finished categorical
 % Motorized
-comparisons(counter + 1).name = 'motorized_walkvsfinished_categorical';
-comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).name = 'motorized_walkvsfinished_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'finished');
 
 % Get intersection of motorized & type. 
-comparisons(counter + 1).indices = find(indices_motorized & indices_type);
+comparisons(counter).indices = find(indices_motorized & indices_type);
 
 counter = counter + 1; 
-
 
 %% Rest vs finished stop categorical 
 
 % Motorized
-comparisons(counter + 1).name = 'motorized_restvsfinishedstop_categorical';
-comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).name = 'motorized_restvsfinishedstop_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'rest') | strcmp(period_types, 'finished_stop');
 
 % Get intersection of motorized & type. 
-comparisons(counter + 1).indices = find(indices_motorized & indices_type);
+comparisons(counter).indices = find(indices_motorized & indices_type);
 
 counter = counter + 1; 
 
 % Spontaneous
-comparisons(counter + 1).name = 'spontaneous_restvsfinishedstop_categorical';
-comparisons(counter + 1).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).name = 'spontaneous_restvsfinishedstop_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {'1100'};
+
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'rest') | strcmp(period_types, 'finished_stop');
 
 % Get intersection of motorized & type. 
-comparisons(counter + 1).indices = find(indices_spontaneous & indices_type);
+comparisons(counter).indices = find(indices_spontaneous & indices_type);
 
 counter = counter + 1;
 
 
 %% Finished vs all active transitions categorical. 
 % Motorized
-comparisons(counter + 1).name = 'motorized_transitionsvsfinished';
-comparisons(counter + 1).variablesToUse = {'transition_or_not_dummyvars_vector'};
+comparisons(counter).name = 'motorized_transitionsvsfinished';
+comparisons(counter).variablesToUse = {'transition_or_not_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'finished') | strcmp(period_types, 'start') ...
     | strcmp(period_types, 'stop') | strcmp(period_types, 'accel') | strcmp(period_types, 'decel');
 
 % Get intersection of motorized & type. 
-comparisons(counter + 1).indices = find(indices_motorized & indices_type);
+comparisons(counter).indices = find(indices_motorized & indices_type);
 
 counter = counter + 1; 
 
 %% Rests, motorized vs spon.
-comparisons(counter + 1).name = 'rest_motorizedvsspon_categorical';
-comparisons(counter + 1).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+comparisons(counter).name = 'rest_motorizedvsspon_categorical';
+comparisons(counter).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'rest');
 
-comparisons(counter + 1).indices = find(indices_type);
+comparisons(counter).indices = find(indices_type);
 
 counter = counter + 1;
 
 %% Walks, motorized vs spon.
-comparisons(counter + 1).name = 'walk_motorizedvsspon_categorical';
-comparisons(counter + 1).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+comparisons(counter).name = 'walk_motorizedvsspon_categorical';
+comparisons(counter).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {'1100'};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk');
 
-comparisons(counter + 1).indices = find(indices_type);
+comparisons(counter).indices = find(indices_type);
 
 counter = counter + 1;
 
 %% Starts, motorized vs spon
-comparisons(counter + 1).name = 'start_motorizedvsspon_categorical';
-comparisons(counter + 1).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+comparisons(counter).name = 'start_motorizedvsspon_categorical';
+comparisons(counter).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {'1100'};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'start');
 
-comparisons(counter + 1).indices = find(indices_type);
+comparisons(counter).indices = find(indices_type);
 
 counter = counter + 1;
 
 %% Stops, motorized vs spon
-comparisons(counter + 1).name = 'stop_motorizedvsspon_categorical';
-comparisons(counter + 1).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+comparisons(counter).name = 'stop_motorizedvsspon_categorical';
+comparisons(counter).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {'1100'};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'stop');
 
-comparisons(counter + 1).indices = find(indices_type);
+comparisons(counter).indices = find(indices_type);
 
 counter = counter + 1;
 
 %% Finished stops, motorized vs spon
-comparisons(counter + 1).name = 'finished_stop_motorizedvsspon_categorical';
-comparisons(counter + 1).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+comparisons(counter).name = 'finished_stop_motorizedvsspon_categorical';
+comparisons(counter).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {'1100'};
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'finished_stop');
 
-comparisons(counter + 1).indices = find(indices_type);
+comparisons(counter).indices = find(indices_type);
 
 counter = counter + 1;
 
