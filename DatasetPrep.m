@@ -91,6 +91,23 @@ function [parameters] = DatasetPrep(parameters)
     % Horizontally concatenate the different response variable categories.
     responseVariables = horzcat(responseVariables_separateVariables{:}); 
 
+    % *** Deal with missing data values ***
+
+    % If user says to (default is not to),
+    if isfield(parameters, 'imputeMissing') && parameters.imputeMissing 
+
+        disp('Imputing missing data.')
+
+        % Run the modified code for trimmed square regression (TSR) for PLS
+        [explanatoryVariables, responseVariables, iterations_needed, tolerance_reached] = plsmbtsr1_TSRonly(explanatoryVariables, responseVariables, parameters.imputation_ncomponents); 
+
+        % Put iterations needed and tolerance reached into dataset
+        % structure.
+        dataset.missing_data_imputation.iterations_needed = iterations_needed;
+        dataset.missing_data_imputation.tolerance_reached = tolerance_reached;
+
+    end
+
     % Zscore both variable sets. Keep mu & sigmas for better interprebility
     % of betas later.
     [explanatoryVariables, mu_explanatory, sigma_explanatory] = zscore(explanatoryVariables);
@@ -108,6 +125,5 @@ function [parameters] = DatasetPrep(parameters)
 
     % Put dataset into output structure.
     parameters.dataset = dataset;
-
-
+    
 end

@@ -217,6 +217,13 @@ parameters.loop_list.iterators = {
 % Specify which comparisons should be used for this dataset prep. 
 parameters.this_comparison_set = parameters.comparisons_continuous;
 
+% Flag for whether or not missing data (NaNs) should be imputed.
+parameters.imputeMissing = true; 
+
+% Number of PLSR components that should be used for imputing missing data
+% (overfitting is probably better?).
+parameters.parameters.imputation_ncomponents = 20; 
+
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.response.filename= {'response_variables_table.mat'};
@@ -453,6 +460,10 @@ parameters.loop_list.iterators = {
 
 % Specify which comparisons should be used for this dataset prep. 
 parameters.this_comparison_set = parameters.comparisons_categorical;
+
+% Flag for whether or not missing data (NaNs) should be imputed. (Don't
+% need it for these comparisons)
+parameters.imputeMissing = false; 
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
