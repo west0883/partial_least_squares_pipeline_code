@@ -15,28 +15,34 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
     iterator_location = strcmp(parameters.keywords, 'comparison_iterator'); 
     comparison_iterator = parameters.values{iterator_location};
 
-    % Get the list of mice not to use in this comparison (if any)
-    mice_not_to_use = parameters.this_comparison_set(comparison_iterator).mice_not_to_use;
-
-    % Get the mouse of this iteration
-    mouse_location = strcmp(parameters.keywords, 'mouse'); 
-    mouse = parameters.values{mouse_location};
-
-    % If mice_not_to_use is not empty
-    if ~isempty(mice_not_to_use)
-
-        % Check if current mouse is included in the list of mice not to
-        % use. If it is, exit function.
-        if any(cellfun(@strcmp, mice_not_to_use, repmat({mouse}, size(mice_not_to_use)))) 
-            
-            % Tell RunAnalysis not to save anything this iteration.
-            parameters.dont_save = true;
-
-            % Leave this function-- will move on to next comparison
-            return
-        end 
+    % *** Deal with mice that should be skipped for this comparison ***
+    
+    % If "mice_not_to_use" is a field in this comparison set,
+    if isfield(parameters.this_comparison_set(comparison_iterator), 'mice_not_to_use')
+        
+        % Get the list of mice not to use in this comparison (if any)
+        mice_not_to_use = parameters.this_comparison_set(comparison_iterator).mice_not_to_use;
+    
+        % Get the mouse of this iteration
+        mouse_location = strcmp(parameters.keywords, 'mouse'); 
+        mouse = parameters.values{mouse_location};
+    
+        % If mice_not_to_use is not empty
+        if ~isempty(mice_not_to_use)
+    
+            % Check if current mouse is included in the list of mice not to
+            % use. If it is, exit function.
+            if any(cellfun(@strcmp, mice_not_to_use, repmat({mouse}, size(mice_not_to_use)))) 
+                
+                % Tell RunAnalysis not to save anything this iteration.
+                parameters.dont_save = true;
+    
+                % Leave this function-- will move on to next comparison
+                return
+            end 
+        end
     end
-
+    
     % *** Handle the response variables (betas)*** 
 
     % Pull out of parameters structure for easier/safer use.
