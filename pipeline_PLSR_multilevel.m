@@ -218,11 +218,11 @@ parameters.loop_list.iterators = {
 parameters.this_comparison_set = parameters.comparisons_continuous;
 
 % Flag for whether or not missing data (NaNs) should be imputed.
-parameters.imputeMissing = true; %true; 
+parameters.imputeMissing = true; 
 
 % Number of PLSR components that should be used for imputing missing data
 % (overfitting is probably better?).
-parameters.parameters.imputation_ncomponents = 20; 
+parameters.imputation_ncomponents = 6; 
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
@@ -243,7 +243,7 @@ parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrep}, parameters);
 
-%% Find the average ratio of Nan in pupil diameter across continuous comparisons per mouse.
+%% Find the average ratio of NaNs in pupil diameter across continuous comparisons per mouse.
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
 end
@@ -253,7 +253,7 @@ parameters.loop_list.iterators = {
                 'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                 'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 
-parameters.evaluation_instructions = {{'data_evaluated = parameters.data.responseVariables(end);'}};
+parameters.evaluation_instructions = {{'data_evaluated = parameters.data.responseVariables(end);'}}; % pupil diameter is always the last variable entered.
 parameters.concatDim = 1;
 parameters.concatenation_level = 'comparison';
 parameters.averageDim = 1;
@@ -323,13 +323,10 @@ parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 
-% Tell functions not to plot MSEPs & PCTVAR for response unless it's by
-% individual variable.
-parameters.plot_MSEPs_response = false;
-parameters.plot_PCTVAR_response = false;
-
 parameters.this_comparison_set = parameters.comparisons_continuous;
-parameters.max_response_vars = 3;
+parameters.plot_MSEPs_response = true;
+parameters.plot_PCTVAR_response = true;
+parameters.max_response_vars = 4;
 
 % Input
 parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\with 20 components\' 'mouse', '\'};
@@ -368,19 +365,10 @@ parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVAR
 parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
 parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
 
-% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory_cumulative.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
-% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory_cumulative.filename= {'PLSR_PCTVARs_explanatory_cumulative.fig'};
-% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory_cumulative.variable= {'fig_PCTVARs_explanatory_cumulative'}; 
-% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory_cumulative.level = 'mouse';
-
-parameters.loop_list.things_to_save.fig_PCTVARs_response_cumulative.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
-parameters.loop_list.things_to_save.fig_PCTVARs_response_cumulative.filename= {'PLSR_PCTVARs_response_cumulativefig'};
-parameters.loop_list.things_to_save.fig_PCTVARs_response_cumulative.variable= {'fig_PCTVARs_response_cumulative'}; 
-parameters.loop_list.things_to_save.fig_PCTVARs_response_cumulative.level = 'mouse';
-
 RunAnalysis({@CheckComponents}, parameters);
 
 close all;
+
 %% PLSR Level 1, continuous: Run PLSR with best number of components
 % Don't run any permutations yet.
 % Always clear loop list first. 
@@ -396,7 +384,7 @@ parameters.loop_list.iterators = {
 % Parameters for calculating best number of components. If
 % "findBestNComponents" = false, just run the ncomponents_max
 parameters.findBestNComponents = false;
-parameters.ncomponents_max = 4; 
+parameters.ncomponents_max = 6; 
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
@@ -408,7 +396,7 @@ parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\6 components\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_save.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_save.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_save.results.level = 'comparison';
@@ -431,7 +419,7 @@ parameters.loop_list.iterators = {
 parameters.adjust_beta = false;
 
 % Input 
-parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\6 components\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_load.results.level = 'comparison';
@@ -443,7 +431,7 @@ parameters.loop_list.things_to_load.dataset_info.variable= {'dataset_info'};
 parameters.loop_list.things_to_load.dataset_info.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\6 components\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_save.fig.filename= {'PLSR_betas.fig'};
 parameters.loop_list.things_to_save.fig.variable= {'fig'}; 
 parameters.loop_list.things_to_save.fig.level = 'comparison';
@@ -472,7 +460,7 @@ parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 % The results from the continuous regression (for the Betas)
-parameters.loop_list.things_to_load.PLSR_results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.PLSR_results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\6 components\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.PLSR_results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.PLSR_results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_load.PLSR_results.level = 'comparison';
@@ -484,7 +472,7 @@ parameters.loop_list.things_to_load.values_old.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.values_new.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
-parameters.loop_list.things_to_save.values_new.filename= {'correlations_continuousSubtracted.mat'};
+parameters.loop_list.things_to_save.values_new.filename= {'correlations_continuousSubtracted_withPupil.mat'};
 parameters.loop_list.things_to_save.values_new.variable= {'correlations'}; 
 parameters.loop_list.things_to_save.values_new.level = 'mouse';
 
@@ -515,7 +503,7 @@ parameters.loop_list.things_to_load.response.variable= {'response_variables'};
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 parameters.loop_list.things_to_load.explanatory.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.explanatory.filename= {'correlations_continuousSubtracted.mat'};
+parameters.loop_list.things_to_load.explanatory.filename= {'correlations_continuousSubtracted_withPupil.mat'};
 parameters.loop_list.things_to_load.explanatory.variable= {'correlations'}; 
 parameters.loop_list.things_to_load.explanatory.level = 'mouse';
 
