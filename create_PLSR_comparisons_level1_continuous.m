@@ -34,7 +34,7 @@ parameters.dir_exper=[parameters.dir_base parameters.experiment_name '\'];
 load([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'], 'periods');
 
 % Continuous variable names
-continuous_variable_names = {'speed_vector', 'accel_vector', 'duration_vector'};
+continuous_variable_names = {'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector'};
 
 % Pull out the relevant columns/info from periods
 period_motorized_vs_spon = periods.motorized_vs_spon;
@@ -92,7 +92,7 @@ counter = counter + typei;
 
 % Only relevant for motorized.
 comparisons(counter + 1).name = 'motorized_finished_continuousVars';
-comparisons(counter + 1).variablesToUse = {'speed_vector', 'duration_vector'};
+comparisons(counter + 1).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector'};
 comparisons(counter + 1).type = 'finished';
 
 % Get relevent indices for this type.
@@ -107,7 +107,7 @@ counter = counter + 1;
 
 % Motorized
 comparisons(counter + 1).name = 'motorized_finished_stop_continuousVars';
-comparisons(counter + 1).variablesToUse = {'duration_vector'};
+comparisons(counter + 1).variablesToUse = {'duration_vector', 'pupil_diameter_vector'};
 comparisons(counter + 1).type = 'finished_stop';
 
 % Get relevent indices for this type.
@@ -120,7 +120,7 @@ counter = counter + 1;
 
 % Spontaneous
 comparisons(counter + 1).name = 'spontaneous_finished_stop_continuousVars';
-comparisons(counter + 1).variablesToUse = {'duration_vector'};
+comparisons(counter + 1).variablesToUse = {'duration_vector', 'pupil_diameter_vector'};
 comparisons(counter + 1).type = 'finished_stop';
 
 % Get relevent indices for this type.
@@ -134,7 +134,7 @@ counter = counter + 1;
 %% Continuous variables, walk with speed
 % Motorized
 comparisons(counter + 1).name = 'motorized_walk_continuousVars';
-comparisons(counter + 1).variablesToUse = {'speed_vector'};
+comparisons(counter + 1).variablesToUse = {'speed_vector','pupil_diameter_vector' };
 comparisons(counter + 1).type = 'walk';
 
 % Get relevent indices for this type.
@@ -147,7 +147,7 @@ counter = counter + 1;
 
 % Spontaneous
 comparisons(counter + 1).name = 'spontaneous_walk_continuousVars';
-comparisons(counter + 1).variablesToUse = {'speed_vector'};
+comparisons(counter + 1).variablesToUse = {'speed_vector', 'pupil_diameter_vector'};
 comparisons(counter + 1).type = 'walk';
 
 % Get relevent indices for this type.
@@ -158,6 +158,31 @@ comparisons(counter + 1).indices = find(indices_spontaneous & indices_type);
 
 counter = counter + 1;
 
+%% Continuous variables, rest
+% Motorized
+comparisons(counter + 1).name = 'motorized_rest_continuousVars';
+comparisons(counter + 1).variablesToUse = {'pupil_diameter_vector' };
+comparisons(counter + 1).type = 'rest';
 
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'rest');
+
+% Get intersection of motorized & type. 
+comparisons(counter + 1).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1; 
+
+% Spontaneous
+comparisons(counter + 1).name = 'spontaneous_rest_continuousVars';
+comparisons(counter + 1).variablesToUse = {'speed_vector', 'pupil_diameter_vector'};
+comparisons(counter + 1).type = 'rest';
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'rest');
+
+% Get intersection of spontaneous & type. 
+comparisons(counter + 1).indices = find(indices_spontaneous & indices_type);
+
+counter = counter + 1;
 %% Save 
 save([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat'], 'comparisons');
