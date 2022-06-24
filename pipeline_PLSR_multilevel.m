@@ -25,7 +25,7 @@ load([parameters.dir_exper '\mice_all.mat']);
 parameters.mice_all = mice_all;
 
 % ****Change here if there are specific mice, days, and/or stacks you want to work with**** 
-parameters.mice_all = parameters.mice_all([1:6, 8]);
+parameters.mice_all = parameters.mice_all;
 
 % Other parameters
 parameters.digitNumber = 2;
@@ -190,7 +190,7 @@ parameters.loop_list.things_to_load.accel_vector.variable= {'accel_averaged_by_i
 parameters.loop_list.things_to_load.accel_vector.level = 'mouse';
 
 % Pupil diameter
-parameters.loop_list.things_to_load.diameter_vector.dir = {[parameters.dir_exper 'behavior\eye\rolled concatenated diameter\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.diameter_vector.dir = {[parameters.dir_exper 'behavior\eye\rolled concatenated diameters\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.diameter_vector.filename= {'diameter_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.diameter_vector.variable= {'diameter_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.diameter_vector.level = 'mouse';
@@ -218,7 +218,7 @@ parameters.loop_list.iterators = {
 parameters.this_comparison_set = parameters.comparisons_continuous;
 
 % Flag for whether or not missing data (NaNs) should be imputed.
-parameters.imputeMissing = true; 
+parameters.imputeMissing = true; %true; 
 
 % Number of PLSR components that should be used for imputing missing data
 % (overfitting is probably better?).
@@ -242,6 +242,39 @@ parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrep}, parameters);
+
+%% Find the average ratio of Nan in pupil diameter across continuous comparisons per mouse.
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Is so you can use a single loop for calculations. 
+parameters.loop_list.iterators = {
+                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+
+parameters.evaluation_instructions = {{'data_evaluated = parameters.data.responseVariables(end);'}};
+parameters.concatDim = 1;
+parameters.concatenation_level = 'comparison';
+parameters.averageDim = 1;
+parameters.average_and_std_together = true;
+
+% Input Values 
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.data.variable= {'dataset_info.NaN_ratios'}; 
+parameters.loop_list.things_to_load.data.level = 'comparison';
+
+% Output values
+parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\NaN ratios\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.average.filename= {'average_missing_pupil_data_ratios.mat'};
+parameters.loop_list.things_to_save.average.variable= {'average_missing_pupil_data_ratios'}; 
+parameters.loop_list.things_to_save.average.level = 'mouse';
+
+parameters.loop_list.things_to_rename = {{'data_evaluated', 'data'}; 
+                                         { 'concatenated_data', 'data'}};
+
+RunAnalysis({@EvaluateOnData,@ConcatenateData, @AverageData}, parameters);
 
 %% PLSR Level 1, continuous: run PLSR up to 20 components to check best number of components
 % Don't run any permutations yet.
@@ -334,6 +367,16 @@ parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_
 parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
 parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
 parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
+
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory_cumulative.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory_cumulative.filename= {'PLSR_PCTVARs_explanatory_cumulative.fig'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory_cumulative.variable= {'fig_PCTVARs_explanatory_cumulative'}; 
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory_cumulative.level = 'mouse';
+
+parameters.loop_list.things_to_save.fig_PCTVARs_response_cumulative.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_PCTVARs_response_cumulative.filename= {'PLSR_PCTVARs_response_cumulativefig'};
+parameters.loop_list.things_to_save.fig_PCTVARs_response_cumulative.variable= {'fig_PCTVARs_response_cumulative'}; 
+parameters.loop_list.things_to_save.fig_PCTVARs_response_cumulative.level = 'mouse';
 
 RunAnalysis({@CheckComponents}, parameters);
 
