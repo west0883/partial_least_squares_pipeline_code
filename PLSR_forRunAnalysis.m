@@ -48,10 +48,10 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         
         % MSEP is calculated for 0 components as well, so subtract 1 from
         % the index.
-        if ncomponents ~= 1
-            ncomponents = ncomponents - 1;
-        end 
-        
+%         if ncomponents ~= 1
+%             ncomponents = ncomponents - 1;
+%         end 
+        ncomponents = parameters.ncomponents_max;
         % Put MSE_original, ncomponents, & W_original into the results.
         results.maximal_components.MSEP = MSEP_original;
         results.maximal_components.MSEP_byVars = MSEP_byVars_original;
