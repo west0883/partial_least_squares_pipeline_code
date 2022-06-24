@@ -15,60 +15,42 @@ function [parameters] = CheckComponents(parameters)
       parameters.fig_weights = parameters.fig; % Rename output figure handle.
 
 
-      %  **** Plot explanatory MSEPs (will save only explanatory).
+      %  **** Plot explanatory & response MSEPs 
       
-      % Rename input figure handles
+      % Rename input figure handles, explanatory
       if isfield(parameters, 'fig_MSEPs_explanatory')
           parameters.xfig = parameters.fig_MSEPs_explanatory;
 
       elseif isfield(parameters, 'xfig')
           parameters = rmfield(parameters, 'xfig');
       end
-      
-      % Plot.
-      parameters = PlotMSEPs(parameters);
 
-      % Rename output figure handle. 
-      parameters.fig_MSEPs_explanatory = parameters.xfig;
-
-
-      % **** Plot response MSEPs by variable.
-
-      % Rename input figure handles
+       % Rename input figure handles, response
       if isfield(parameters, 'fig_MSEPs_response')
           parameters.yfig = parameters.fig_MSEPs_response;
 
       elseif isfield(parameters, 'yfig')
           parameters = rmfield(parameters, 'yfig');
       end
+      % Plot.
+      parameters = PlotMSEPs(parameters);
 
-      % Plot
-      parameters = PlotMSEPs_byVar(parameters);
-
-      % Rename output figure handle
+      % Rename output figure handles. 
+      parameters.fig_MSEPs_explanatory = parameters.xfig;
       parameters.fig_MSEPs_response = parameters.yfig;
 
 
-      % **** Plot explanatory percent variance (will save only explanatory)
-      % Rename input figure handles
+      % **** Plot explanatory & response percent variance 
+
+      
+      % Rename input figure handles, explanatory
       if isfield(parameters, 'fig_PCTVARs_explanatory')
           parameters.xfig = parameters.fig_PCTVARs_explanatory;
 
       elseif isfield(parameters, 'xfig')
           parameters = rmfield(parameters, 'xfig');
       end
-
-      % Plot
-      parameters = PlotPCTVAR(parameters);
-
-      % Rename output figure handle. 
-      parameters.fig_PCTVARs_explanatory = parameters.xfig;
-
-
-      % **** Plot response percent variance by variable
-      parameters.percent_variance_cumulative = false;
-
-      % Rename input figure handles
+      % Rename input figure handles, response
       if isfield(parameters, 'fig_PCTVARs_response')
           parameters.yfig = parameters.fig_PCTVARs_response;
 
@@ -77,26 +59,11 @@ function [parameters] = CheckComponents(parameters)
       end
 
       % Plot
-      parameters = PlotPCTVAR_byVar(parameters);
-      
-      % Rename output figure handle.
+      parameters = PlotPCTVAR(parameters);
+
+      % Rename output figure handle. 
+      parameters.fig_PCTVARs_explanatory = parameters.xfig;
       parameters.fig_PCTVARs_response = parameters.yfig;
 
-
-      % **** Plot response percent variance by variable, CUMULATIVE
-      % Rename input figure handles
-      parameters.percent_variance_cumulative = true;
-      if isfield(parameters, 'fig_PCTVARs_response_cumulative')
-          parameters.yfig = parameters.fig_PCTVARs_response_cumulative;
-
-      elseif isfield(parameters, 'yfig')
-          parameters = rmfield(parameters, 'yfig');
-      end
-
-      % Plot
-      parameters = PlotPCTVAR_byVar(parameters);
-      
-      % Rename output figure handle.
-      parameters.fig_PCTVARs_response_cumulative = parameters.yfig;
                 
 end 
