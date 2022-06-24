@@ -66,6 +66,8 @@ function [parameters] = CheckComponents(parameters)
 
 
       % **** Plot response percent variance by variable
+      parameters.percent_variance_cumulative = false;
+
       % Rename input figure handles
       if isfield(parameters, 'fig_PCTVARs_response')
           parameters.yfig = parameters.fig_PCTVARs_response;
@@ -80,4 +82,21 @@ function [parameters] = CheckComponents(parameters)
       % Rename output figure handle.
       parameters.fig_PCTVARs_response = parameters.yfig;
 
+
+      % **** Plot response percent variance by variable, CUMULATIVE
+      % Rename input figure handles
+      parameters.percent_variance_cumulative = true;
+      if isfield(parameters, 'fig_PCTVARs_response_cumulative')
+          parameters.yfig = parameters.fig_PCTVARs_response_cumulative;
+
+      elseif isfield(parameters, 'yfig')
+          parameters = rmfield(parameters, 'yfig');
+      end
+
+      % Plot
+      parameters = PlotPCTVAR_byVar(parameters);
+      
+      % Rename output figure handle.
+      parameters.fig_PCTVARs_response_cumulative = parameters.yfig;
+                
 end 
