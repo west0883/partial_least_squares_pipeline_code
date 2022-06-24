@@ -18,7 +18,7 @@ function [parameters] = PlotPCTVAR(parameters)
         axis tight;
         xlabel('component number');
         ylabel('PCTVAR');
-
+        ylim([0 1]);
         hold on; 
     end
 % 
@@ -46,8 +46,10 @@ function [parameters] = PlotPCTVAR(parameters)
             axis tight;
             xlabel('component number');
             ylabel('PCTVAR');
+            ylim([0 1]);
     
             hold on; 
+          
         end
         set(0, 'CurrentFigure', parameters.yfig); 
         hold on;
