@@ -40,7 +40,13 @@ function [parameters] = PlotPCTVAR_byVar(parameters)
     for variablei = 1:size(variance_byvariable, 1)
 
         subplot(subplot_rows, subplot_columns, variablei + 1);
-        plot(variance_byvariable(variablei,:)); 
+
+        % If cumulative, 
+        if isfield(parameters, 'percent_variance_cumulative') && parameters.percent_variance_cumulative
+            plot(cumsum(variance_byvariable(variablei,:))); 
+        else
+            plot(variance_byvariable(variablei,:)); 
+        end
         % legend(parameters.this_comparison_set(:).name);
         axis tight;
         title(['variable ' num2str(variablei)]);
@@ -50,7 +56,12 @@ function [parameters] = PlotPCTVAR_byVar(parameters)
 
     % Do total in FIRST plot
     subplot(subplot_rows, subplot_columns, 1);
-    plot(sum(variance_byvariable, 1)); 
+    % If cumulative, 
+    if isfield(parameters, 'percent_variance_cumulative') && parameters.percent_variance_cumulative
+        plot(cumsum(sum(variance_byvariable,1))); 
+    else
+        plot(sum(variance_byvariable, 1)); 
+    end
     legend(parameters.this_comparison_set(:).name);
     axis tight;
     title('total'); 
