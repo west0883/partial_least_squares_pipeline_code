@@ -93,7 +93,11 @@ function [parameters] = DatasetPrep(parameters)
 
     % *** Deal with missing data values ***
 
-    % If user says to (default is not to),
+    % Calculate number of missing values for each variable. 
+    dataset.NaN_ratios.responseVariables = sum(isnan(responseVariables), 1)/size(responseVariables,1);
+    dataset.NaN_ratios.explanatoryVariables = sum(isnan(explanatoryVariables), 1)/size(explanatoryVariables,1);
+
+    % If user says to (default is not to), impute missing values
     if isfield(parameters, 'imputeMissing') && parameters.imputeMissing 
 
         disp('Imputing missing data.')
