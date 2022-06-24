@@ -39,7 +39,7 @@ function [parameters] = PopulateResponseVariables(parameters)
         % ***Put in pupil diameters
 
         % Use original location in periods_nametable via index field.
-        index = parameters.periods(periodi, 'index');
+        index = parameters.periods{periodi, 'index'};
         
         % Get out the diameters
         diameters = parameters.diameter_vector{index};
