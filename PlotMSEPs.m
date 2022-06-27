@@ -14,7 +14,13 @@ function [parameters] = PlotMSEPs(parameters)
         parameters.x_axis = gca;
         set(0, 'CurrentFigure', parameters.xfig); 
         
-        title_string = ['MSEPs for explanatory variables ' parameters.values(1)];
+        % Only put in the iterator names if it's a level 1 analysis
+        if isfield(parameters, 'analysis_level') && parameters.analysis_level == 2
+            title_string = ['MSEPS for explanatory variables'];
+        else
+            title_string = ['MSEPS for explanatory variables ' parameters.values(1)];
+        end
+       
         title(title_string);
         axis tight;
         xlabel('component number');
@@ -25,8 +31,8 @@ function [parameters] = PlotMSEPs(parameters)
 
     set(0, 'CurrentFigure', parameters.xfig); 
     hold on; 
-    component_vector = 0:size(parameters.results.maximal_components.MSEP,2) - 1;
-    plot(component_vector, parameters.results.maximal_components.MSEP(1,:));
+    component_vector = 0:size(parameters.results.MSEP,2) - 1;
+    plot(component_vector, parameters.results.MSEP(1,:));
     legend(parameters.this_comparison_set(:).name);
 
     % Plot responses only if user says so.
@@ -34,9 +40,15 @@ function [parameters] = PlotMSEPs(parameters)
         if ~isfield(parameters,'yfig')
             parameters.yfig = figure;
             parameters.yfig.WindowState = 'maximized';
-          
             parameters.y_axis = gca;
-            title_string = ['MSEPs for response variables ' parameters.values(1)];
+
+            % Only put in the iterator names if it's a level 1 analysis
+            if isfield(parameters, 'analysis_level') && parameters.analysis_level == 2
+                title_string = ['MSEPs for response variables'];
+            else
+                title_string = ['MSEPs for response variables ' parameters.values(1)];
+            end
+
             title(title_string);
             axis tight;
             xlabel('component number');
@@ -47,7 +59,7 @@ function [parameters] = PlotMSEPs(parameters)
         hold on;
         
     
-        plot(parameters.y_axis, component_vector, parameters.results.maximal_components.MSEP(2,:));
+        plot(parameters.y_axis, component_vector, parameters.results.MSEP(2,:));
         legend(parameters.this_comparison_set(:).name);
     end
 end 
