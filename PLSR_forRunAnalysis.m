@@ -14,10 +14,10 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
         if isnumeric(parameters.crossValidationReps)
        
-        message = ['Finding best number of components with maximum ' num2str(parameters.ncomponents_max) ...
-            ' components, ' num2str(parameters.crossValidationReps) ' cross-validation reps, ' ...
-             num2str(parameters.MonteCarloReps) , ' Monte Carlo repetitions'];
-        disp(message);
+            message = ['Finding best number of components with maximum ' num2str(parameters.ncomponents_max) ...
+                ' components, ' num2str(parameters.crossValidationReps) ' cross-validation reps, ' ...
+                 num2str(parameters.MonteCarloReps) , ' Monte Carlo repetitions'];
+            disp(message);
         end
 
     end
@@ -78,8 +78,39 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     disp(['Running PLSR with ' num2str(ncomponents) ' components.']);
 
-    [results.XL, results.YL, results.XS, results.YS, results.BETA, results.PCTVAR, results.MSEP, results.stats, results.MSEP_byVars] ...
-       = plsregress_fullcode(explanatoryVariables, responseVariables, ncomponents); 
+    % If this isn't a second-level comparison being run on previously
+    % calculated random permutations, run just the one asked-for
+    % regression.
+    if ~isfield(parameters, 'onPermutations') || (isfield(parameters, 'onPermutations') && ~parameters.onPermutations)
+   
+        [results.XL, results.YL, results.XS, results.YS, results.BETA, results.PCTVAR, results.MSEP, results.stats, results.MSEP_byVars] ...
+          = plsregress_fullcode(explanatoryVariables, responseVariables, ncomponents); 
+   
+         % Put results into output structure.
+         parameters.results = results; 
+
+    % If this IS a second-level comparison being run on previously
+    % calculated random permutations, 
+    else
+
+        % Set up a holder that will hold the newly generated betas. (number
+        % of mice + 1 for intercept x number of correlations x number of permutations)
+        betas_randomPermutations_2ndlevel = NaN(size(responseVariables,1) + 1, size(responseVariables,2), size(responseVariables,3));
+
+        % For each permutation,
+        parfor repi = 1:size(responseVariables, 3)
+
+            % Run PLSR regression.
+            [~, ~, ~, ~, BETA] = plsregress_fullcode(explanatoryVariables, responseVariables, ncomponents);
+
+            % Put into holder.
+            betas_randomPermutations_2ndlevel(:, :, repi) = BETA;
+
+        end
+
+        % Put all betas into output structure.
+        parameters.betas_randomPermutations_2ndlevel = betas_randomPermutations_2ndlevel;
+    end
 
     % Run iterative permutations for permutation significance testing. Randomly
     % permute the order of the response variables. 
@@ -132,7 +163,4 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         parameters.betas_randomPermutations = betas_permutations;
 
     end 
-
-    % Put results into output structure.
-    parameters.results = results; 
 end 
