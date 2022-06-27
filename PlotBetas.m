@@ -28,7 +28,7 @@ function [parameters] = PlotBetas(parameters)
         extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
         color_range = [-extreme extreme]; 
 
-        color_range = [-0.06 0.06];
+        %color_range = [-0.06 0.06];
         subplot(subplot_rows, subplot_columns, componenti); imagesc(holder); colorbar; 
         caxis(color_range);
         title(['Variable ' num2str(componenti)]); axis square;
