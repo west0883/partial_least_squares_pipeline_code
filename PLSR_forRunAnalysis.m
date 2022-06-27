@@ -93,6 +93,8 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % calculated random permutations, 
     else
 
+        disp('Running on permutations.')
+        
         % Set up a holder that will hold the newly generated betas. (number
         % of mice + 1 for intercept x number of correlations x number of permutations)
         betas_randomPermutations_2ndlevel = NaN(size(responseVariables,1) + 1, size(responseVariables,2), size(responseVariables,3));
