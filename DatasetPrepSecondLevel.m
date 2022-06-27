@@ -45,28 +45,34 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
     
     % *** Handle the response variables (betas)*** 
 
+    % Do differently if it's on a regular first-level set vs if it's on a
+    % random permutation set. 
+
     % Pull out of parameters structure for easier/safer use. Don't include 
     % the first row, which were interceps.
     % If the first-level comparison was categorical, use only the first
     % variable's betas
     if isfield(parameters, 'firstLevelCategorical') && parameters.firstLevelCategorical
-         responseVariables = parameters.response(2:end, 1); % 
+        
+         % Have ":" in 3rd dimension in case there are shuffles.
+         responseVariables = parameters.response(2:end, 1, :); 
     else
-         responseVariables = parameters.response(2:end, :); 
+         % Have ":" in 3rd dimension in case there are shuffles.
+         responseVariables = parameters.response(2:end, :, :); 
     end
 
     % If there was more than one response variable at level 1 (will have
     % more than one column, before transposing)
     if size(responseVariables, 2) > 1
         
-        % Reshape so its all one big row vector
-        responseVariables = reshape(responseVariables, [], 1);
- 
+        % Reshape so its all one big row vector (shuffles in 3rd dim,
+        % if applicable)
+        responseVariables = reshape(responseVariables, [], 1, size(responseVariables,3));
     end
 
-    % Transpose so each beta is its own variable 
-    responseVariables = responseVariables';
-
+    % Transpose/permute so each beta is its own variable. (Permute in
+    % case there are shuffles in 3rd dim.
+    responseVariables = permute(responseVariables, [2 1 3]);
 
     % ***Handle the explanatory variables (mouse dummy variables)***
 
@@ -100,9 +106,10 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
        parameters.responseVariables_concatenated = [];
     end
     
-    % Concatenate
-    explanatoryVariables_concatenated = [parameters.explanatoryVariables_concatenated; explanatoryVariables];
-    responseVariables_concatenated = [parameters.responseVariables_concatenated; responseVariables];
+    % Concatenate.
+    % Always concatenate across 1st dimension (rows)
+    explanatoryVariables_concatenated = cat(1, parameters.explanatoryVariables_concatenated, explanatoryVariables);
+    responseVariables_concatenated = cat(1, parameters.responseVariables_concatenated, responseVariables);
 
     % For explanatory variables (mice), remove any columns that don't have
     % a 1 in it (will happen if one mouse is not used in this comparison).
