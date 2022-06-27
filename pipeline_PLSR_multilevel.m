@@ -312,6 +312,7 @@ parameters.loop_list.things_to_save.results.level = 'comparison';
 
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
 
+parameters.findBestNComponents = false;
 %% PLSR Level 1, continuous: check components 
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
@@ -381,9 +382,6 @@ parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 
-% Parameters for calculating best number of components. If
-% "findBestNComponents" = false, just run the ncomponents_max
-parameters.findBestNComponents = false;
 parameters.ncomponents_max = 6; 
 
 % Do you want permutations?
@@ -552,6 +550,8 @@ parameters.loop_list.things_to_save.results.level = 'comparison';
 
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
 
+parameters.findBestNComponents = false;
+
 %% Level 1 categorical -- Check components
 
 % Always clear loop list first. 
@@ -623,9 +623,6 @@ parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
-% Parameters for calculating best number of components. If
-% "findBestNComponents" = false, just run the ncomponents_max
-parameters.findBestNComponents = false;
 parameters.ncomponents_max = 3; 
 
 % Do you want permutations?
@@ -697,7 +694,6 @@ parameters.loop_list.iterators = {
 
 % Parameters for calculating best number of components. If
 % "findBestNComponents" = false, just run the ncomponents_max
-parameters.findBestNComponents = false;
 parameters.ncomponents_max = 3; 
 
 % Do you want permutations?
@@ -724,6 +720,8 @@ RunAnalysis({@PLSR_forRunAnalysis}, parameters);
 profile off;
 profile viewer;
 
+parameters.permutationGeneration = false;
+
 %% Level 2 categorical -- Prep betas & mouse variables
 % For any spontaneous, don't include mouse 1100
 
@@ -742,6 +740,7 @@ parameters.ncomponents_max = 3;
 % If the first level was categorical:
 parameters.firstLevelCategorical = true; 
 
+parameters.this_comparison_set = parameters.comparisons_categorical;
 parameters.max_mice = size(parameters.mice_all, 2);
 parameters.concatenation_level = 'mouse';
 
@@ -772,10 +771,10 @@ parameters.loop_list.iterators = {
 parameters.ncomponents_from_first_level = 3;
 % Parameters for calculating best number of compo
 % nents. If "findBestNComponents" = false, just run the ncomponents_max
-parameters.findBestNComponents = false;
+parameters.findBestNComponents = true;
 parameters.ncomponents_max = 6; 
-% parameters.crossValidationReps = 6;
-% parameters.MonteCarloReps = 6;
+parameters.crossValidationReps = 6;
+parameters.MonteCarloReps = 6;
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
@@ -792,7 +791,9 @@ parameters.loop_list.things_to_save.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_save.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_save.results.level = 'comparison';
 
-RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+RunAnalysis({@PLSR_forRunAnalysis}, parameters); 
+
+parameters.findBestNComponents = false;
 
 %% Level 2 categorical -- check components
 % Always clear loop list first. 
@@ -848,6 +849,7 @@ parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'end';
 RunAnalysis({@CheckComponents}, parameters);
 
 close all;
+
 %% Level 2 categorical -- run PLSR with best number of components.
 % 2 or 3 components
 % Always clear loop list first. 
@@ -860,12 +862,7 @@ parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
 parameters.ncomponents_from_first_level = 3;
-% Parameters for calculating best number of compo
-% nents. If "findBestNComponents" = false, just run the ncomponents_max
-parameters.findBestNComponents = false;
 parameters.ncomponents_max = 3; 
-% parameters.crossValidationReps = 6;
-% parameters.MonteCarloReps = 6;
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
