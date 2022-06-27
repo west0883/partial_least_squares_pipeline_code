@@ -11,8 +11,14 @@ function [parameters] = CheckComponents(parameters)
       MessageToUser('Checking ', parameters);
 
       % **** Plot weights 
-      parameters = PlotWeights(parameters);
-      parameters.fig_weights = parameters.fig; % Rename output figure handle.
+      % Don't do if this is a second level analysis
+      if isfield(parameters, 'analysis_level') && parameters.analysis_level == 2
+          % Do nothing
+      else
+          % Plot the weights
+          parameters = PlotWeights(parameters);
+          parameters.fig_weights = parameters.fig; % Rename output figure handle.
+      end
 
 
       %  **** Plot explanatory & response MSEPs 
@@ -38,8 +44,7 @@ function [parameters] = CheckComponents(parameters)
       % Rename output figure handles. 
       parameters.fig_MSEPs_explanatory = parameters.xfig;
       parameters.fig_MSEPs_response = parameters.yfig;
-
-
+      
       % **** Plot explanatory & response percent variance 
 
       
