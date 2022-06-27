@@ -24,7 +24,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     if isfield(parameters, 'permutationGeneration') && parameters.permutationGeneration
 
-        disp(['Will run ' num2str(parameters.n_permutaions) ' permutations.'])
+        disp(['Will run ' num2str(parameters.n_permutations) ' permutations.'])
 
     end
      
@@ -34,10 +34,19 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     explanatoryVariables = parameters.dataset.explanatoryVariables;
     responseVariables = parameters.dataset.responseVariables;
 
+    % If there are fewer observations than asked-for components (happens in
+    % 2nd level analyses), lower ncomponents to 1 less than number of rows.
+    if size(responseVariables, 1) <= parameters.ncomponents_max
+        ncomponents_max = size(responseVariables, 1) - 1;
+
+    else
+        ncomponents_max = parameters.ncomponents_max;
+    end
+
     % If user says so
     if isfield(parameters, 'findBestNComponents') && parameters.findBestNComponents
         [~, ~, ~, ~, ~, ~, MSEP_original, stats_original, MSEP_byVars_original] ...
-           = plsregress_fullcode(explanatoryVariables, responseVariables, parameters.ncomponents_max, 'cv', parameters.crossValidationReps, 'mcreps', parameters.MonteCarloReps, 'Options', statset('UseParallel',true) );
+           = plsregress_fullcode(explanatoryVariables, responseVariables, ncomponents_max, 'cv', parameters.crossValidationReps, 'mcreps', parameters.MonteCarloReps, 'Options', statset('UseParallel',true) );
         
         % Save the original weights of Y for later (in case you want to look at
         % what those components look like later)
@@ -51,16 +60,16 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 %         if ncomponents ~= 1
 %             ncomponents = ncomponents - 1;
 %         end 
-        ncomponents = parameters.ncomponents_max;
+        ncomponents = ncomponents_max;
         % Put MSE_original, ncomponents, & W_original into the results.
         results.maximal_components.MSEP = MSEP_original;
         results.maximal_components.MSEP_byVars = MSEP_byVars_original;
         results.maximal_components.W = W_original;
         results.ncomponents_used = ncomponents;
 
-    % Otherwise, just run with ncomponents as parameters.ncomponents_max.
+    % Otherwise, just run with ncomponents as ncomponents_max.
     else
-        ncomponents = parameters.ncomponents_max;
+        ncomponents = ncomponents_max;
         results.ncomponents_used = ncomponents;
         
     end
@@ -79,13 +88,17 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     if isfield(parameters, 'permutationGeneration') && parameters.permutationGeneration
 
         disp('Running permutations'); 
-
-        columns_to_use = parameters.dataset.columns_to_use;
+        
+        if isfield(parameters, 'comparison_type') && strcmp(parameters.comparison_type, 'categorical')
+            columns_to_use = 1;
+        else 
+            columns_to_use = 1:size(responseVariables, 2);
+        end
 
         % Make a holding matrix for beta permutations.
-        betas_permutations = NaN(size(results.BETA,1), size(results.BETA, 2), parameters.n_permutations); 
+        betas_permutations = NaN(size(results.BETA,1), numel(columns_to_use), parameters.n_permutations);  %size(results.BETA, 2)
 
-        parfor repi = 1:parameters.n_permutaions 
+        parfor repi = 1:parameters.n_permutations 
 
             % For each response variable being looked at (want the diffent 
             % categories to vary independently), make a mixing vector that's
@@ -93,16 +106,17 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             % included.
 
             % Make a holder for mixed response variables
-            responseVariables_mixed = NaN(size(responseVariables));
+            responseVariables_mixed = NaN(size(responseVariables, 1), numel(columns_to_use));
 
-            for variablei = 1:numel(comparison_variablesToUse)
-                
+            for variablei = 1:numel(columns_to_use)     %(responseVariables, 2)
+                column = columns_to_use(variablei);
+
                 % Randomize order
-                vect_mix = randperm(1:size(responseVariables, 1));
+                vect_mix = randperm(size(responseVariables, 1));
     
                 % Mix/permute response varables for this category's columns
                 % only. 
-                responseVariables_mixed(:, columns_to_use{variablei}) = responseVariables(vect_mix, columns_to_use{variablei});
+                responseVariables_mixed(:, column) = responseVariables(vect_mix, column);
 
             end
 
@@ -114,8 +128,8 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             
         end 
 
-        % Put betas_permutations into results structure.
-        results.betas_permutations = betas_permutations;
+        % Put betas_permutations into output structure
+        parameters.betas_randomPermutations = betas_permutations;
 
     end 
 
