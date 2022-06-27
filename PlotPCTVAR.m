@@ -13,7 +13,13 @@ function [parameters] = PlotPCTVAR(parameters)
         parameters.xfig.WindowState = 'maximized';
         set(0, 'CurrentFigure', parameters.xfig); 
         
-        title_string = ['Percent variance for explanatory variables ' parameters.values(1)];
+        % Only put in the iterator names if it's a level 1 analysis
+        if isfield(parameters, 'analysis_level') && parameters.analysis_level == 2
+            title_string = ['Percent variance for explanatory variables'];
+        else
+            title_string = ['Percent variance for explanatory variables ' parameters.values(1)];
+        end
+
         title(title_string);
         axis tight;
         xlabel('component number');
@@ -21,6 +27,7 @@ function [parameters] = PlotPCTVAR(parameters)
         ylim([0 1]);
         hold on; 
     end
+
 % 
 %     % Find the comparison name for legend. 
 %     name_location = find(cellfun(@strcmp, parameters.keywords, repmat({'comparison'}, size(parameters.keywords)))); 
@@ -41,7 +48,13 @@ function [parameters] = PlotPCTVAR(parameters)
             parameters.yfig.WindowState = 'maximized';
           
             set(0, 'CurrentFigure', parameters.yfig); 
-            title_string = ['Percent variance for response variables ' parameters.values(1)];
+            % Only put in the iterator names if it's a level 1 analysis
+            if isfield(parameters, 'analysis_level') && parameters.analysis_level == 2
+                title_string = ['Percent variance for response variables'];
+            else
+                title_string = ['Percent variance for response variables ' parameters.values(1)];
+            end
+       
             title(title_string);
             axis tight;
             xlabel('component number');
