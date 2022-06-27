@@ -880,9 +880,78 @@ parameters.loop_list.things_to_save.results.variable= {'PLSR_results'};
 parameters.loop_list.things_to_save.results.level = 'comparison';
 
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+
+%% Level 2 categorical -- prep shuffled datasets for PLSR on shuffles.
+% Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
+
+parameters.ncomponents_from_first_level = 3;
+parameters.ncomponents_max = 3;
+
+% If the first level was categorical:
+parameters.firstLevelCategorical = true; 
+
+parameters.this_comparison_set = parameters.comparisons_categorical;
+parameters.max_mice = size(parameters.mice_all, 2);
+parameters.concatenation_level = 'mouse';
+
+% Input 
+parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\with ' num2str(parameters.ncomponents_max) ' components\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.response.filename= {'PLSR_betas_randomPermutations.mat'};
+parameters.loop_list.things_to_load.response.variable= {'betas_randomPermutations'}; 
+parameters.loop_list.things_to_load.response.level = 'mouse';
+
+% Output
+parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\with ' num2str(parameters.ncomponents_max) ' components\'], 'comparison', '\'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations.mat'};
+parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_save.dataset.level = 'comparison';
+
+RunAnalysis({@DatasetPrepSecondLevel}, parameters);
+
 %% Level 2 categorical -- PLSR on shuffles
 % Run a second-level PLSR on the random shuffles from level 1. 
 
+% Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
+
+parameters.ncomponents_from_first_level = 3;
+parameters.ncomponents_max = 3; 
+
+% Say that you do want to run on permutations
+parameters.onPermutations = true;
+
+% If the first level was categorical:
+parameters.firstLevelCategorical = true; 
+
+% Input 
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\with ' num2str(parameters.ncomponents_from_first_level) ' components\'], 'comparison','\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info_randomPermutations.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset.level = 'comparison';
+
+% Output
+parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\with ' num2str(parameters.ncomponents_from_first_level) ' level 1 components\with ' num2str(parameters.ncomponents_max) ' components\'], 'comparison', '\'};
+parameters.loop_list.things_to_save.results.filename= {'PLSR_betas_randomPermutations.mat'};
+parameters.loop_list.things_to_save.results.variable= {'betas_randomPermutations'}; 
+parameters.loop_list.things_to_save.results.level = 'comparison';
+
+RunAnalysis({@PLSR_forRunAnalysis}, parameters);
+
+parameters.onPermutations = false;
 
 %% Level 2 categorical -- check significance
 
