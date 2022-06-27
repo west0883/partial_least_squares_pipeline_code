@@ -45,8 +45,15 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
     
     % *** Handle the response variables (betas)*** 
 
-    % Pull out of parameters structure for easier/safer use.
-    responseVariables = parameters.response;
+    % Pull out of parameters structure for easier/safer use. Don't include 
+    % the first row, which were interceps.
+    % If the first-level comparison was categorical, use only the first
+    % variable's betas
+    if isfield(parameters, 'firstLevelCategorical') && parameters.firstLevelCategorical
+         responseVariables = parameters.response(2:end, 1); % 
+    else
+         responseVariables = parameters.response(2:end, :); 
+    end
 
     % If there was more than one response variable at level 1 (will have
     % more than one column, before transposing)
@@ -60,14 +67,20 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
     % Transpose so each beta is its own variable 
     responseVariables = responseVariables';
 
+
     % ***Handle the explanatory variables (mouse dummy variables)***
-    explanatoryVariables = zeros(parameters.max_mice, 1); 
-    explanatoryVariables(mouse_location) = 1;
+
+    % Get the mouse iterator value
+    mouse_level = find(strcmp(parameters.loop_list.iterators(:,1), 'mouse'));
+    current_mouse_iterator = parameters.values{numel(parameters.values)/2 + mouse_level};
+    
+    explanatoryVariables = zeros(1, parameters.max_mice); 
+    explanatoryVariables(current_mouse_iterator) = 1;
 
     % *** Concatenate ***
 
     % Check the concatenation level.
-    % Get the current iterator value for that level
+    % Get the current iterator value for that level (which should be mice)
     iterator_level = find(strcmp(parameters.loop_list.iterators(:,1), parameters.concatenation_level));
     current_iterator = parameters.values{numel(parameters.values)/2 + iterator_level};
 
@@ -75,7 +88,7 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
     % concatenation, clear any previously concatenated data.
     if current_iterator == 1 && isfield(parameters, 'responseVariables_concatenated')
         parameters = rmfield(parameters, 'responseVariables_concatenated'); 
-        parameters = rmfield(parameters, 'explanatorVariables_concatenated'); 
+        parameters = rmfield(parameters, 'explanatoryVariables_concatenated'); 
     end 
    
     % Create concatenation arrays, if hasn't already been done for this
@@ -93,33 +106,39 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
 
     % For explanatory variables (mice), remove any columns that don't have
     % a 1 in it (will happen if one mouse is not used in this comparison).
-    columns_to_remove = ~any(explanatoryVariables_concatenated);
 
-    % If there are columns to remove, remove them.
-    if ~isempty(columns_to_remove)
-        explanatoryVariables_concatenated(:, columns_to_remove) = [];  
+    % Only do if the mouse iterator is the maximum number of mice,
+    if current_iterator == parameters.max_mice
+        columns_to_remove = ~any(explanatoryVariables_concatenated);
+
+        % If there are columns to remove, remove them.
+        if ~isempty(columns_to_remove)
+            explanatoryVariables_concatenated(:, columns_to_remove) = [];  
+        end
     end
-
     % Put into parameters structure for next iteration
     parameters.explanatoryVariables_concatenated = explanatoryVariables_concatenated;
     parameters.responseVariables_concatenated = responseVariables_concatenated;
 
     % *** Normalize ***
     % (does this for each concatenation, but will only save the last)
-   [explanatoryVariables_normalized, mu_explanatory, sigma_explanatory] = zscore(parameters.explanatoryVariables_concatenated);
-   [responseVariables_normalized, mu_response, sigma_response] = zscore(parameters.responseVariables_concatenated);
-
-   % *** Put into output structure ***
-
-   % Zscoring info.
-   dataset.zscoring.explanatoryVariables.mu = mu_explanatory;
-   dataset.zscoring.explanatoryVariables.sigma = sigma_explanatory;
-   dataset.zscoring.responseVariables.mu = mu_response;
-   dataset.zscoring.responseVariables.sigma = sigma_response;
+%    [explanatoryVariables_normalized, mu_explanatory, sigma_explanatory] = zscore(parameters.explanatoryVariables_concatenated);
+%    [responseVariables_normalized, mu_response, sigma_response] = zscore(parameters.responseVariables_concatenated);
+% 
+%    % *** Put into output structure ***
+% 
+%    % Zscoring info.
+%    dataset.zscoring.explanatoryVariables.mu = mu_explanatory;
+%    dataset.zscoring.explanatoryVariables.sigma = sigma_explanatory;
+%    dataset.zscoring.responseVariables.mu = mu_response;
+%    dataset.zscoring.responseVariables.sigma = sigma_response;
 
    % Put both variable sets for this comparison into a stucture for saving. 
-   dataset.explanatoryVariables = explanatoryVariables_normalized;
-   dataset.responseVariables = responseVariables_normalized;
+%    dataset.explanatoryVariables = explanatoryVariables_normalized;
+%    dataset.responseVariables = responseVariables_normalized;
+
+   dataset.explanatoryVariables = explanatoryVariables_concatenated;
+   dataset.responseVariables = responseVariables_concatenated;
 
    % Put into parameters
    parameters.dataset = dataset;
