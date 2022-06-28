@@ -9,20 +9,9 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     % Some things need to be done differently with the continuous vs
     % categorical comparisons. (Separate out each continuous variable)
 
-    % If categorical, 
-    if strcmp(parameters.comparison_type, 'categorical')
-
-        % Get number of subplot to use.
-        % Just use the total number of comparisons.
-        [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(parameters.this_comparison_set, 2),4/5);
-
-    % If continuous,
-    else
-         % Get number of subplot to use.
-         % make each row a different variable type, each column a different "comparison"/ behavior period. 
-         subplot_columns = size(parameters.this_comparison_set, 2);
-         subplot_rows = parameters.max_response_vars;
-    end
+    % Get number of subplot to use.
+    % Just use the total number of comparisons.
+    [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(parameters.this_comparison_set, 2),4/5);
 
     % Pull out betas to use going forward (using just the intercepts).
     betas = parameters.results.BETA(1, :);
@@ -93,7 +82,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     else
         % Make figures for each variable type.
         for variablei = 1:numel(parameters.continuous_variable_names)
-            variable = erase(parameters.comparison_type{variablei}, 'vector');
+            variable = parameters.continuous_variable_names{variablei};
 
             if ~isfield(parameters, [variable '_fig'])
                 figure_holder = figure;
@@ -105,7 +94,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 sgtitle(title_string);
 
                 % Put into output structure.
-                parameters.([variable '_fig ']) = figure_holder;
+                parameters.([variable '_fig']) = figure_holder;
 
             end
         end
@@ -139,7 +128,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
         for variablei = 1:numel(variablesToUse)
 
             % Get the variable name
-            variable = variablesToUse{variablei};
+            variable = erase(variablesToUse{variablei}, '_vector');
 
             % Set the current figure to the one you're interested in
             set(0, 'CurrentFigure', parameters.([variable '_fig']));
@@ -156,8 +145,13 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
             % Plot
             subplot(subplot_rows, subplot_columns, comparison_iterator); imagesc(betas_separated_variables(:,:, variablei)); 
-            colormap(cmap); colorbar; caxis(color_range);
-        
+            colormap(cmap); colorbar; 
+            
+            % Don't use the color range if both values are 0.
+            if any(color_range)
+                caxis(color_range);
+            end
+           
             % Make subplot title.
             title_string = [erase(comparison, parameters.comparison_type)]; 
             title(strrep(title_string, '_', ' '));  axis square;
