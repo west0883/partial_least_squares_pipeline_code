@@ -94,7 +94,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     else
 
         disp('Running on permutations.')
-        
+
         % Set up a holder that will hold the newly generated betas. (number
         % of mice + 1 for intercept x number of correlations x number of permutations)
         betas_randomPermutations_2ndlevel = NaN(size(responseVariables,1) + 1, size(responseVariables,2), size(responseVariables,3));
@@ -103,7 +103,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         parfor repi = 1:size(responseVariables, 3)
 
             % Run PLSR regression.
-            [~, ~, ~, ~, BETA] = plsregress_fullcode(explanatoryVariables, responseVariables, ncomponents);
+            [~, ~, ~, ~, BETA] = plsregress_fullcode(explanatoryVariables, responseVariables(:,:, repi), ncomponents);
 
             % Put into holder.
             betas_randomPermutations_2ndlevel(:, :, repi) = BETA;
