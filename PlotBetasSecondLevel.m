@@ -15,6 +15,14 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     else
         betas_adjusted = parameters.results.BETA(1, :);
     end
+
+    % If user wants to use significance for plotting,
+    if isfield(parameters, 'useSignificance') && parameters.useSignificance
+        
+        % Only keep/plot beta values that reach significance 
+        betas_adjusted = betas_adjusted .* parameters.significance'; 
+
+    end
     
     % If there isn't a figure for this yet, make one.
     if ~isfield(parameters, 'fig')
@@ -41,8 +49,13 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     color_range = [-extreme extreme]; 
 
     %color_range = [-0.06 0.06];
-    subplot(subplot_rows, subplot_columns, comparison_iterator); imagesc(holder); colorbar; 
-    caxis(color_range);
+
+    % Make a colormap with cbrewer; 
+    cmap= flipud(cbrewer('div', 'RdBu', 512, 'nearest'));
+
+    % Plot.
+    subplot(subplot_rows, subplot_columns, comparison_iterator); imagesc(holder); 
+    colormap(cmap); colorbar; caxis(color_range);
 
     % Make subplot title.
     title_string = erase(comparison, parameters.comparison_type); 
