@@ -6,14 +6,33 @@
 
 function [parameters] = PlotBetasSecondLevel(parameters)
 
-    [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(parameters.this_comparison_set, 2),4/5);
+    % Some things need to be done differently with the continuous vs
+    % categorical comparisons. (Separate out each continuous variable)
 
+    % If categorical, 
+    if strcmp(parameters.comparison_type, 'categorical')
+
+        % Get number of subplot to use.
+        % Just use the total number of comparisons.
+        [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(parameters.this_comparison_set, 2),4/5);
+
+    % If continuous,
+    else
+         % Get number of subplot to use.
+         % make each row a different variable type, each column a different "comparison"/ behavior period. 
+         subplot_columns = size(parameters.this_comparison_set, 2);
+         subplot_rows = parameters.max_response_vars;
+    end
+
+    % Pull out betas to use going forward (using just the intercepts).
+    betas = parameters.results.BETA(1, :);
+   
     % Adjust Betas based on z-score sigma. % First row is constant estimate
     % If user says so
     if isfield(parameters, 'adjust_beta') && parameters.adjust_beta
-        betas_adjusted = parameters.results.BETA(1, :) ./ parameters.dataset_info.zscoring.brainData.sigma' .*  parameters.dataset_info.zscoring.responseVariables.sigma; 
+        betas_adjusted = betas ./ parameters.dataset_info.zscoring.brainData.sigma' .*  parameters.dataset_info.zscoring.responseVariables.sigma; 
     else
-        betas_adjusted = parameters.results.BETA(1, :);
+        betas_adjusted = betas;
     end
 
     % If user wants to use significance for plotting,
@@ -24,16 +43,6 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
     end
     
-    % If there isn't a figure for this yet, make one.
-    if ~isfield(parameters, 'fig')
-        fig = figure;
-        fig.WindowState = 'maximized';
-        
-        % Put into output structure.
-        parameters.fig = fig;
-        hold on;
-    end
-  
     % Get comparison iterator for subplot location. 
     iterator_location = strcmp(parameters.keywords, {'comparison_iterator'});
     comparison_iterator = parameters.values{iterator_location};
@@ -42,27 +51,118 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     name_location = strcmp(parameters.keywords, {'comparison'});
     comparison = parameters.values{name_location};
 
-    holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
-    holder(parameters.indices) = betas_adjusted;
-
-    extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
-    color_range = [-extreme extreme]; 
-
-    %color_range = [-0.06 0.06];
-
     % Make a colormap with cbrewer; 
     cmap= flipud(cbrewer('div', 'RdBu', 512, 'nearest'));
 
-    % Plot.
-    subplot(subplot_rows, subplot_columns, comparison_iterator); imagesc(holder); 
-    colormap(cmap); colorbar; caxis(color_range);
+    % Start plotting. 
+    
+    % If categorical, 
+    if strcmp(parameters.comparison_type, 'categorical')
 
-    % Make subplot title.
-    title_string = erase(comparison, parameters.comparison_type); 
-    title(strrep(title_string, '_', ' ')); axis square;
+        % If there isn't a figure for this yet, make one.
+        if ~isfield(parameters, 'fig')
+            fig = figure;
+            fig.WindowState = 'maximized';
 
-    title_string = ['Betas, second level ' parameters.comparison_type ', ' num2str(parameters.ncomponents_from_first_level) ' 1st level & ' num2str(parameters.ncomponents_max) ' 2nd level components'];
-    title_string = strrep(title_string, '_', ' ');
-    sgtitle(title_string);
+            % Make title.
+            title_string = ['Betas, second level ' parameters.comparison_type ', ' num2str(parameters.ncomponents_from_first_level) ' 1st level & ' num2str(parameters.ncomponents_max) ' 2nd level components'];
+            title_string = strrep(title_string, '_', ' ');
+            sgtitle(title_string);
+
+            % Put into output structure.
+            parameters.fig = fig;
+        end
+
+        % Just need one plot per comparison.
+        holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
+        holder(parameters.indices) = betas_adjusted;
+    
+        % Make a fitted color range for this plot.
+        extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
+        color_range = [-extreme extreme]; 
+
+        % Plot.
+        subplot(subplot_rows, subplot_columns, comparison_iterator); imagesc(holder); 
+        colormap(cmap); colorbar; caxis(color_range);
+    
+        % Make subplot title.
+        title_string = erase(comparison, parameters.comparison_type); 
+        title(strrep(title_string, '_', ' ')); axis square;
+
+    % If continuous, 
+    else
+        % Make figures for each variable type.
+        for variablei = 1:numel(parameters.continuous_variable_names)
+            variable = erase(parameters.comparison_type{variablei}, 'vector');
+
+            if ~isfield(parameters, [variable '_fig'])
+                figure_holder = figure;
+                figure_holder.WindowState = 'maximized';
+                
+                % Make title.
+                title_string = ['Betas, ' variable ' second level ' parameters.comparison_type ', ' num2str(parameters.ncomponents_from_first_level) ' 1st level & ' num2str(parameters.ncomponents_max) ' 2nd level components'];
+                title_string = strrep(title_string, '_', ' ');
+                sgtitle(title_string);
+
+                % Put into output structure.
+                parameters.([variable '_fig ']) = figure_holder;
+
+            end
+        end
+
+        % Figure out where each beta matrix needs to go. 
+        
+        % Use the comparisons matrix to get the variables you're using for
+        % this comparison.
+        variablesToUse = parameters.this_comparison_set(comparison_iterator).variablesToUse;
+
+        % Make a holder matrix for separated variable betas
+        betas_separated_variables = NaN(parameters.number_of_sources, parameters.number_of_sources, numel(variablesToUse));
+     
+        % Separate out each beta matrix per variable
+        for variablei = 1:numel(variablesToUse)
+
+            % Make a 2D holder (because lists of indices are weird).
+            holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
+            
+            % Separate
+            try
+            holder(parameters.indices) = betas_adjusted((variablei - 1) * numel(parameters.indices) + [1:numel(parameters.indices)]);
+            catch
+            end
+            % Put into 3D holder.
+            betas_separated_variables(:,:, variablei) = holder; 
+
+        end
+
+        % Plot each beta matrix depending on where the variable belongs.
+        for variablei = 1:numel(variablesToUse)
+
+            % Get the variable name
+            variable = variablesToUse{variablei};
+
+            % Set the current figure to the one you're interested in
+            set(0, 'CurrentFigure', parameters.([variable '_fig']));
+
+            % Find its place in the order of variables in continuous_variables_names
+            %variable_location = find(strcmp(parameters.continuous_variable_names, {variable}));
+        
+            % Make a fitted color range for this plot.
+            extreme = max(max(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan'), abs(min(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan')));
+            color_range = [-extreme extreme]; 
+            
+            % Get subplot index.
+            %subplot_index = sub2ind([subplot_rows subplot_columns], variable_location, comparison_iterator);
+
+            % Plot
+            subplot(subplot_rows, subplot_columns, comparison_iterator); imagesc(betas_separated_variables(:,:, variablei)); 
+            colormap(cmap); colorbar; caxis(color_range);
+        
+            % Make subplot title.
+            title_string = [erase(comparison, parameters.comparison_type)]; 
+            title(strrep(title_string, '_', ' '));  axis square;
+
+        end
+    end
 
 end 
