@@ -12,14 +12,10 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % it runs for a long time if they made a mistake).
     if isfield(parameters, 'findBestNComponents') && parameters.findBestNComponents
 
-        if isnumeric(parameters.crossValidationReps)
+        message = ['Finding best number of components with maximum ' num2str(parameters.ncomponents_max) ...
+            ' components, ' num2str(parameters.kFolds) ' -folds.'];
+        disp(message);
        
-            message = ['Finding best number of components with maximum ' num2str(parameters.ncomponents_max) ...
-                ' components, ' num2str(parameters.crossValidationReps) ' cross-validation reps, ' ...
-                 num2str(parameters.MonteCarloReps) , ' Monte Carlo repetitions'];
-            disp(message);
-        end
-
     end
 
     if isfield(parameters, 'permutationGeneration') && parameters.permutationGeneration
@@ -45,9 +41,112 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     % If user says so
     if isfield(parameters, 'findBestNComponents') && parameters.findBestNComponents
-        [~, ~, ~, ~, ~, ~, MSEP_original, stats_original, MSEP_byVars_original] ...
-           = plsregress_fullcode(explanatoryVariables, responseVariables, ncomponents_max, 'cv', parameters.crossValidationReps, 'mcreps', parameters.MonteCarloReps, 'Options', statset('UseParallel',true) );
-        
+
+        % Run cross-validation with contiguous partitions.
+
+        % Divide data into parameters.kFolds number of partitions.
+       
+        % If the data is categorical, you have to stratify it within each
+        % category (partition within each category).
+        if strcmp(parameters.comparison_type, 'categorical')
+
+            % Make a holder cell array of indices to use for each partition. Rows
+            % are different partitions, columns different variables.
+            partition_indices_holder = cell(parameters.kFolds, size(responseVariables, 2));
+
+            % For each response variable,
+            for variablei = 1:size(responseVariables, 2)
+
+                % Get out variable indices
+                variable_indices = responseVariables(:,variablei) == 1;
+                
+                % Find number of observations that will go into each fold.
+                % Remainder will go into the last fold.
+                nobservations = floor(numel(variable_indices)/parameters.kFolds);
+                remainder = rem(numbel(variable_indices), parameters.kFolds);
+
+                % For each fold/partition.
+                for foldi = 1:parameters.kFolds
+
+                    % Put the number of observations into the partition
+                    % indices holder. Make a vector of indices for easier
+                    % reading.
+                    vector_indices = [1:nobservations] + (foldi - 1) * nobservations; % Do separately here for readability.
+                    partition_indices_holder{foldi, variablei} = variable_indices(vector_indices);
+                end
+
+                % Put the remainder observations in the last partition. 
+                partition_indices_holder{end, variablei} =  [partition_indices_holder{end, variablei} variable_indices((end - remainder + 1) : end)];
+            end
+
+            % Concatenate indices across different variables (so you have
+            % different variables in different partitions).
+            partition_indices = cellfun(@horzcat, partition_indices_holder(:,1), partition_indices_holder(:,2), 'UniformOutput', false);
+
+        % If continuous, don't need to stratify.
+        else
+            % Make a holder cell array of indices to use for each partition. Rows
+            % are different partitions.
+            partition_indices = cell(parameters.kFolds, 1);
+
+            % Get out variable indices (for continuous, are just 1: total number
+            % of observations)
+            variable_indices = 1:size(responseVariables, 1);
+            
+            % Find number of observations that will go into each fold.
+            % Remainder will go into the last fold.
+            nobservations = floor(numel(variable_indices)/parameters.kFolds);
+            remainder = rem(numel(variable_indices), parameters.kFolds);
+            
+            % For each fold/partition.
+            for foldi = 1:parameters.kFolds
+            
+                % Put the number of observations into the partition
+                % indices holder. Make a vector of indices for easier
+                % reading.
+                vector_indices = [1:nobservations] + (foldi - 1) * nobservations; % Do separately here for readability.
+                partition_indices{foldi} = variable_indices(vector_indices);
+            end
+            
+            % Put the remainder observations in the last partition. 
+            partition_indices{end} =  [partition_indices{end} variable_indices((end - remainder + 1) : end)];
+        end
+
+        % Run calculations of sum squared error of PLSR model with each fold.
+
+        % Make holder for sum squared errors. Rows are each fold, dimension 2 are 
+        % explanatory vs response, dimension 3 are each number of components 
+        % (plus the 0 component null condition).
+        SSEs = NaN(parameters.kFolds, 2, ncomponents_max + 1);
+
+        for foldi = 1:parameters.kFolds
+
+            % Make a vector of the fold numbers. Make new on each fold iteration.
+            fold_numbers_vector = 1:parameters.kFolds;
+
+            % Remove foldi from the vector, leaving only the indices to be
+            % used for training.
+            fold_numbers_vector(foldi) = [];
+
+            % Set up testing data. (One of the folds).
+            Xtest = explanatoryVariables(partition_indices{foldi}, :);
+            Ytest = responseVariables(partition_indices{foldi}, :);
+
+            % Set up training data. (The rest of the folds). 
+
+            % Concatenate indices of all other folds.
+            train_indices = horzcat(partition_indices{fold_numbers_vector});
+            Xtrain = explanatoryVariables(train_indices, :);
+            Ytrain = responseVariables(train_indices, :);
+
+            % Calculate model & sum squared error. 
+            SSEs(foldi, :, :) = SSEFunction(Xtrain,Ytrain,Xtest,Ytest,ncomponents_max); 
+
+        end
+
+        % Find mean squared error by taking mean across folds of SSEs.
+        MSEP_original = squeeze(mean(SSEs, 1));
+
         % Save the original weights of Y for later (in case you want to look at
         % what those components look like later)
         W_original = stats_original.W; 
