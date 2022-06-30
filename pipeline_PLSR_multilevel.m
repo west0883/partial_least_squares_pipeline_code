@@ -729,7 +729,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
-               'mouse', {'loop_variables.mice_all(2:end).name'}, 'mouse_iterator'; 
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
 % Parameters for calculating best number of components. If
@@ -895,7 +895,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
-               'comparison', {'loop_variables.comparisons_categorical(19:20).name'}, 'comparison_iterator' };
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
 parameters.ncomponents_from_first_level = 3;
 parameters.ncomponents_max = 3; 
@@ -985,10 +985,7 @@ parameters.loop_list.things_to_save.betas_randomPermutations_2ndlevel.filename= 
 parameters.loop_list.things_to_save.betas_randomPermutations_2ndlevel.variable= {'betas_randomPermutations'}; 
 parameters.loop_list.things_to_save.betas_randomPermutations_2ndlevel.level = 'comparison';
 
-profile off;
-profile on; 
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);
-profile viewer;
 
 parameters.onPermutations = false;
 
@@ -1084,6 +1081,7 @@ parameters.loop_list.things_to_save.fig.level = 'end';
 
 RunAnalysis({@PlotBetasSecondLevel}, parameters);
 
+%close all;
 
 %% *** LEVEL 2 CONTINUOUS ***
 
@@ -1120,7 +1118,6 @@ parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrepSecondLevel}, parameters);
-
 
 %% Level 2 continuous -- optimize number of components
 % if isfield(parameters, 'loop_list')
