@@ -20,7 +20,7 @@ load([parameters.dir_exper '\mice_all.mat']);
 parameters.mice_all = mice_all;
 
 % ****Change here if there are specific mice, days, and/or stacks you want to work with**** 
-parameters.mice_all = parameters.mice_all([1:6 8]);
+parameters.mice_all = parameters.mice_all;
 
 % Load names of motorized periods
 load([parameters.dir_exper 'periods_nametable.mat']);
@@ -83,6 +83,7 @@ for coli = 1:numel(columns_to_remove)
 end
 
 clear columns_to_remove; 
+
 %% Create labels for "spontaneous" vs "motorized"
 % Do this before removing periods you don't need so you can use size of
 % periods_motorized and periods_spontaneous.
