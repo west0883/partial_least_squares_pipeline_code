@@ -146,10 +146,6 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
         % Find mean squared error by taking mean across folds of SSEs.
         MSEP_original = squeeze(mean(SSEs, 1));
-
-        % Save the original weights of Y for later (in case you want to look at
-        % what those components look like later)
-        W_original = stats_original.W; 
     
         % Find component with minimum response-variable MSEP
         [~ , ncomponents] = min(MSEP_original(2,:));
@@ -162,8 +158,6 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         ncomponents = ncomponents_max;
         % Put MSE_original, ncomponents, & W_original into the results.
         results.maximal_components.MSEP = MSEP_original;
-        results.maximal_components.MSEP_byVars = MSEP_byVars_original;
-        results.maximal_components.W = W_original;
         results.ncomponents_used = ncomponents;
 
     % Otherwise, just run with ncomponents as ncomponents_max.
