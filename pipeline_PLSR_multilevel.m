@@ -316,62 +316,67 @@ RunAnalysis({@EvaluateOnData,@ConcatenateData, @AverageData}, parameters);
 % RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
 % 
 % parameters.findBestNComponents = false;
-% %% PLSR Level 1, continuous: check components 
-% % Always clear loop list first. 
-% if isfield(parameters, 'loop_list')
-% parameters = rmfield(parameters,'loop_list');
-% end
-% 
-% % Iterators
-% parameters.loop_list.iterators = {
-%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-%                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-% 
-% parameters.this_comparison_set = parameters.comparisons_continuous;
-% parameters.plot_MSEPs_response = true;
-% parameters.plot_PCTVAR_response = true;
-% parameters.max_response_vars = 4;
-% 
-% % Input
-% parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\with 20 components\' 'mouse', '\'};
-% parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
-% parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
-% parameters.loop_list.things_to_load.results.level = 'comparison';
-% 
-% parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
-% parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
-% parameters.loop_list.things_to_load.dataset.level = 'comparison';
-% 
-% % Output
+
+
+%% PLSR Level 1, continuous: check components 
+% Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+
+parameters.this_comparison_set = parameters.comparisons_continuous;
+parameters.plot_MSEPs_response = true;
+parameters.plot_PCTVAR_response = true;
+parameters.max_response_vars = 4;
+
+% Plot weights?
+parameters.plot_weights = false;
+
+% Input
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\with 20 components\' 'mouse', '\'};
+parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_load.results.level = 'comparison';
+
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset.level = 'comparison';
+
+% Output
 % parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\with 20 components\' 'mouse', '\'};
 % parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
 % parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
 % parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
-% 
-% parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
-% parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
-% parameters.loop_list.things_to_save.fig_MSEPs_explanatory.variable= {'fig_MSEPs_explanatory'}; 
-% parameters.loop_list.things_to_save.fig_MSEPs_explanatory.level = 'mouse';
-% 
-% parameters.loop_list.things_to_save.fig_MSEPs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
-% parameters.loop_list.things_to_save.fig_MSEPs_response.filename= {'PLSR_MSEPs_response.fig'};
-% parameters.loop_list.things_to_save.fig_MSEPs_response.variable= {'fig_MSEPs_response'}; 
-% parameters.loop_list.things_to_save.fig_MSEPs_response.level = 'mouse';
-% 
-% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
-% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
-% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
-% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'mouse';
-% 
-% parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
-% parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
-% parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
-% parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
-% 
-% RunAnalysis({@CheckComponents}, parameters);
-% 
-% close all;
+
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.variable= {'fig_MSEPs_explanatory'}; 
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.level = 'mouse';
+
+parameters.loop_list.things_to_save.fig_MSEPs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_MSEPs_response.filename= {'PLSR_MSEPs_response.fig'};
+parameters.loop_list.things_to_save.fig_MSEPs_response.variable= {'fig_MSEPs_response'}; 
+parameters.loop_list.things_to_save.fig_MSEPs_response.level = 'mouse';
+
+parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
+parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
+parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'mouse';
+
+parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\MSEPS to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
+parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
+parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
+
+RunAnalysis({@CheckComponents}, parameters);
+
+close all;
 
 %% PLSR Level 1, continuous: Run PLSR with best number of components
 % Don't run any permutations yet.
