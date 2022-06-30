@@ -31,8 +31,8 @@ function [parameters] = PlotMSEPs(parameters)
 
     set(0, 'CurrentFigure', parameters.xfig); 
     hold on; 
-    component_vector = 0:size(parameters.results.MSEP,2) - 1;
-    plot(component_vector, parameters.results.MSEP(1,:));
+    component_vector = 0:size(parameters.maximal_components.MSEP,2) - 1;
+    plot(component_vector, parameters.maximal_components.MSEP(1,:));
     legend(parameters.this_comparison_set(:).name);
 
     % Plot responses only if user says so.
@@ -59,7 +59,7 @@ function [parameters] = PlotMSEPs(parameters)
         hold on;
         
     
-        plot(parameters.y_axis, component_vector, parameters.results.MSEP(2,:));
+        plot(parameters.y_axis, component_vector, parameters.maximal_components.MSEP(2,:));
         legend(parameters.this_comparison_set(:).name);
     end
 end 
