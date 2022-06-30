@@ -119,7 +119,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         % (plus the 0 component null condition).
         SSEs = NaN(parameters.kFolds, 2, ncomponents_max + 1);
 
-        for foldi = 1:parameters.kFolds
+        parfor foldi = 1:parameters.kFolds
 
             % Make a vector of the fold numbers. Make new on each fold iteration.
             fold_numbers_vector = 1:parameters.kFolds;
