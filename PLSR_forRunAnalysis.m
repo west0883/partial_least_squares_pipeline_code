@@ -27,7 +27,9 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         disp(['Will run ' num2str(parameters.n_permutations) ' permutations.'])
 
     end
-     
+    
+    comparison_type = parameters.comparison_type;
+    
     % Run plsregress_fullcode to find the optimal number of components, using a maximal number of components (somewhat
     % arbitrary)
     explanatoryVariables = parameters.dataset.explanatoryVariables;
@@ -47,8 +49,15 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
         if isfield(parameters, 'contiguous_partitions') && parameters.contiguous_partitions
 
-            kFolds = parameters.kFolds;
-            comparison_type = parameters.comparison_type;
+            % Adjust k-folds size to response variable observation number.
+            if size(responseVariables, 1) <= parameters.kFolds
+                kFolds = size(responseVariables, 1) - 1;
+        
+            else
+                kFolds = parameters.kFolds;
+            end
+       
+            stratify = parameters.stratify;
 
             % Run cross-validation with contiguous partitions.
     
@@ -57,7 +66,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             % If the data is categorical, you have to stratify it within each
             % category (partition within each category).--> only when
             % there's just one "class" of category being compared.
-            if strcmp(parameters.comparison_type, 'categorical')
+            if strcmp(comparison_type, 'categorical') && stratify 
     
                 % Make a holder cell array of indices to use for each
                 % partition. Rows are different partitions, columns
@@ -79,13 +88,13 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                     
                     % Find number of observations that will go into each fold.
                     % Remainder will go into the last fold.
-                    nobservations = floor(numel(variable_indices)/parameters.kFolds);
-                    remainder = rem(numel(variable_indices), parameters.kFolds);
+                    nobservations = floor(numel(variable_indices)/kFolds);
+                    remainder = rem(numel(variable_indices), kFolds);
 
                     % Make a list of offsets to generate different
                     % partitions. Ranging from 1:nobservations. 
                     if nobservations <= parameters.MonteCarloReps
-                       warning(['Number of observations allows for only ' num2str(nobservations) 'MonteCarlo repitions.']);
+                       disp(['Number of observations allows for only ' num2str(nobservations) ' MonteCarlo repitions.']);
                        offset_vector = 1:nobservations;
                     else
                        offset_vector = randperm(nobservations, parameters.MonteCarloReps);
@@ -139,7 +148,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                 % Make a holder cell array of indices to use for each partition. Rows
                 % are different partitions. Dimension 2 is different monte carlo
                 % divisions.
-                partition_indices = cell(parameters.kFolds, parameters.MonteCarloReps);
+                partition_indices = cell(kFolds, parameters.MonteCarloReps);
     
                 % Get out variable indices (for continuous, are just 1: total number
                 % of observations)
@@ -147,13 +156,13 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                 
                 % Find number of observations that will go into each fold.
                 % Remainder will go into the last fold.
-                nobservations = floor(numel(variable_indices)/parameters.kFolds);
-                remainder = rem(numel(variable_indices), parameters.kFolds);
+                nobservations = floor(numel(variable_indices)/kFolds);
+                remainder = rem(numel(variable_indices), kFolds);
                 
                 % Make a list of offsets to generate different
                 % partitions. Ranging from 1:nobservations. 
                 if nobservations <= parameters.MonteCarloReps
-                   disp(['Number of observations allows for only ' num2str(nobservations) 'MonteCarlo repitions.']);
+                   disp(['Number of observations allows for only ' num2str(nobservations) ' MonteCarlo repitions.']);
                    offset_vector = 1:nobservations;
                 else
                    offset_vector = randperm(nobservations, parameters.MonteCarloReps);
@@ -226,7 +235,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                     % Set up training data. (The rest of the folds). 
         
                     % Concatenate indices of all other folds.
-                    if strcmp(comparison_type, 'categorical')
+                    if strcmp(comparison_type, 'categorical') && stratify
                         train_indices = vertcat(partition_indices{fold_numbers_vector, repititioni});
                     else
                         train_indices = horzcat(partition_indices{fold_numbers_vector, repititioni});
@@ -245,14 +254,14 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             MSEP_original = squeeze(sum(SSEs_byrepitition, 1)./(parameters.MonteCarloReps * size(responseVariables, 2)));
         
             % Calculate AIC and BIC. Don't use first entry (is null model with 0 components).
-            [aicy, bicy] = aicbic(-MSEP_original(2,2:end), 3:parameters.ncomponents_max + 2, size(responseVariables,1));
+            [aicy, bicy] = aicbic(-MSEP_original(2,2:end), 3:size(MSEP_original,2) - 1 + 2, size(responseVariables,1));
 
             % Get number of components to use from reponse variable BIC
             % minimum.
             [~ , ncomponents] = min(bicy);
 
             % Also calculate for explanatory, for completeness.
-            [aicx, bicx] = aicbic(-MSEP_original(1,2:end), 3:parameters.ncomponents_max + 2, size(responseVariables,1));
+            [aicx, bicx] = aicbic(-MSEP_original(1,2:end), 3:size(MSEP_original) -1 + 2, size(responseVariables,1));
 
             % Concatenate aics & bics to match style of MSEP
             aic = [aicx; aicy];
@@ -339,7 +348,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
         disp('Running permutations'); 
         
-        if isfield(parameters, 'comparison_type') && strcmp(parameters.comparison_type, 'categorical')
+        if isfield(parameters, 'comparison_type') && strcmp(comparison_type, 'categorical')
             columns_to_use = 1;
         else 
             columns_to_use = 1:size(responseVariables, 2);
