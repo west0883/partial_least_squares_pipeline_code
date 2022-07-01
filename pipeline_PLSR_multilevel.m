@@ -589,7 +589,7 @@ RunAnalysis({@PLSR_forRunAnalysis}, parameters);
 
 parameters.findBestNComponents = false;
 
-%% Level 1 categorical -- Check components
+%% Level 1 categorical -- check components
 
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
@@ -601,11 +601,13 @@ parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
-parameters.plot_MSEPs_response = true;
-parameters.plot_PCTVAR_response = true;
-
 parameters.this_comparison_set = parameters.comparisons_categorical;
 parameters.max_response_vars = 2;
+
+parameters.plot_weights = false;
+parameters.plot_MSEPs = true;
+parameters.plot_BICs = true;
+parameters.plot_percentVars = false;
 
 % Input
 parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\\level 1 categorical\optimized components\'], 'comparison', '\' 'mouse', '\'};
@@ -634,15 +636,25 @@ parameters.loop_list.things_to_save.fig_MSEPs_response.filename= {'PLSR_MSEPs_re
 parameters.loop_list.things_to_save.fig_MSEPs_response.variable= {'fig_MSEPs_response'}; 
 parameters.loop_list.things_to_save.fig_MSEPs_response.level = 'mouse';
 
-parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
-parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
-parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
-parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'mouse';
+parameters.loop_list.things_to_save.fig_BICs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_BICs_explanatory.filename= {'PLSR_BICs_explanatory.fig'};
+parameters.loop_list.things_to_save.fig_BICs_explanatory.variable= {'fig_BICs_explanatory'}; 
+parameters.loop_list.things_to_save.fig_BICs_explanatory.level = 'mouse';
 
-parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
-parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
-parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
-parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
+parameters.loop_list.things_to_save.fig_BICs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_BICs_response.filename= {'PLSR_BICs_response.fig'};
+parameters.loop_list.things_to_save.fig_BICs_response.variable= {'fig_BICs_response'}; 
+parameters.loop_list.things_to_save.fig_BICs_response.level = 'mouse';
+
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'mouse';
+% 
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
 
 RunAnalysis({@CheckComponents}, parameters);
 
@@ -807,14 +819,11 @@ end
 % Iterators
 parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
-
-parameters.analysis_level = 2;
 parameters.this_comparison_set = parameters.comparisons_categorical;
-parameters.max_response_vars = 1;
 parameters.plot_weights = false;
-parameters.plot_percentVars = false;
 parameters.plot_MSEPs = true;
 parameters.plot_BICs = true;
+parameters.plot_percentVars = false;
 
 % Input
 parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\'], 'comparison', '\'};
@@ -837,6 +846,16 @@ parameters.loop_list.things_to_save.fig_MSEPs_response.dir = {[parameters.dir_ex
 parameters.loop_list.things_to_save.fig_MSEPs_response.filename= {'PLSR_MSEPs_response.fig'};
 parameters.loop_list.things_to_save.fig_MSEPs_response.variable= {'fig_MSEPs_response'}; 
 parameters.loop_list.things_to_save.fig_MSEPs_response.level = 'end';
+
+parameters.loop_list.things_to_save.fig_BICs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\MSEPs to 6\']};
+parameters.loop_list.things_to_save.fig_BICs_explanatory.filename= {'PLSR_BICs_explanatory.fig'};
+parameters.loop_list.things_to_save.fig_BICs_explanatory.variable= {'fig_BICs_explanatory'}; 
+parameters.loop_list.things_to_save.fig_BICs_explanatory.level = 'end';
+
+parameters.loop_list.things_to_save.fig_BICs_response.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\MSEPs to 6\']};
+parameters.loop_list.things_to_save.fig_BICs_response.filename= {'PLSR_BICs_response.fig'};
+parameters.loop_list.things_to_save.fig_BICs_response.variable= {'fig_BICs_response'}; 
+parameters.loop_list.things_to_save.fig_BICs_response.level = 'end';
 
 % parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\MSEPs to 6\']};
 % parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
@@ -1101,11 +1120,12 @@ end
 parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 parameters.analysis_level = 2;
-
-parameters.plot_MSEPs_response = true;
-parameters.plot_PCTVAR_response = true;
-
 parameters.this_comparison_set = parameters.comparisons_continuous;
+parameters.plot_weights = false;
+parameters.plot_MSEPs = true;
+parameters.plot_BICs = true;
+parameters.plot_percentVars = false;
+
 parameters.max_response_vars = 4;
 
 % Input
@@ -1130,15 +1150,25 @@ parameters.loop_list.things_to_save.fig_MSEPs_response.filename= {'PLSR_MSEPs_re
 parameters.loop_list.things_to_save.fig_MSEPs_response.variable= {'fig_MSEPs_response'}; 
 parameters.loop_list.things_to_save.fig_MSEPs_response.level = 'end';
 
-parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
-parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
-parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
-parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'end';
+parameters.loop_list.things_to_save.fig_BICs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
+parameters.loop_list.things_to_save.fig_BICs_explanatory.filename= {'PLSR_BICs_explanatory.fig'};
+parameters.loop_list.things_to_save.fig_BICs_explanatory.variable= {'fig_BICs_explanatory'}; 
+parameters.loop_list.things_to_save.fig_BICs_explanatory.level = 'end';
 
-parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
-parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
-parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
-parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'end';
+parameters.loop_list.things_to_save.fig_BICs_response.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
+parameters.loop_list.things_to_save.fig_BICs_response.filename= {'PLSR_BICs_response.fig'};
+parameters.loop_list.things_to_save.fig_BICs_response.variable= {'fig_BICs_response'}; 
+parameters.loop_list.things_to_save.fig_BICs_response.level = 'end';
+
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'end';
+% 
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'end';
 
 RunAnalysis({@CheckComponents}, parameters);
 
