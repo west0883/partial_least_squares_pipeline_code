@@ -560,13 +560,13 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
-               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'mouse', {'loop_variables.mice_all(3:end).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
 % Parameters for calculating best number of components. If
 % "findBestNComponents" = false, just run the ncomponents_max
 parameters.findBestNComponents = true;
-parameters.ncomponents_max = 20; 
+parameters.ncomponents_max = 10; 
 parameters.contiguous_partitions = true; 
 parameters.kFolds = 10;
 parameters.MonteCarloReps = 10;
@@ -622,10 +622,10 @@ parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
-parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
-parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
+% parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
+% parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
+% parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
 
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\MSEPs to 20\'],  'mouse', '\'};
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
@@ -671,9 +671,6 @@ parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator'     
                };
-
-parameters.ncomponents_max = 3;
-
 % Adjust beta values based on zscore sigmas?
 parameters.adjust_beta = false;
 
