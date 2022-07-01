@@ -230,17 +230,25 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             % Find mean squared error by taking mean across folds of SSEs.
             MSEP_original = squeeze(sum(SSEs_byrepitition, 1)./(parameters.MonteCarloReps * size(responseVariables, 2)));
         
-            % Find component with minimum response-variable MSEP. Don't use
-            % first entry (is null model with 0 components).
-            [aic, bic] = aicbic(-MSEP_original(2,2:end), 3:22, size(responseVariables,1));
+            % Calculate AIC and BIC. Don't use first entry (is null model with 0 components).
+            [aicy, bicy] = aicbic(-MSEP_original(2,2:end), 3:22, size(responseVariables,1));
 
-            [~ , ncomponents] = min(bic);
+            % Get number of components to use from reponse variable BIC
+            % minimum.
+            [~ , ncomponents] = min(bicy);
+
+            % Also calculate for explanatory, for completeness.
+            [aicx, bicx] = aicbic(-MSEP_original(1,2:end), 3:22, size(responseVariables,1));
+
+            % Concatenate aics & bics to match style of MSEP
+            aic = [aicx; aicy];
+            bic = [bicx; bicy];
            
             % Put MSE_original, ncomponents,aic, bic, & W_original into the results.
             results.maximal_components.MSEP = MSEP_original;
             results.ncomponents_used = ncomponents;
-            results.aic = aic;
-            results.bic = bic;
+            results.maximal_components.AIC = aic;
+            results.maximal_components.BIC = bic;
 
         % If not contguous partitions, run with random paritions.
         else 
