@@ -1,4 +1,4 @@
-% PlotWeights.m
+% PlotMSEPs.m
 % Sarah West 
 % 6/9/22
 
@@ -14,9 +14,9 @@ function [parameters] = PlotMSEPs(parameters)
         
         % Only put in the iterator names if it's a level 1 analysis
         if isfield(parameters, 'analysis_level') && parameters.analysis_level == 2
-            title_string = ['MSEPS for explanatory variables'];
+            title_string = ['MSEPs for explanatory variables'];
         else
-            title_string = ['MSEPS for explanatory variables ' parameters.values(1)];
+            title_string = ['MSEPs for explanatory variables ' parameters.values(1)];
         end
        
         title(title_string);
@@ -31,16 +31,18 @@ function [parameters] = PlotMSEPs(parameters)
     hold on; 
     component_vector = 0:size(parameters.results.maximal_components.MSEP,2) - 1;
 
-    % Normalize height of MSEPS.
-    MSEP_normalized = parameters.results.maximal_components.MSEP(1,:);
-    %ratio = MSEP_normalized(1)/size(parameters.dataset.explanatoryVariables, 2);
-    MSEP_normalized = MSEP_normalized/MSEP_normalized(1);
+    % Normalize height of MSEPs.
+    MSEPs_normalized = parameters.results.maximal_components.MSEP(1,:);
+    %ratio = MSEPs_normalized(1)/size(parameters.dataset.explanatoryVariables, 2);
+    MSEPs_normalized = MSEPs_normalized/MSEPs_normalized(1);
 
-    plot(component_vector, MSEP_normalized);
+    plot(component_vector, MSEPs_normalized);
     legend(parameters.this_comparison_set(:).name);
 
-    % Plot responses only if user says so.
-    if isfield(parameters, 'plot_MSEPs_response') && parameters.plot_MSEPs_response
+    % Plot responses. Don't plot if user says not to.
+    if isfield(parameters, 'plot_MSEPs_response') && ~parameters.plot_MSEPs_response
+        % Do nothing.
+    else
         if ~isfield(parameters,'yfig')
             parameters.yfig = figure;
             parameters.yfig.WindowState = 'maximized';
@@ -62,12 +64,12 @@ function [parameters] = PlotMSEPs(parameters)
         end
         hold on;
         
-        % Normalize height of MSEPS.
-        MSEP_normalized = parameters.results.maximal_components.MSEP(2,:);
-        %ratio = MSEP_normalized(1)/size(parameters.dataset.responseVariables, 2);
-        MSEP_normalized = MSEP_normalized/MSEP_normalized(1);
+        % Normalize height of MSEPs.
+        MSEPs_normalized = parameters.results.maximal_components.MSEP(2,:);
+        %ratio = MSEPs_normalized(1)/size(parameters.dataset.responseVariables, 2);
+        MSEPs_normalized = MSEPs_normalized/MSEPs_normalized(1);
     
-        plot(parameters.y_axis, component_vector, MSEP_normalized);
+        plot(parameters.y_axis, component_vector, MSEPs_normalized);
         legend(parameters.this_comparison_set(:).name);
     end
     
