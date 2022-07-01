@@ -236,9 +236,11 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
             [~ , ncomponents] = min(bic);
            
-            % Put MSE_original, ncomponents, & W_original into the results.
+            % Put MSE_original, ncomponents,aic, bic, & W_original into the results.
             results.maximal_components.MSEP = MSEP_original;
             results.ncomponents_used = ncomponents;
+            results.aic = aic;
+            results.bic = bic;
 
         % If not contguous partitions, run with random paritions.
         else 
