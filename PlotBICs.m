@@ -62,14 +62,15 @@ function [parameters] = PlotBICs(parameters)
     
             hold on; 
         end
+        set(0, 'CurrentFigure', parameters.yfig);
         hold on;
         
         % Normalize height of BICs.
         BICs_normalized = parameters.results.maximal_components.BIC(2,:);
         %ratio = BICs_normalized(1)/size(parameters.dataset.responseVariables, 2);
         BICs_normalized = BICs_normalized/BICs_normalized(1);
-    
-        plot(parameters.y_axis, component_vector, BICs_normalized);
+   
+        plot(component_vector, BICs_normalized);
         legend(parameters.this_comparison_set(:).name);
     end
     

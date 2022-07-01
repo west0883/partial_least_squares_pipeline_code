@@ -62,6 +62,7 @@ function [parameters] = PlotMSEPs(parameters)
     
             hold on; 
         end
+        set(0, 'CurrentFigure', parameters.yfig); 
         hold on;
         
         % Normalize height of MSEPs.
@@ -69,7 +70,7 @@ function [parameters] = PlotMSEPs(parameters)
         %ratio = MSEPs_normalized(1)/size(parameters.dataset.responseVariables, 2);
         MSEPs_normalized = MSEPs_normalized/MSEPs_normalized(1);
     
-        plot(parameters.y_axis, component_vector, MSEPs_normalized);
+        plot(component_vector, MSEPs_normalized);
         legend(parameters.this_comparison_set(:).name);
     end
     
