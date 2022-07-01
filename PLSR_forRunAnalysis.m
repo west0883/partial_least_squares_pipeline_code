@@ -47,6 +47,9 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
         if isfield(parameters, 'contiguous_partitions') && parameters.contiguous_partitions
 
+            kFolds = parameters.kFolds;
+            comparison_type = parameters.comparison_type;
+
             % Run cross-validation with contiguous partitions.
     
             % Divide data into parameters.kFolds number of partitions.
@@ -89,13 +92,13 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                     end
 
                     % For each monteCarlo repetition, 
-                    for repititioni = 1: parameters.MonteCarloReps
+                    for repititioni = 1:numel(offset_vector)
 
                         % Get the offset for this repition. 
                         offset = offset_vector(repititioni);
 
                         % For each fold/partition.
-                        parfor foldi = 1:parameters.kFolds
+                        parfor foldi = 1:kFolds
         
                             % Make a vector of indices to use fot this partition.
                             vector_indices = offset + [1:nobservations] + (foldi - 1) * nobservations;
@@ -164,7 +167,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                     offset = offset_vector(repititioni);
                     
                     % For each fold/partition.
-                    parfor foldi = 1:parameters.kFolds
+                    parfor foldi = 1:kFolds
                     
                         % Put the number of observations into the partition
                         % indices holder. Make a vector of indices for easier
@@ -200,17 +203,17 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             % (plus the 0 component null condition).
            
             SSEs_byrepitition = NaN(parameters.MonteCarloReps, 2, ncomponents_max + 1);
-           
+            
             % For each repitition.
-            for repititioni = 1:parameters.MonteCarloReps
+            parfor repititioni = 1:parameters.MonteCarloReps
 
-                SSEs_byfold = NaN(parameters.kFolds, 2, ncomponents_max + 1);
+                SSEs_byfold = NaN(kFolds, 2, ncomponents_max + 1);
         
                 % For each fold, 
-                parfor foldi = 1:parameters.kFolds
+                for foldi = 1:kFolds
         
                     % Make a vector of the fold numbers. Make new on each fold iteration.
-                    fold_numbers_vector = 1:parameters.kFolds;
+                    fold_numbers_vector = 1:kFolds;
         
                     % Remove foldi from the vector, leaving only the indices to be
                     % used for training.
