@@ -561,7 +561,7 @@ end
 % Iterators
 parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-               'comparison', {'loop_variables.comparisons_categorical(1:9).name'}, 'comparison_iterator' };
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
 % Parameters for calculating best number of components. If
 % "findBestNComponents" = false, just run the ncomponents_max
@@ -611,7 +611,7 @@ parameters.plot_BICs = true;
 parameters.plot_percentVars = false;
 
 % Input
-parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\\level 1 categorical\optimized components\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_load.results.level = 'comparison';
@@ -622,37 +622,37 @@ parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR\results\\level 1 categorical\optimized components\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
 parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
 parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
 
-parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\MSEPs to 20\'],  'mouse', '\'};
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.variable= {'fig_MSEPs_explanatory'}; 
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.level = 'mouse';
 
-parameters.loop_list.things_to_save.fig_MSEPs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_MSEPs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\MSEPs to 20\'],  'mouse', '\'};
 parameters.loop_list.things_to_save.fig_MSEPs_response.filename= {'PLSR_MSEPs_response.fig'};
 parameters.loop_list.things_to_save.fig_MSEPs_response.variable= {'fig_MSEPs_response'}; 
 parameters.loop_list.things_to_save.fig_MSEPs_response.level = 'mouse';
 
-parameters.loop_list.things_to_save.fig_BICs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_BICs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\MSEPs to 20\'],  'mouse', '\'};
 parameters.loop_list.things_to_save.fig_BICs_explanatory.filename= {'PLSR_BICs_explanatory.fig'};
 parameters.loop_list.things_to_save.fig_BICs_explanatory.variable= {'fig_BICs_explanatory'}; 
 parameters.loop_list.things_to_save.fig_BICs_explanatory.level = 'mouse';
 
-parameters.loop_list.things_to_save.fig_BICs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_BICs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\MSEPs to 20\'],  'mouse', '\'};
 parameters.loop_list.things_to_save.fig_BICs_response.filename= {'PLSR_BICs_response.fig'};
 parameters.loop_list.things_to_save.fig_BICs_response.variable= {'fig_BICs_response'}; 
 parameters.loop_list.things_to_save.fig_BICs_response.level = 'mouse';
 
-% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\MSEPs to 20\'],  'mouse', '\'};
 % parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
 % parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
 % parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'mouse';
 % 
-% parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\MSEPs to 20\'],  'mouse', '\'};
 % parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
 % parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
 % parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
