@@ -279,7 +279,7 @@ parameters.loop_list.things_to_rename = {{'data_evaluated', 'data'};
 
 RunAnalysis({@EvaluateOnData,@ConcatenateData, @AverageData}, parameters);
 
-%% PLSR Level 1, continuous: run PLSR up to 20 components to check best number of components
+%% PLSR Level 1, continuous: optimize components.
 % Don't run any permutations yet.
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
