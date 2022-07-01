@@ -12,9 +12,13 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % it runs for a long time if they made a mistake).
     if isfield(parameters, 'findBestNComponents') && parameters.findBestNComponents
 
-        message = ['Finding best number of components with maximum ' num2str(parameters.ncomponents_max) ...
-            ' components, ' num2str(parameters.kFolds) ' -folds.'];
-        disp(message);
+        if isfield(parameters, 'contiguous_partitions') && ~parameters.contiguous_partitions 
+        else
+
+            message = ['Finding best number of components with maximum ' num2str(parameters.ncomponents_max) ...
+                ' components, ' num2str(parameters.kFolds) ' -folds.'];
+            disp(message);
+        end
        
     end
 
@@ -26,7 +30,6 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
      
     % Run plsregress_fullcode to find the optimal number of components, using a maximal number of components (somewhat
     % arbitrary)
-
     explanatoryVariables = parameters.dataset.explanatoryVariables;
     responseVariables = parameters.dataset.responseVariables;
 
@@ -42,123 +45,220 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % If user says so
     if isfield(parameters, 'findBestNComponents') && parameters.findBestNComponents
 
-        % Run cross-validation with contiguous partitions.
+        if isfield(parameters, 'contiguous_partitions') && parameters.contiguous_partitions
 
-        % Divide data into parameters.kFolds number of partitions.
-       
-        % If the data is categorical, you have to stratify it within each
-        % category (partition within each category).
-        if strcmp(parameters.comparison_type, 'categorical')
+            % Run cross-validation with contiguous partitions.
+    
+            % Divide data into parameters.kFolds number of partitions.
+           
+            % If the data is categorical, you have to stratify it within each
+            % category (partition within each category).--> only when
+            % there's just one "class" of category being compared.
+            if strcmp(parameters.comparison_type, 'categorical')
+    
+                % Make a holder cell array of indices to use for each
+                % partition. Rows are different partitions, columns
+                % different variables, dimension 3 is different monte carlo
+                % divisions.
+                partition_indices_holder = cell(parameters.kFolds, parameters.MonteCarloReps, size(responseVariables, 2));
+    
+                % For each response variable,
+                for variablei = 1:size(responseVariables, 2)
+    
+                    % Get out variable indices
+                    variable_indices = responseVariables(:,variablei) == 1;
+                    
+                    % Find number of observations that will go into each fold.
+                    % Remainder will go into the last fold.
+                    nobservations = floor(numel(variable_indices)/parameters.kFolds);
+                    remainder = rem(numbel(variable_indices), parameters.kFolds);
 
-            % Make a holder cell array of indices to use for each partition. Rows
-            % are different partitions, columns different variables.
-            partition_indices_holder = cell(parameters.kFolds, size(responseVariables, 2));
+                    % Make a list of offsets to generate different
+                    % partitions. Ranging from 1:nobservations. 
+                    if nobservations <= parameters.MonteCarloReps
+                       warning(['Number of observations allows for only ' num2str(nobservations) 'MonteCarlo repitions.']);
+                       offset_vector = 1:nobservations;
+                    else
+                       offset_vector = randperm(nobservations, parameters.MonteCarloReps);
+                    end
 
-            % For each response variable,
-            for variablei = 1:size(responseVariables, 2)
+                    % For each monteCarlo repetition, 
+                    for repititioni = 1: parameters.MonteCarloReps
 
-                % Get out variable indices
-                variable_indices = responseVariables(:,variablei) == 1;
+                        % Get the offset for this repition. 
+                        offset = offset_vector(repititioni);
+
+                        % For each fold/partition.
+                        parfor foldi = 1:parameters.kFolds
+        
+                            % Make a vector of indices to use fot this partition.
+                            vector_indices = offset + [1:nobservations] + (foldi - 1) * nobservations;
+
+                            % If vector_indices go past the number of
+                            % total observations for this variable, adjust them. 
+                            if any(vector_indices > numel(variable_indices))
+                               
+                                overs = find(vector_indices > numel(variable_indices));
+                                vector_indices(overs) = vector_indices(overs) - numel(variable_indices);
+                            end 
+
+                            partition_indices_holder{foldi, repititioni, variablei} = variable_indices(vector_indices);
+                        end
+        
+                        % Adjust remainders.
+                        remainders = offset + variable_indices((end - remainder + 1) : end);
+
+                        % If vector_indices go past the number of total observations for this variable, adjust them. 
+                        if any(remainders > numel(variable_indices))
+                            overs = find(remainders > numel(variable_indices));
+                            remainders(overs) = remainders(overs) - numel(variable_indices);
+                        end 
+
+                        % Put the remainder observations in the last partition. 
+                        partition_indices_holder{end, repititioni, variablei} =  [partition_indices_holder{end, repititioni, variablei} remainders];
+               
+                    end
+                end
+    
+                % Concatenate indices across different variables (so you have
+                % different variables in different partitions).
+                partition_indices = cellfun(@horzcat, partition_indices_holder(:, :, 1), ...
+                     partition_indices_holder(:,:,2), 'UniformOutput', false);
+    
+            % If continuous, don't need to stratify.
+            else
+                % Make a holder cell array of indices to use for each partition. Rows
+                % are different partitions. Dimension 2 is different monte carlo
+                % divisions.
+                partition_indices = cell(parameters.kFolds, parameters.MonteCarloReps);
+    
+                % Get out variable indices (for continuous, are just 1: total number
+                % of observations)
+                variable_indices = 1:size(responseVariables, 1);
                 
                 % Find number of observations that will go into each fold.
                 % Remainder will go into the last fold.
                 nobservations = floor(numel(variable_indices)/parameters.kFolds);
-                remainder = rem(numbel(variable_indices), parameters.kFolds);
-
-                % For each fold/partition.
-                for foldi = 1:parameters.kFolds
-
-                    % Put the number of observations into the partition
-                    % indices holder. Make a vector of indices for easier
-                    % reading.
-                    vector_indices = [1:nobservations] + (foldi - 1) * nobservations; % Do separately here for readability.
-                    partition_indices_holder{foldi, variablei} = variable_indices(vector_indices);
+                remainder = rem(numel(variable_indices), parameters.kFolds);
+                
+                % Make a list of offsets to generate different
+                % partitions. Ranging from 1:nobservations. 
+                if nobservations <= parameters.MonteCarloReps
+                   disp(['Number of observations allows for only ' num2str(nobservations) 'MonteCarlo repitions.']);
+                   offset_vector = 1:nobservations;
+                else
+                   offset_vector = randperm(nobservations, parameters.MonteCarloReps);
                 end
 
-                % Put the remainder observations in the last partition. 
-                partition_indices_holder{end, variablei} =  [partition_indices_holder{end, variablei} variable_indices((end - remainder + 1) : end)];
+                % For each monteCarlo repetition, 
+                for repititioni = 1:numel(offset_vector)
+
+                    % Get the offset for this repition. 
+                    offset = offset_vector(repititioni);
+                    
+                    % For each fold/partition.
+                    parfor foldi = 1:parameters.kFolds
+                    
+                        % Put the number of observations into the partition
+                        % indices holder. Make a vector of indices for easier
+                        % reading.
+                        vector_indices = offset + [1:nobservations] + (foldi - 1) * nobservations; % Do separately here for readability.
+                        
+                        % If vector_indices go past the number of
+                        % total observations for this variable, adjust them. 
+                        if any(vector_indices > numel(variable_indices))
+                           
+                            overs = find(vector_indices > numel(variable_indices));
+                            vector_indices(overs) = vector_indices(overs) - numel(variable_indices);
+                        end 
+                        
+                        partition_indices{foldi, repititioni} = variable_indices(vector_indices);
+                    end
+                
+                    % Put the remainder observations in the last partition.
+                    remainders = offset + variable_indices((end - remainder + 1) : end);
+                    if any(remainders > numel(variable_indices))
+                        overs = find(remainders > numel(variable_indices));
+                        remainders(overs) = remainders(overs) - numel(variable_indices);
+                    end 
+
+                    partition_indices{end, repititioni} =  [partition_indices{end, repititioni} remainders];
+                end
             end
 
-            % Concatenate indices across different variables (so you have
-            % different variables in different partitions).
-            partition_indices = cellfun(@horzcat, partition_indices_holder(:,1), partition_indices_holder(:,2), 'UniformOutput', false);
-
-        % If continuous, don't need to stratify.
-        else
-            % Make a holder cell array of indices to use for each partition. Rows
-            % are different partitions.
-            partition_indices = cell(parameters.kFolds, 1);
-
-            % Get out variable indices (for continuous, are just 1: total number
-            % of observations)
-            variable_indices = 1:size(responseVariables, 1);
-            
-            % Find number of observations that will go into each fold.
-            % Remainder will go into the last fold.
-            nobservations = floor(numel(variable_indices)/parameters.kFolds);
-            remainder = rem(numel(variable_indices), parameters.kFolds);
-            
-            % For each fold/partition.
-            for foldi = 1:parameters.kFolds
-            
-                % Put the number of observations into the partition
-                % indices holder. Make a vector of indices for easier
-                % reading.
-                vector_indices = [1:nobservations] + (foldi - 1) * nobservations; % Do separately here for readability.
-                partition_indices{foldi} = variable_indices(vector_indices);
-            end
-            
-            % Put the remainder observations in the last partition. 
-            partition_indices{end} =  [partition_indices{end} variable_indices((end - remainder + 1) : end)];
-        end
-
-        % Run calculations of sum squared error of PLSR model with each fold.
-
-        % Make holder for sum squared errors. Rows are each fold, dimension 2 are 
-        % explanatory vs response, dimension 3 are each number of components 
-        % (plus the 0 component null condition).
-        SSEs = NaN(parameters.kFolds, 2, ncomponents_max + 1);
-
-        parfor foldi = 1:parameters.kFolds
-
-            % Make a vector of the fold numbers. Make new on each fold iteration.
-            fold_numbers_vector = 1:parameters.kFolds;
-
-            % Remove foldi from the vector, leaving only the indices to be
-            % used for training.
-            fold_numbers_vector(foldi) = [];
-
-            % Set up testing data. (One of the folds).
-            Xtest = explanatoryVariables(partition_indices{foldi}, :);
-            Ytest = responseVariables(partition_indices{foldi}, :);
-
-            % Set up training data. (The rest of the folds). 
-
-            % Concatenate indices of all other folds.
-            train_indices = horzcat(partition_indices{fold_numbers_vector});
-            Xtrain = explanatoryVariables(train_indices, :);
-            Ytrain = responseVariables(train_indices, :);
-
-            % Calculate model & sum squared error. 
-            SSEs(foldi, :, :) = SSEFunction(Xtrain,Ytrain,Xtest,Ytest,ncomponents_max); 
-
-        end
-
-        % Find mean squared error by taking mean across folds of SSEs.
-        MSEP_original = squeeze(mean(SSEs, 1));
+            % Run calculations of sum squared error of PLSR model with each fold.
     
-        % Find component with minimum response-variable MSEP
-        [~ , ncomponents] = min(MSEP_original(2,:));
+            % Make holder for sum squared errors. Rows are each fold, dimension 2 are 
+            % explanatory vs response, dimension 3 are each number of components 
+            % (plus the 0 component null condition).
+           
+            SSEs_byrepitition = NaN(parameters.MonteCarloReps, 2, ncomponents_max + 1);
+           
+            % For each repitition.
+            for repititioni = 1:parameters.MonteCarloReps
+
+                SSEs_byfold = NaN(parameters.kFolds, 2, ncomponents_max + 1);
         
-        % MSEP is calculated for 0 components as well, so subtract 1 from
-        % the index.
-%         if ncomponents ~= 1
-%             ncomponents = ncomponents - 1;
-%         end 
-        ncomponents = ncomponents_max;
-        % Put MSE_original, ncomponents, & W_original into the results.
-        results.maximal_components.MSEP = MSEP_original;
-        results.ncomponents_used = ncomponents;
+                % For each fold, 
+                parfor foldi = 1:parameters.kFolds
+        
+                    % Make a vector of the fold numbers. Make new on each fold iteration.
+                    fold_numbers_vector = 1:parameters.kFolds;
+        
+                    % Remove foldi from the vector, leaving only the indices to be
+                    % used for training.
+                    fold_numbers_vector(foldi) = [];
+        
+                    % Set up testing data. (One of the folds).
+                    Xtest = explanatoryVariables(partition_indices{foldi, repititioni}, :);
+                    Ytest = responseVariables(partition_indices{foldi, repititioni}, :);
+        
+                    % Set up training data. (The rest of the folds). 
+        
+                    % Concatenate indices of all other folds.
+                    train_indices = horzcat(partition_indices{fold_numbers_vector, repititioni});
+                    Xtrain = explanatoryVariables(train_indices, :);
+                    Ytrain = responseVariables(train_indices, :);
+        
+                    % Calculate model & sum squared error. 
+                    SSEs_byfold(foldi, :, :) = SSEFunction(Xtrain,Ytrain,Xtest,Ytest,ncomponents_max); 
+        
+                end
+                SSEs_byrepitition(repititioni, :, :) = squeeze(mean(SSEs_byfold, 1));
+            end
+
+            % Find mean squared error by taking mean across folds of SSEs.
+            MSEP_original = squeeze(sum(SSEs_byrepitition, 1)./(parameters.MonteCarloReps * size(responseVariables, 2)));
+        
+            % Find component with minimum response-variable MSEP. Don't use
+            % first entry (is null model with 0 components).
+            [aic, bic] = aicbic(-MSEP_original(2,2:end), 3:22, size(responseVariables,1));
+
+            [~ , ncomponents] = min(bic);
+           
+            % Put MSE_original, ncomponents, & W_original into the results.
+            results.maximal_components.MSEP = MSEP_original;
+            results.ncomponents_used = ncomponents;
+
+        % If not contguous partitions, run with random paritions.
+        else 
+                 [~, ~, ~, ~, ~, ~, MSEP_original, stats_original, MSEP_byVars_original] ...
+               = plsregress_fullcode(explanatoryVariables, responseVariables, ncomponents_max, 'cv', parameters.crossValidationReps, 'mcreps', parameters.MonteCarloReps, 'Options', statset('UseParallel',true) );
+            
+            % Save the original weights of Y for later (in case you want to look at
+            % what those components look like later)
+            W_original = stats_original.W; 
+        
+            % Find component with minimum response-variable MSEP. Don't use
+            % first entry (is null model with 0 components).
+            [~ , ncomponents] = min(MSEP_original(2,2:end));
+
+            % Put MSE_original, ncomponents, & W_original into the results.
+            results.maximal_components.MSEP = MSEP_original;
+            results.maximal_components.MSEP_byVars = MSEP_byVars_original;
+            results.maximal_components.W = W_original;
+            results.ncomponents_used = ncomponents;
+        end 
 
     % Otherwise, just run with ncomponents as ncomponents_max.
     else
