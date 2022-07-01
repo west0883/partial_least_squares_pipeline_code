@@ -288,7 +288,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
-               'mouse', {'loop_variables.mice_all(4:end).name'}, 'mouse_iterator'; 
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 
 % Parameters for calculating best number of components. If
@@ -297,7 +297,6 @@ parameters.findBestNComponents = true;
 parameters.ncomponents_max = 20; 
 parameters.contiguous_partitions = true; 
 parameters.kFolds = 10;
-%parameters.crossValidationReps = 10;
 parameters.MonteCarloReps = 10;
 parameters.comparison_type = 'continuous';
 
@@ -566,8 +565,10 @@ parameters.loop_list.iterators = {
 % "findBestNComponents" = false, just run the ncomponents_max
 parameters.findBestNComponents = true;
 parameters.ncomponents_max = 20; 
-parameters.crossValidationReps = 10;
+parameters.contiguous_partitions = true; 
+parameters.kFolds = 10;
 parameters.MonteCarloReps = 10;
+parameters.comparison_type = 'categorical';
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
@@ -769,13 +770,14 @@ end
 parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
-parameters.ncomponents_from_first_level = 3;
 % Parameters for calculating best number of compo
 % nents. If "findBestNComponents" = false, just run the ncomponents_max
 parameters.findBestNComponents = true;
 parameters.ncomponents_max = 6; 
-parameters.crossValidationReps = 6;
+parameters.contiguous_partitions = true; 
+parameters.kFolds = 6;
 parameters.MonteCarloReps = 6;
+parameters.comparison_type = 'categorical';
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
@@ -806,14 +808,13 @@ end
 parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
-parameters.ncomponents_from_first_level = 3;
 parameters.analysis_level = 2;
-
-parameters.plot_MSEPs_response = true;
-parameters.plot_PCTVAR_response = true;
-
 parameters.this_comparison_set = parameters.comparisons_categorical;
 parameters.max_response_vars = 1;
+parameters.plot_weights = false;
+parameters.plot_percentVars = false;
+parameters.plot_MSEPs = true;
+parameters.plot_BICs = true;
 
 % Input
 parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\'], 'comparison', '\'};
@@ -837,15 +838,15 @@ parameters.loop_list.things_to_save.fig_MSEPs_response.filename= {'PLSR_MSEPs_re
 parameters.loop_list.things_to_save.fig_MSEPs_response.variable= {'fig_MSEPs_response'}; 
 parameters.loop_list.things_to_save.fig_MSEPs_response.level = 'end';
 
-parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\MSEPs to 6\']};
-parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
-parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
-parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'end';
-
-parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\MSEPs to 6\']};
-parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
-parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
-parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'end';
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\MSEPs to 6\']};
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'end';
+% 
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\MSEPs to 6\']};
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'end';
 
 RunAnalysis({@CheckComponents}, parameters);
 
@@ -1062,13 +1063,14 @@ end
 parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 
-parameters.ncomponents_from_first_level = 6;
 % Parameters for calculating best number of compo
 % nents. If "findBestNComponents" = false, just run the ncomponents_max
 parameters.findBestNComponents = true;
 parameters.ncomponents_max = 6; 
-parameters.crossValidationReps = 6;
+parameters.contiguous_partitions = true; 
+parameters.kFolds = 6;
 parameters.MonteCarloReps = 6;
+parameters.comparison_type = 'continuous';
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
@@ -1098,9 +1100,6 @@ end
 % Iterators
 parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-
-parameters.ncomponents_from_first_level = 6;
-parameters.ncomponents_max = 6;
 parameters.analysis_level = 2;
 
 parameters.plot_MSEPs_response = true;
