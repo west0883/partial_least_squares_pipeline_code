@@ -225,7 +225,10 @@ parameters.imputeMissing = true;
 
 % Number of PLSR components that should be used for imputing missing data
 % (overfitting is probably better?).
-parameters.imputation_ncomponents = 6; 
+%parameters.imputation_ncomponents = 6; 
+% Using just 85% instead of 90% usually cuts number of components needed by
+% half.
+parameters.imputation_components_variance_explained = 85; % in percents
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
@@ -318,7 +321,6 @@ parameters.loop_list.things_to_save.results.level = 'comparison';
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
 
 parameters.findBestNComponents = false;
-
 
 %% PLSR Level 1, continuous: check components 
 % Always clear loop list first. 

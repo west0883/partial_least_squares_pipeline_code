@@ -103,7 +103,7 @@ function [parameters] = DatasetPrep(parameters)
         disp('Imputing missing data.')
 
         % Run the modified code for trimmed square regression (TSR) for PLS
-        [explanatoryVariables, responseVariables, iterations_needed, tolerance_reached] = plsmbtsr1_TSRonly(explanatoryVariables, responseVariables, parameters.imputation_ncomponents); 
+        [explanatoryVariables, responseVariables, iterations_needed, tolerance_reached] = plsmbtsr1_TSRonly(explanatoryVariables, responseVariables, parameters.imputation_components_variance_explained);% parameters.imputation_ncomponents); 
 
         % Put iterations needed and tolerance reached into dataset
         % structure.
