@@ -62,16 +62,22 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                 % divisions.
                 partition_indices_holder = cell(parameters.kFolds, parameters.MonteCarloReps, size(responseVariables, 2));
     
+
                 % For each response variable,
                 for variablei = 1:size(responseVariables, 2)
     
                     % Get out variable indices
-                    variable_indices = responseVariables(:,variablei) == 1;
+
+                    % These are normalized category labels. Assume the
+                    % relevant positive category is the max in this column.
+                    % (1 vs 0 or even -1).
+                    cat_value = max(responseVariables(:,variablei));
+                    variable_indices = find(responseVariables(:,variablei) == cat_value);
                     
                     % Find number of observations that will go into each fold.
                     % Remainder will go into the last fold.
                     nobservations = floor(numel(variable_indices)/parameters.kFolds);
-                    remainder = rem(numbel(variable_indices), parameters.kFolds);
+                    remainder = rem(numel(variable_indices), parameters.kFolds);
 
                     % Make a list of offsets to generate different
                     % partitions. Ranging from 1:nobservations. 
@@ -115,14 +121,14 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                         end 
 
                         % Put the remainder observations in the last partition. 
-                        partition_indices_holder{end, repititioni, variablei} =  [partition_indices_holder{end, repititioni, variablei} remainders];
+                        partition_indices_holder{end, repititioni, variablei} =  [partition_indices_holder{end, repititioni, variablei}; remainders];
                
                     end
                 end
     
                 % Concatenate indices across different variables (so you have
                 % different variables in different partitions).
-                partition_indices = cellfun(@horzcat, partition_indices_holder(:, :, 1), ...
+                partition_indices = cellfun(@vertcat, partition_indices_holder(:, :, 1), ...
                      partition_indices_holder(:,:,2), 'UniformOutput', false);
     
             % If continuous, don't need to stratify.
@@ -149,6 +155,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                 else
                    offset_vector = randperm(nobservations, parameters.MonteCarloReps);
                 end
+                
 
                 % For each monteCarlo repetition, 
                 for repititioni = 1:numel(offset_vector)
@@ -216,7 +223,11 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                     % Set up training data. (The rest of the folds). 
         
                     % Concatenate indices of all other folds.
-                    train_indices = horzcat(partition_indices{fold_numbers_vector, repititioni});
+                    if strcmp(comparison_type, 'categorical')
+                        train_indices = vertcat(partition_indices{fold_numbers_vector, repititioni});
+                    else
+                        train_indices = horzcat(partition_indices{fold_numbers_vector, repititioni});
+                    end
                     Xtrain = explanatoryVariables(train_indices, :);
                     Ytrain = responseVariables(train_indices, :);
         
