@@ -245,14 +245,14 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             MSEP_original = squeeze(sum(SSEs_byrepitition, 1)./(parameters.MonteCarloReps * size(responseVariables, 2)));
         
             % Calculate AIC and BIC. Don't use first entry (is null model with 0 components).
-            [aicy, bicy] = aicbic(-MSEP_original(2,2:end), 3:22, size(responseVariables,1));
+            [aicy, bicy] = aicbic(-MSEP_original(2,2:end), 3:parameters.ncomponents_max + 2, size(responseVariables,1));
 
             % Get number of components to use from reponse variable BIC
             % minimum.
             [~ , ncomponents] = min(bicy);
 
             % Also calculate for explanatory, for completeness.
-            [aicx, bicx] = aicbic(-MSEP_original(1,2:end), 3:22, size(responseVariables,1));
+            [aicx, bicx] = aicbic(-MSEP_original(1,2:end), 3:parameters.ncomponents_max + 2, size(responseVariables,1));
 
             % Concatenate aics & bics to match style of MSEP
             aic = [aicx; aicy];
