@@ -302,6 +302,7 @@ parameters.contiguous_partitions = true;
 parameters.kFolds = 10;
 parameters.MonteCarloReps = 10;
 parameters.comparison_type = 'continuous';
+parameters.stratify = false;
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
@@ -414,7 +415,7 @@ parameters.loop_list.iterators = {
 % Do you want permutations?
 parameters.permutationGeneration = true;
 parameters.n_permutations = 1000;
-
+parameters.stratify = false;
 parameters.comparison_type = 'continuous';
 
 % Input 
@@ -560,7 +561,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
-               'mouse', {'loop_variables.mice_all(3:end).name'}, 'mouse_iterator'; 
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
 % Parameters for calculating best number of components. If
@@ -571,6 +572,7 @@ parameters.contiguous_partitions = true;
 parameters.kFolds = 10;
 parameters.MonteCarloReps = 10;
 parameters.comparison_type = 'categorical';
+parameters.stratify = true;
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
@@ -696,6 +698,8 @@ RunAnalysis({@PlotBetas}, parameters);
 
 close all;
 
+%% Level 1 categorical -- plot histograms of number of components used .
+
 %% Level 1 categorical -- run random permutations.
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
@@ -710,7 +714,7 @@ parameters.loop_list.iterators = {
 % Do you want permutations?
 parameters.permutationGeneration = true;
 parameters.n_permutations = 1000;
-
+parameters.stratify = true;
 parameters.comparison_type = 'categorical';
 
 % Input 
@@ -786,6 +790,7 @@ parameters.contiguous_partitions = true;
 parameters.kFolds = 6;
 parameters.MonteCarloReps = 6;
 parameters.comparison_type = 'categorical';
+parameters.stratify = false;
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
@@ -916,6 +921,8 @@ parameters.onPermutations = true;
 
 % If the first level was categorical:
 parameters.firstLevelCategorical = true; 
+parameters.stratify = false;
+parameters.comparison_type = 'categorical';
 
 % Input 
 parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\optimized components\'], 'comparison','\'};
@@ -1051,7 +1058,7 @@ parameters.loop_list.things_to_load.response.variable= {'PLSR_results.BETA'};
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
-parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\with ' num2str(parameters.ncomponents_max) ' components\'], 'comparison', '\'};
+parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\'], 'comparison', '\'};
 parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
