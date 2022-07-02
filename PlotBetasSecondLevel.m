@@ -54,7 +54,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             fig.WindowState = 'maximized';
 
             % Make title.
-            title_string = ['Betas, second level ' parameters.comparison_type ', ' num2str(parameters.ncomponents_from_first_level) ' 1st level & ' num2str(parameters.ncomponents_max) ' 2nd level components'];
+            title_string = ['Betas, second level ' parameters.comparison_type];
             title_string = strrep(title_string, '_', ' ');
             sgtitle(title_string);
 
@@ -89,7 +89,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 figure_holder.WindowState = 'maximized';
                 
                 % Make title.
-                title_string = ['Betas, ' variable ' second level ' parameters.comparison_type ', ' num2str(parameters.ncomponents_from_first_level) ' 1st level & ' num2str(parameters.ncomponents_max) ' 2nd level components'];
+                title_string = ['Betas, ' variable ' second level' parameters.comparison_type];
                 title_string = strrep(title_string, '_', ' ');
                 sgtitle(title_string);
 
