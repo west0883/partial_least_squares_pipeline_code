@@ -273,6 +273,14 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             results.maximal_components.AIC = aic;
             results.maximal_components.BIC = bic;
 
+            % If user said to run with max components (to get out loadings and
+            % weights and stuff), run it.
+            if isfield(parameters, 'run_with_max_components') && parameters.run_with_max_components
+                disp('Running with max components.');
+                 [results.maximal_components.maximal_components.XL, results.maximal_components.YL, results.maximal_components.XS, results.maximal_components.YS, results.maximal_components.BETA, ...
+                       results.maximal_components.stats] = plsregress_fullcode(explanatoryVariables, responseVariables, ncomponents_max); 
+            end
+
         % If not contguous partitions, run with random paritions.
         else 
                  [~, ~, ~, ~, ~, ~, MSEP_original, stats_original, MSEP_byVars_original] ...
