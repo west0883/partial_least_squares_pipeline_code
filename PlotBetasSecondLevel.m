@@ -18,8 +18,13 @@ function [parameters] = PlotBetasSecondLevel(parameters)
    
     % Adjust Betas based on z-score sigma. % First row is constant estimate
     % If user says so
-    if isfield(parameters, 'adjust_beta') && parameters.adjust_beta
-        betas_adjusted = betas ./ parameters.dataset_info.zscoring.brainData.sigma' .*  parameters.dataset_info.zscoring.responseVariables.sigma; 
+    if isfield(parameters, 'adjustBetas') && parameters.adjustBetas
+        % if categorical, only use first set of sigmas.
+        if strcmp(parameters.comparison_type, 'categorical')
+            betas_adjusted = betas .* parameters.average_sigmas(1:numel(betas));
+        else
+            betas_adjusted = betas .* parameters.average_sigmas;
+        end
     else
         betas_adjusted = betas;
     end
@@ -41,7 +46,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     comparison = parameters.values{name_location};
 
     % Make a colormap with cbrewer; 
-    cmap= flipud(cbrewer('div', 'RdBu', 512, 'nearest'));
+    cmap= flipud(cbrewer('div', 'RdBu', 512, 'linear'));
 
     % Start plotting. 
     
@@ -55,6 +60,12 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
             % Make title.
             title_string = ['Betas, second level ' parameters.comparison_type];
+            if isfield(parameters, 'adjustBetas') && parameters.adjustBetas
+                title_string = [title_string ', sigma adjusted'];
+            end
+            if isfield(parameters, 'useSignificance') && parameters.useSignificance
+                title_string = [title_string ', significant only'];
+            end
             title_string = strrep(title_string, '_', ' ');
             sgtitle(title_string);
 
@@ -66,9 +77,14 @@ function [parameters] = PlotBetasSecondLevel(parameters)
         holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
         holder(parameters.indices) = betas_adjusted;
     
-        % Make a fitted color range for this plot.
-        extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
-        color_range = [-extreme extreme]; 
+        % If adjusted, use a standard color range for each plot.
+        if isfield(parameters, 'adjustBetas') && parameters.adjustBetas
+            color_range = parameters.color_range;
+        % If not adjusted, make a fitted color range for this plot.
+        else
+            extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
+            color_range = [-extreme extreme]; 
+        end
 
         % Plot.
         subplot(subplot_rows, subplot_columns, comparison_iterator); imagesc(holder); 
@@ -89,7 +105,13 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 figure_holder.WindowState = 'maximized';
                 
                 % Make title.
-                title_string = ['Betas, ' variable ' second level' parameters.comparison_type];
+                title_string = ['Betas, ' variable ' second level ' parameters.comparison_type];
+                if isfield(parameters, 'adjustBetas') && parameters.adjustBetas
+                    title_string = [title_string ', sigma adjusted'];
+                end
+                if isfield(parameters, 'useSignificance') && parameters.useSignificance
+                    title_string = [title_string ', significant only'];
+                end
                 title_string = strrep(title_string, '_', ' ');
                 sgtitle(title_string);
 
@@ -115,10 +137,8 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
             
             % Separate
-            try
             holder(parameters.indices) = betas_adjusted((variablei - 1) * numel(parameters.indices) + [1:numel(parameters.indices)]);
-            catch
-            end
+
             % Put into 3D holder.
             betas_separated_variables(:,:, variablei) = holder; 
 
@@ -136,9 +156,14 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             % Find its place in the order of variables in continuous_variables_names
             %variable_location = find(strcmp(parameters.continuous_variable_names, {variable}));
         
-            % Make a fitted color range for this plot.
-            extreme = max(max(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan'), abs(min(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan')));
-            color_range = [-extreme extreme]; 
+            % If adjusted, use a standard color range for each plot.
+            if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'useColorRange') && parameters.useColorRange
+                color_range = parameters.color_range;
+            % If not adjusted, make a fitted color range for this plot.
+            else
+                extreme = max(max(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan'), abs(min(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan')));
+                color_range = [-extreme extreme]; 
+            end
             
             % Get subplot index.
             %subplot_index = sub2ind([subplot_rows subplot_columns], variable_location, comparison_iterator);
