@@ -6,7 +6,13 @@
 
 function [parameters] = PlotWeights(parameters)
 
-     weights = parameters.results.stats.W; 
+     % If this is a second level analysis, use the maximal components
+      % YLs. 
+      if isfield(parameters, 'analysis_level') && parameters.analysis_level == 2
+          weights = parameters.results.YL;
+      else
+        weights = parameters.results.stats.W; 
+      end
 
     [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(weights, 2),4/5);
 
