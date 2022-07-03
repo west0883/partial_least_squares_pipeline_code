@@ -1085,8 +1085,9 @@ parameters.loop_list.things_to_rename = {{'data_evaluated', 'test_values'}
 
 RunAnalysis({@EvaluateOnData, @EvaluateOnData, @SignificanceCalculation}, parameters);
 
-%% Level 2 categorical -- plot betas
-% Plot all the beta intercepts in a single plot 
+
+%% Level 2 categorical -- concatenate & average sigmas
+% For each comparison. For adjusting betas in plots below. 
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -1094,38 +1095,115 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
-               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
-% Comparison type (categorical or continuous)
-parameters.comparison_type = 'categorical';
 parameters.this_comparison_set = parameters.comparisons_categorical;
 
-% Adjust beta values based on zscore sigmas?
-parameters.adjust_beta = false;
+parameters.evaluation_instructions = {{'if strcmp(parameters.values(2), parameters.this_comparison_set(parameters.values{3}).mice_not_to_use);'... % Skip mice not to use
+                                       'data_evaluated = [];'...
+                                       'else;'...
+                                       'ysig = parameters.dataset.zscoring.responseVariables.sigma;'... 
+                                       'xsig = repmat(parameters.dataset.zscoring.explanatoryVariables.sigma, size(ysig,2),1);'...  % Make dimensions match (replicate corrs so there's a set for each response varaible.
+                                       'data_evaluated = reshape(transpose(transpose(ysig)./xsig), 1, []);'...
+                                       'end;'}};
+                                   
+parameters.concatDim = 3;
+parameters.concatenation_level = 'mouse';
+parameters.averageDim = 3;
+parameters.average_and_std_together = false;
 
-% Only include significant betas?
-parameters.useSignificance = true;
+% Input 
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\optimized components\'], 'comparison','\', 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset.level = 'mouse';
 
-% Input
-parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.results.filename = {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.results.variable = {'PLSR_results'};
-parameters.loop_list.things_to_load.results.level = 'comparison';
-% significance matrix
-parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance.mat'};
-parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
-parameters.loop_list.things_to_load.significance.level = 'comparison';
+% Output 
+parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\optimized components\'], 'comparison','\'};
+parameters.loop_list.things_to_save.average.filename= {'average_zscore_sigmas.mat'};
+parameters.loop_list.things_to_save.average.variable= {'average_zscore_sigmas'}; 
+parameters.loop_list.things_to_save.average.level = 'comparison';
 
-% Output
-parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\']};
-parameters.loop_list.things_to_save.fig.filename = {'PLSR_betas_all_comparisons_withSignificance.fig'};
-parameters.loop_list.things_to_save.fig.variable = {'PLSR_betas'};
-parameters.loop_list.things_to_save.fig.level = 'end';
+parameters.loop_list.things_to_save.std_dev.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\optimized components\'], 'comparison','\'};
+parameters.loop_list.things_to_save.std_dev.filename= {'std_dev_zscore_sigmas.mat'};
+parameters.loop_list.things_to_save.std_dev.variable= {'std_dev_zscore_sigmas'}; 
+parameters.loop_list.things_to_save.std_dev.level = 'comparison';
 
-RunAnalysis({@PlotBetasSecondLevel}, parameters);
+parameters.loop_list.things_to_rename = {{'data_evaluated', 'data'};
+                                         {}}; 
 
+RunAnalysis({@EvaluateOnData, @ConcatenateData, @AverageData}, parameters);
+
+%% Level 2 categorical -- plot betas
+% Plot all the beta intercepts in a single plot 
+
+% Do for each variation of significance & adjusted
+true_false_vector = {false, true};
+for i = 1:numel(true_false_vector)
+    % Adjust beta values based on zscore sigmas?
+    parameters.adjustBetas = true_false_vector{i};
+
+    for j = 1:numel(true_false_vector)
+         % Only include significant betas?
+         parameters.useSignificance = true_false_vector{j};
+
+        if isfield(parameters, 'loop_list')
+        parameters = rmfield(parameters,'loop_list');
+        end
+        
+        % Iterators
+        parameters.loop_list.iterators = {
+                       'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
+        
+        % Color range for all plots (if betas are adjusted).
+        parameters.useColorRange = true;
+        parameters.color_range = [-0.02 0.02];
+        
+        % Comparison type (categorical or continuous)
+        parameters.comparison_type = 'categorical';
+        parameters.this_comparison_set = parameters.comparisons_categorical;
+        
+        title = 'PLSR_betas_all_comparisons';
+        if parameters.adjustBetas
+            title = [title '_Adjusted'];
+        end
+        if parameters.useSignificance 
+            title = [title '_withSignificance'];
+        end
+        title = [title '.fig'];
+        
+        % Input
+        parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\'], 'comparison', '\'};
+        parameters.loop_list.things_to_load.results.filename = {'PLSR_results.mat'};
+        parameters.loop_list.things_to_load.results.variable = {'PLSR_results'};
+        parameters.loop_list.things_to_load.results.level = 'comparison';
+        % significance matrix
+        if parameters.useSignificance
+        parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\'], 'comparison', '\'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance.mat'};
+        parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
+        parameters.loop_list.things_to_load.significance.level = 'comparison';
+        end
+        % Average sigmas.
+        if parameters.adjustBetas
+        parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\optimized components\'], 'comparison', '\'};
+        parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
+        parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
+        parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
+        end
+        
+        % Output
+        parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\']};
+        parameters.loop_list.things_to_save.fig.filename = {title};
+        parameters.loop_list.things_to_save.fig.variable = {'PLSR_betas'};
+        parameters.loop_list.things_to_save.fig.level = 'end';
+        
+        RunAnalysis({@PlotBetasSecondLevel}, parameters);
+    end
+end 
 %close all;
+clear i j true_false_vector;
 
 %% *** LEVEL 2 CONTINUOUS ***
 
@@ -1382,8 +1460,8 @@ parameters.loop_list.things_to_rename = {{'data_evaluated', 'test_values'}
 
 RunAnalysis({@EvaluateOnData, @EvaluateOnData, @SignificanceCalculation}, parameters);
 
-%% Level 2 continuous -- plot betas
-% Plot all the beta intercepts in a single plot 
+%% Level 2 continuous -- concatenate & average sigmas
+% For each comparison. For adjusting betas in plots below. 
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -1391,55 +1469,128 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
-               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator';
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
-parameters.max_response_vars = 4;
-
-% Comparison type (categorical or continuous, is just for plot titles)
-parameters.comparison_type = 'continuous';
 parameters.this_comparison_set = parameters.comparisons_continuous;
 
-% Adjust beta values based on zscore sigmas?
-parameters.adjust_beta = false;
+parameters.evaluation_instructions = {{'if strcmp(parameters.values(2), parameters.this_comparison_set(parameters.values{3}).mice_not_to_use);'... % Skip mice not to use
+                                       'data_evaluated = [];'...
+                                       'else;'...
+                                       'ysig = parameters.dataset.zscoring.responseVariables.sigma;'... 
+                                       'xsig = repmat(parameters.dataset.zscoring.explanatoryVariables.sigma, size(ysig,2),1);'...  % Make dimensions match (replicate corrs so there's a set for each response varaible.
+                                       'data_evaluated = reshape(transpose(transpose(ysig)./xsig), 1, []);'...
+                                       'end;'}};
+                                   
+parameters.concatDim = 3;
+parameters.concatenation_level = 'mouse';
+parameters.averageDim = 3;
+parameters.average_and_std_together = false;
 
-% Only include significant betas?
-parameters.useSignificance = true;
+% Input 
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison','\', 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset.level = 'mouse';
 
-% Input
-parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.results.filename = {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.results.variable = {'PLSR_results'};
-parameters.loop_list.things_to_load.results.level = 'comparison';
-% significance matrix
-parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance.mat'};
-parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
-parameters.loop_list.things_to_load.significance.level = 'comparison';
+% Output 
+parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\'], 'comparison','\'};
+parameters.loop_list.things_to_save.average.filename= {'average_zscore_sigmas.mat'};
+parameters.loop_list.things_to_save.average.variable= {'average_zscore_sigmas'}; 
+parameters.loop_list.things_to_save.average.level = 'comparison';
 
-% Output
-parameters.loop_list.things_to_save.speed_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\']};
-parameters.loop_list.things_to_save.speed_fig.filename = {'speed_betas_all_comparisons_withSignificance.fig'};
-parameters.loop_list.things_to_save.speed_fig.variable = {'speed_betas'};
-parameters.loop_list.things_to_save.speed_fig.level = 'end';
+parameters.loop_list.things_to_save.std_dev.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\'], 'comparison','\'};
+parameters.loop_list.things_to_save.std_dev.filename= {'std_dev_zscore_sigmas.mat'};
+parameters.loop_list.things_to_save.std_dev.variable= {'std_dev_zscore_sigmas'}; 
+parameters.loop_list.things_to_save.std_dev.level = 'comparison';
 
-parameters.loop_list.things_to_save.accel_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\']};
-parameters.loop_list.things_to_save.accel_fig.filename = {'accel_betas_all_comparisons_withSignificance.fig'};
-parameters.loop_list.things_to_save.accel_fig.variable = {'accel_betas'};
-parameters.loop_list.things_to_save.accel_fig.level = 'end';
+parameters.loop_list.things_to_rename = {{'data_evaluated', 'data'};
+                                         {}}; 
 
-parameters.loop_list.things_to_save.duration_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\']};
-parameters.loop_list.things_to_save.duration_fig.filename = {'duration_betas_all_comparisons_withSignificance.fig'};
-parameters.loop_list.things_to_save.duration_fig.variable = {'duration_betas'};
-parameters.loop_list.things_to_save.duration_fig.level = 'end';
+RunAnalysis({@EvaluateOnData, @ConcatenateData, @AverageData}, parameters);
 
-parameters.loop_list.things_to_save.pupil_diameter_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\']};
-parameters.loop_list.things_to_save.pupil_diameter_fig.filename = {'pupil_diameter_betas_all_comparisons_withSignificance.fig'};
-parameters.loop_list.things_to_save.pupil_diameter_fig.variable = {'pupil_diameter_betas'};
-parameters.loop_list.things_to_save.pupil_diameter_fig.level = 'end';
+%% Level 2 continuous -- plot betas
+% Plot all the beta intercepts in a single plot 
 
-RunAnalysis({@PlotBetasSecondLevel}, parameters);
+% Do for each variation of significance & adjusted
+true_false_vector = {false, true};
+for i = 1:numel(true_false_vector)
+    % Adjust beta values based on zscore sigmas?
+    parameters.adjustBetas = true_false_vector{i};
+
+    for j = 1:numel(true_false_vector)
+         % Only include significant betas?
+         parameters.useSignificance = true_false_vector{j};
+
+        % Always clear loop list first. 
+        if isfield(parameters, 'loop_list')
+        parameters = rmfield(parameters,'loop_list');
+        end
+        
+        % Iterators
+        parameters.loop_list.iterators = {
+                       'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+        
+        parameters.max_response_vars = 4;
+
+        % Color range for all plots (if betas are adjusted).
+        parameters.useColorRange = false;
+        
+        % Comparison type (categorical or continuous, is just for plot titles)
+        parameters.comparison_type = 'continuous';
+        parameters.this_comparison_set = parameters.comparisons_continuous;
+        
+        % Make figure file title.
+        title = '_betas_all_comparisons';
+        if parameters.adjust_beta
+            title = [title '_Adjusted'];
+        end
+        if parameters.useSignificance 
+            title = [title '_withSignificance'];
+        end
+        title = [title '.fig'];
+        
+        % Input
+        parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\'], 'comparison', '\'};
+        parameters.loop_list.things_to_load.results.filename = {'PLSR_results.mat'};
+        parameters.loop_list.things_to_load.results.variable = {'PLSR_results'};
+        parameters.loop_list.things_to_load.results.level = 'comparison';
+        % significance matrix
+        parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\'], 'comparison', '\'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance.mat'};
+        parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
+        parameters.loop_list.things_to_load.significance.level = 'comparison';
+        % average sigmas 
+        parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\'], 'comparison','\'};
+        parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
+        parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
+        parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
+
+        % Output
+        parameters.loop_list.things_to_save.speed_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\']};
+        parameters.loop_list.things_to_save.speed_fig.filename = {['speed' title]};
+        parameters.loop_list.things_to_save.speed_fig.variable = {'speed_betas'};
+        parameters.loop_list.things_to_save.speed_fig.level = 'end';
+        
+        parameters.loop_list.things_to_save.accel_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\']};
+        parameters.loop_list.things_to_save.accel_fig.filename = {['accel' title]};
+        parameters.loop_list.things_to_save.accel_fig.variable = {'accel_betas'};
+        parameters.loop_list.things_to_save.accel_fig.level = 'end';
+        
+        parameters.loop_list.things_to_save.duration_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\']};
+        parameters.loop_list.things_to_save.duration_fig.filename = {['duration' title]};
+        parameters.loop_list.things_to_save.duration_fig.variable = {'duration_betas'};
+        parameters.loop_list.things_to_save.duration_fig.level = 'end';
+        
+        parameters.loop_list.things_to_save.pupil_diameter_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\']};
+        parameters.loop_list.things_to_save.pupil_diameter_fig.filename = {['pupil_diameter' title]};
+        parameters.loop_list.things_to_save.pupil_diameter_fig.variable = {'pupil_diameter_betas'};
+        parameters.loop_list.things_to_save.pupil_diameter_fig.level = 'end';
+        
+        RunAnalysis({@PlotBetasSecondLevel}, parameters);
+    end 
+end
+clear i j true_false_vector;
 
 %% Level 2 continuous across categories
 % take difference of betas between 2 categories, concatenate, normalize
-
-%% Un-normalize, plot betas of all comparisons
