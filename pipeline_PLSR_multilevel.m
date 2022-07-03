@@ -612,7 +612,7 @@ parameters.loop_list.iterators = {
 % Parameters for calculating best number of components. If
 % "findBestNComponents" = false, just run the ncomponents_max
 parameters.findBestNComponents = true;
-parameters.ncomponents_max = 10; 
+parameters.ncomponents_max = 20; 
 parameters.contiguous_partitions = true; 
 parameters.kFolds = 10;
 parameters.MonteCarloReps = 10;
@@ -870,13 +870,16 @@ parameters.loop_list.iterators = {
 
 % Parameters for calculating best number of compo
 % nents. If "findBestNComponents" = false, just run the ncomponents_max
-parameters.findBestNComponents = true;
+parameters.findBestNComponents = false;
+
 parameters.ncomponents_max = 6; 
 parameters.contiguous_partitions = true; 
 parameters.kFolds = 6;
 parameters.MonteCarloReps = 6;
 parameters.comparison_type = 'categorical';
-parameters.stratify = false;
+parameters.stratify = false; % Don't need to stratify on 2nd levels.
+
+parameters.run_with_max_components = true;
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
@@ -896,6 +899,7 @@ parameters.loop_list.things_to_save.results.level = 'comparison';
 RunAnalysis({@PLSR_forRunAnalysis}, parameters); 
 
 parameters.findBestNComponents = false;
+parameters.run_with_max_components = false;
 
 %% Level 2 categorical -- check components
 % Always clear loop list first. 
@@ -907,10 +911,11 @@ end
 parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 parameters.this_comparison_set = parameters.comparisons_categorical;
-parameters.plot_weights = false;
+parameters.plot_weights = true;
 parameters.plot_MSEPs = true;
 parameters.plot_BICs = true;
 parameters.plot_percentVars = false;
+parameters.analysis_level = 2;
 
 % Input
 parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\'], 'comparison', '\'};
@@ -924,6 +929,11 @@ parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 
 % Output
+parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\'], 'comparison', '\'};
+parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
+parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
+parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
+
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\MSEPs to 6\']};
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.variable= {'fig_MSEPs_explanatory'}; 
@@ -1016,7 +1026,7 @@ parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info_random
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 % optimized number of components to use.
-parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\'], 'comparison','\', 'mouse', '\'};
+parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\'], 'comparison','\'};
 parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
 parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
@@ -1162,7 +1172,9 @@ parameters.loop_list.iterators = {
 
 % Parameters for calculating best number of compo
 % nents. If "findBestNComponents" = false, just run the ncomponents_max
-parameters.findBestNComponents = true;
+parameters.findBestNComponents = false;
+
+
 parameters.ncomponents_max = 6; 
 parameters.contiguous_partitions = true; 
 parameters.kFolds = 6;
@@ -1199,12 +1211,13 @@ parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 parameters.analysis_level = 2;
 parameters.this_comparison_set = parameters.comparisons_continuous;
-parameters.plot_weights = false;
+parameters.plot_weights = true;
 parameters.plot_MSEPs = true;
 parameters.plot_BICs = true;
 parameters.plot_percentVars = false;
 
 parameters.max_response_vars = 4;
+parameters.analysis_level = 2;
 
 % Input
 parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\'], 'comparison', '\'};
@@ -1309,7 +1322,7 @@ parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info_random
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 % optimized number of components to use.
-parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\'], 'comparison','\', 'mouse', '\'};
+parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\'], 'comparison', '\'};
 parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
 parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
