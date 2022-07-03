@@ -13,15 +13,12 @@ function [parameters] = CheckComponents(parameters)
       % **** Plot weights 
       % Don't do if user says not to.
       if isfield(parameters, 'plot_weights') && ~parameters.plot_weights
+          % Do nothing
       else
-          % Don't do if this is a second level analysis
-          if isfield(parameters, 'analysis_level') && parameters.analysis_level == 2
-              % Do nothing
-          else
-              % Plot the weights
-              parameters = PlotWeights(parameters);
-              parameters.fig_weights = parameters.fig; % Rename output figure handle.
-          end
+     
+          % Plot the weights
+          parameters = PlotWeights(parameters);
+          parameters.fig_weights = parameters.fig; % Rename output figure handle.
       end
       
       %  **** Plot explanatory & response MSEPs 
