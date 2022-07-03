@@ -28,6 +28,11 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     end
     
+    if isfield(parameters, 'useBootstrapping') && parameters.useBootstrapping
+
+        disp(['Will run ' num2str(parameters.n_bootstraps) ' Bootstrap samples.'])
+
+    end
     comparison_type = parameters.comparison_type;
     
     % Run plsregress_fullcode to find the optimal number of components, using a maximal number of components (somewhat
@@ -397,6 +402,82 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
         % Put betas_permutations into output structure
         parameters.betas_randomPermutations = betas_permutations;
+
+    end 
+
+    % Run Bootstrappipng resampling & calculations
+
+     % If user says so
+    if isfield(parameters, 'useBootstrapping') && parameters.useBootstrapping
+
+        disp('Running bootstrapping.'); 
+        
+        if isfield(parameters, 'comparison_type') && strcmp(comparison_type, 'categorical')
+            columns_to_use = 1;
+        else 
+            columns_to_use = 1:size(responseVariables, 2);
+        end
+
+       % If stratifying,
+       if parameters.stratify
+           % For each response variable,
+           for variablei = 1:size(responseVariables, 2)
+
+                % Get out variable indices
+    
+                % These are normalized category labels. Assume the
+                % relevant positive category is the max in this column.
+                % (1 vs 0 or even -1).
+                cat_value = max(responseVariables(:,variablei));
+                variable_indices = find(responseVariables(:,variablei) == cat_value);
+                
+                
+
+                holder =  NaN(parameters.n_bootstraps, numel(variable_indices));
+                parfor bootstrapi = 1:parameters.n_bootstraps
+
+                    holder(bootstrapi, :) = datasample(variable_indices, numel(variable_indices));
+
+                end 
+                bootstrap_indices_holder{variablei} = holder; 
+               
+           end
+
+           % Concatenate horizontally 
+           bootstrap_indices = cellfun(@horzcat, bootstrap_indices_holder(1), ...
+                     bootstrap_indices_holder(2), 'UniformOutput', true);
+
+       % If not stratifying,
+       else
+            holder =  NaN(parameters.n_bootstraps, size(responseVariables,1));
+            for bootstrapi = 1:parameters.n_bootstraps
+
+                holder(bootstrapi, :) = datasample([1:size(responseVariables,1)], size(responseVariables,1));
+
+            end 
+            bootstrap_indices = holder; 
+
+       end 
+
+       % Make a holding matrix for beta permutations.
+       betas_bootstrap = NaN(size(results.BETA,1), numel(columns_to_use), size(bootstrap_indices,1));  %size(results.BETA, 2)
+        
+       % Now run bootstraps
+       parfor repi = 1:size(bootstrap_indices,1) 
+
+            explanatoryVariables_bootstrap = explanatoryVariables(bootstrap_indices(repi,:));
+            responseVariables_bootstrap = responseVariables(bootstrap_indices(repi,:));
+
+            % Run the plsregress_fullcode on the mixed/permuted data.
+            [~, ~, ~, ~, BETA] = plsregress_fullcode(explanatoryVariables_bootstrap, responseVariables_bootstrap, ncomponents);
+            
+            % Put into holding matrix.
+            betas_bootstrap(:, :, repi) = BETA; 
+            
+        end 
+
+        % Put betas_bootstraps into output structure
+        parameters.betas_bootstrap = betas_bootstrap;
 
     end 
 end 
