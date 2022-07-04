@@ -297,7 +297,7 @@ parameters.loop_list.iterators = {
 % Parameters for calculating best number of components. If
 % "findBestNComponents" = false, just run the ncomponents_max
 parameters.findBestNComponents = true;
-parameters.ncomponents_max = 20; 
+parameters.ncomponents_max = 10; 
 parameters.contiguous_partitions = true; 
 parameters.kFolds = 10;
 parameters.MonteCarloReps = 10;
@@ -459,7 +459,7 @@ parameters.loop_list.iterators = {
 
 % Do you want permutations?
 parameters.permutationGeneration = true;
-parameters.n_permutations = 1000;
+parameters.n_permutations = 5000;
 parameters.stratify = false;
 parameters.comparison_type = 'continuous';
 
@@ -484,6 +484,49 @@ parameters.loop_list.things_to_save.betas_randomPermutations.level = 'comparison
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
 
 parameters.permutationGeneration = false;
+
+%% Level 1 continuous -- run bootstrapping.
+% With best number of components.
+% profile off;
+% profile on;
+% % Always clear loop list first. 
+% if isfield(parameters, 'loop_list')
+% parameters = rmfield(parameters,'loop_list');
+% end
+% 
+% % Iterators
+% parameters.loop_list.iterators = {
+%                'mouse', {'loop_variables.mice_all(6:end).name'}, 'mouse_iterator'; 
+%                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+% 
+% % Do you want permutations?
+% parameters.useBootstrapping = true;
+% parameters.n_bootstraps = 10000;
+% parameters.stratify = false;
+% parameters.comparison_type = 'continuous';
+% 
+% % Input 
+% % dataset
+% parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+% parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+% parameters.loop_list.things_to_load.dataset.level = 'comparison';
+% % optimized number of components to use.
+% parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\'], 'comparison','\', 'mouse', '\'};
+% parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
+% parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
+% parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
+% 
+% % Output
+% parameters.loop_list.things_to_save.betas_bootstrap.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_save.betas_bootstrap.filename= {'PLSR_betas_bootstrap.mat'};
+% parameters.loop_list.things_to_save.betas_bootstrap.variable= {'betas_bootstrap'}; 
+% parameters.loop_list.things_to_save.betas_bootstrap.level = 'comparison';
+% 
+% RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+% 
+% parameters.useBootstrapping = false;
+% profile viewer; 
 
 %% Plot Betas from continuous level 1 
 if isfield(parameters, 'loop_list')
@@ -606,13 +649,13 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
-               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'mouse', {'loop_variables.mice_all(6:end).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
 % Parameters for calculating best number of components. If
 % "findBestNComponents" = false, just run the ncomponents_max
 parameters.findBestNComponents = true;
-parameters.ncomponents_max = 20; 
+parameters.ncomponents_max = 10; 
 parameters.contiguous_partitions = true; 
 parameters.kFolds = 10;
 parameters.MonteCarloReps = 10;
@@ -708,6 +751,50 @@ RunAnalysis({@CheckComponents}, parameters);
 
 close all;
 
+%% Level 1 categorical -- run bootstrapping.
+% % With best number of components.
+% profile off;
+% profile on;
+% 
+% % Always clear loop list first. 
+% if isfield(parameters, 'loop_list')
+% parameters = rmfield(parameters,'loop_list');
+% end
+% 
+% % Iterators
+% parameters.loop_list.iterators = {
+%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+%                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
+% 
+% % Do you want permutations?
+% parameters.useBootstrapping = true;
+% parameters.n_bootstraps = 10000;
+% parameters.stratify = true;
+% parameters.comparison_type = 'categorical';
+% 
+% % Input 
+% % dataset
+% parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+% parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+% parameters.loop_list.things_to_load.dataset.level = 'comparison';
+% % optimized number of components to use.
+% parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\'], 'comparison','\', 'mouse', '\'};
+% parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
+% parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
+% parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
+% 
+% % Output
+% parameters.loop_list.things_to_save.betas_bootstrap.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_save.betas_bootstrap.filename= {'PLSR_betas_bootstrap.mat'};
+% parameters.loop_list.things_to_save.betas_bootstrap.variable= {'betas_bootstrap'}; 
+% parameters.loop_list.things_to_save.betas_bootstrap.level = 'comparison';
+% 
+% RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+% 
+% parameters.useBootstrapping = false;
+% profile viewer;
+
 %% Level 1 categorical -- plot betas
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -799,7 +886,7 @@ parameters.loop_list.iterators = {
 
 % Do you want permutations?
 parameters.permutationGeneration = true;
-parameters.n_permutations = 1000;
+parameters.n_permutations = 5000;
 parameters.stratify = true;
 parameters.comparison_type = 'categorical';
 
@@ -870,16 +957,14 @@ parameters.loop_list.iterators = {
 
 % Parameters for calculating best number of compo
 % nents. If "findBestNComponents" = false, just run the ncomponents_max
-parameters.findBestNComponents = false;
-
+parameters.findBestNComponents = true;
 parameters.ncomponents_max = 6; 
 parameters.contiguous_partitions = true; 
 parameters.kFolds = 6;
 parameters.MonteCarloReps = 6;
 parameters.comparison_type = 'categorical';
 parameters.stratify = false; % Don't need to stratify on 2nd levels.
-
-parameters.run_with_max_components = true;
+parameters.run_with_max_components = false;
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
@@ -1017,7 +1102,7 @@ parameters.onPermutations = true;
 
 % If the first level was categorical:
 parameters.firstLevelCategorical = true; 
-parameters.stratify = false;
+parameters.stratify = false; % Don't need to stratify when running on already-found permutations.
 parameters.comparison_type = 'categorical';
 
 % Input 
@@ -1250,9 +1335,7 @@ parameters.loop_list.iterators = {
 
 % Parameters for calculating best number of compo
 % nents. If "findBestNComponents" = false, just run the ncomponents_max
-parameters.findBestNComponents = false;
-
-
+parameters.findBestNComponents = true;
 parameters.ncomponents_max = 6; 
 parameters.contiguous_partitions = true; 
 parameters.kFolds = 6;
@@ -1343,7 +1426,6 @@ RunAnalysis({@CheckComponents}, parameters);
 
 close all;
  
-
 %% Level 2 continuous -- prep shuffled datasets for PLSR on shuffles.
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
