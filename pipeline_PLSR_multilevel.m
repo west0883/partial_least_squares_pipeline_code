@@ -528,6 +528,7 @@ parameters.permutationGeneration = false;
 % parameters.useBootstrapping = false;
 % profile viewer; 
 
+
 %% Plot Betas from continuous level 1 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -640,7 +641,7 @@ parameters.loop_list.things_to_save.dataset.level = 'comparison';
 RunAnalysis({@DatasetPrep}, parameters);
 
 %% Level 1 categorical -- optimize number of components
-% Will look at the outputs from 20 calculated components.
+% Will look at the outputs from 10 calculated components.
 
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
@@ -649,7 +650,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
-               'mouse', {'loop_variables.mice_all(6:end).name'}, 'mouse_iterator'; 
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
 % Parameters for calculating best number of components. If
@@ -960,11 +961,11 @@ parameters.loop_list.iterators = {
 parameters.findBestNComponents = true;
 parameters.ncomponents_max = 6; 
 parameters.contiguous_partitions = true; 
-parameters.kFolds = 6;
+parameters.kFolds = 7;
 parameters.MonteCarloReps = 6;
 parameters.comparison_type = 'categorical';
 parameters.stratify = false; % Don't need to stratify on 2nd levels.
-parameters.run_with_max_components = false;
+parameters.run_with_max_components = true; % In addition to finding best number of components
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
@@ -1341,6 +1342,7 @@ parameters.contiguous_partitions = true;
 parameters.kFolds = 6;
 parameters.MonteCarloReps = 6;
 parameters.comparison_type = 'continuous';
+parameters.run_with_max_components = true;
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
@@ -1360,6 +1362,7 @@ parameters.loop_list.things_to_save.results.level = 'comparison';
 RunAnalysis({@PLSR_forRunAnalysis}, parameters); 
 
 parameters.findBestNComponents = false;
+parameters.run_with_max_components = false;
 
 %% Level 2 continuous -- check components
 % Always clear loop list first. 
@@ -1372,7 +1375,7 @@ parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 parameters.analysis_level = 2;
 parameters.this_comparison_set = parameters.comparisons_continuous;
-parameters.plot_weights = true;
+parameters.plot_weights = false;
 parameters.plot_MSEPs = true;
 parameters.plot_BICs = true;
 parameters.plot_percentVars = false;
