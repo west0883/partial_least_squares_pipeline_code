@@ -12,7 +12,7 @@
 % way to apply zscoring without NaNs.
 
 
-function [X,Y, It, diff] = plsmbtsr1_TSRonly(X, Y, percent_explained)
+function [X,Y, It, diff, A] = plsmbtsr1_TSRonly(X, Y, percent_explained)
 % TSR 1 for PLS-MB (adapted from PCA-MB)
 %
 % INPUTS:
