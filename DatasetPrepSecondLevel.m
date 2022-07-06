@@ -110,7 +110,7 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
     % Always concatenate across 1st dimension (rows)
     explanatoryVariables_concatenated = cat(1, parameters.explanatoryVariables_concatenated, explanatoryVariables);
     responseVariables_concatenated = cat(1, parameters.responseVariables_concatenated, responseVariables);
-
+    
     % For explanatory variables (mice), remove any columns that don't have
     % a 1 in it (will happen if one mouse is not used in this comparison).
 
