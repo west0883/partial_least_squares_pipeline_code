@@ -1349,6 +1349,7 @@ parameters.kFolds = 6;
 parameters.MonteCarloReps = 6;
 parameters.comparison_type = 'continuous';
 parameters.run_with_max_components = true;
+parameters.stratify = false;
 
 % Do you want permutations?
 parameters.permutationGeneration = false;
@@ -1647,10 +1648,10 @@ for i = 1:numel(true_false_vector)
         parameters.loop_list.things_to_load.results.variable = {'PLSR_results'};
         parameters.loop_list.things_to_load.results.level = 'comparison';
         % significance matrix
-        parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance.mat'};
-        parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
-        parameters.loop_list.things_to_load.significance.level = 'comparison';
+%         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\'], 'comparison', '\'};
+%         parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance.mat'};
+%         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
+%         parameters.loop_list.things_to_load.significance.level = 'comparison';
         % average sigmas 
         parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\'], 'comparison','\'};
         parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
