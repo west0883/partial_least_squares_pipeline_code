@@ -82,11 +82,15 @@ end
 % Run PCA
 [~, ~, ~, ~, explained, ~] = pca(Xoriginal_centered);
 
-% Find number of components to reach the desired percent variance explaned. 
+% Find number of components to reach the desired percent variance explaned.
+% Maximum of 10 components, because of the PLSR component number.
 A = find(cumsum(explained) >= percent_explained, 1);
+if A > 15
+    A = 15;
+end
 disp(['Need ' num2str(A) ' components.']);
 
-maxiter=5000;
+maxiter= 1000;   %5000;
 conv=1.0e-10;
 diff=100;
 It=0;
