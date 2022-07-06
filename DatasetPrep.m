@@ -102,20 +102,38 @@ function [parameters] = DatasetPrep(parameters)
        
         % Run outlier removal code. Uses a PCA + Trimmed score regression
         % method.
-        [explanatoryVariables, outliers] = OUTLIERS(explanatoryVariables_old);
+        %[explanatoryVariables, outliers] = OUTLIERS(explanatoryVariables_old);
+        % Find outliers per column.
+        outliers = isoutlier(explanatoryVariables_old);
+
+        % Replace outliers with NaNs.
+        explanatoryVariables(outliers) = NaN;
 
         % Put important info into output structures.
-        dataset.outliers.indices_rowcolumn = outliers;
+        dataset.outliers.indices = find(outliers);
         if ~isempty(outliers)
-            dataset.outliers.indices = sub2ind(size(explanatoryVariables), outliers(:,1), outliers(:,2));
+            [row, column] =  ind2sub([size(explanatoryVariables)], find(outliers));
+            dataset.outliers.indices_rowcolumn = [row, column];
         else
             dataset.outliers.indices = [];
         end
-        dataset.outlier.values_old = explanatoryVariables_old(dataset.outliers.indices);
-        
+        dataset.outliers.values_old = explanatoryVariables_old(dataset.outliers.indices);
+
+        % If any rows (observations) have more than 1/10 the explanatory values
+        % as outliers, remove that observation.
+        summation = sum(outliers,2);
+        holder = find(summation > size(explanatoryVariables,2) * 1/10);
+        dataset.outliers.removed_indices = holder;
+
+        % If there are observations with this, remove. 
+        if ~isempty(holder)
+            explanatoryVariables(holder, :) = [];
+            responseVariables(holder, :) = [];
+            
+        end
     end
 
-
+   
     % *** Deal with missing data values ***
 
     % Calculate number of missing values for each variable. 
@@ -145,8 +163,10 @@ function [parameters] = DatasetPrep(parameters)
         % If you were calculating outliers, too, 
         if isfield(parameters, 'removeOutliers') && parameters.removeOutliers
 
+
+
             % Get new calculated values.
-            dataset.outlier.values_new = explanatoryVariables(dataset.outliers.indices);
+            %dataset.outlier.values_new = explanatoryVariables(dataset.outliers.indices);
 
         end 
     end
