@@ -231,7 +231,7 @@ parameters.imputeMissing = true;
 %parameters.imputation_ncomponents = 6; 
 % Using just 85% instead of 90% usually cuts number of components needed by
 % half.
-parameters.imputation_components_variance_explained = 85; % in percents
+parameters.imputation_components_variance_explained = 80; % in percents
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
@@ -584,6 +584,8 @@ parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 
+parameters.removeOutliers = true; 
+
 % Input 
 % The variables from the comparison
 parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
@@ -625,7 +627,10 @@ parameters.this_comparison_set = parameters.comparisons_categorical;
 
 % Flag for whether or not missing data (NaNs) should be imputed. (Don't
 % need it for these comparisons)
-parameters.imputeMissing = false; 
+parameters.removeOutliers = true;
+parameters.imputeMissing = true; 
+
+parameters.imputation_components_variance_explained = 80; % in percents
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
@@ -645,6 +650,9 @@ parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrep}, parameters);
+
+parameters.removeOutliers = false;
+parameters.imputeMissing = false;
 
 %% Level 1 categorical -- optimize number of components
 % Will look at the outputs from 10 calculated components.
