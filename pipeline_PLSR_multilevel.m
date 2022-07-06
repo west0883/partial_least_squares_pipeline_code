@@ -220,6 +220,9 @@ parameters.loop_list.iterators = {
 % Specify which comparisons should be used for this dataset prep. 
 parameters.this_comparison_set = parameters.comparisons_continuous;
 
+% Remove outliers from explanatory variables.
+parameters.removeOutliers = true;
+
 % Flag for whether or not missing data (NaNs) should be imputed.
 parameters.imputeMissing = true; 
 
@@ -248,6 +251,9 @@ parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrep}, parameters);
+
+parameters.removeOutliers = false;
+parameters.imputeMissing = false;
 
 %% Find the average ratio of NaNs in pupil diameter across continuous comparisons per mouse.
 if isfield(parameters, 'loop_list')
