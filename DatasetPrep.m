@@ -103,6 +103,15 @@ function [parameters] = DatasetPrep(parameters)
         % Run outlier removal code. Uses a PCA + Trimmed score regression
         % method.
         [explanatoryVariables, outliers] = OUTLIERS(explanatoryVariables_old);
+
+        % Put important info into output structures.
+        dataset.outliers.indices_rowcolumn = outliers;
+        if ~isempty(outliers)
+            dataset.outliers.indices = sub2ind(size(explanatoryVariables), outliers(:,1), outliers(:,2));
+        else
+            dataset.outliers.indices = [];
+        end
+        dataset.outlier.values_old = explanatoryVariables_old(dataset.outliers.indices);
         
     end
 
@@ -119,14 +128,27 @@ function [parameters] = DatasetPrep(parameters)
 
         disp('Imputing missing data.')
 
+        % Put indices of missing data into output structure.
+        dataset.missing_data_imputation.indices = find(isnan(responseVariables));
+        dataset.missing_data_imputation.induces_rowcolumn = ind2sub(size(responseVariables), dataset.missing_data_imputation.indices);
+
         % Run the modified code for trimmed square regression (TSR) for PLS
-        [explanatoryVariables, responseVariables, iterations_needed, tolerance_reached] = plsmbtsr1_TSRonly(explanatoryVariables, responseVariables, parameters.imputation_components_variance_explained);% parameters.imputation_ncomponents); 
+        [explanatoryVariables, responseVariables, iterations_needed, tolerance_reached, components_needed] = plsmbtsr1_TSRonly(explanatoryVariables, responseVariables, parameters.imputation_components_variance_explained);% parameters.imputation_ncomponents); 
 
         % Put iterations needed and tolerance reached into dataset
         % structure.
         dataset.missing_data_imputation.iterations_needed = iterations_needed;
         dataset.missing_data_imputation.tolerance_reached = tolerance_reached;
+        dataset.missing_data_imputation.components_needed = components_needed;
+        dataset.missing_data_imputation.values_new = responseVariables(dataset.missing_data_imputation.indices);
 
+        % If you were calculating outliers, too, 
+        if isfield(parameters, 'removeOutliers') && parameters.removeOutliers
+
+            % Get new calculated values.
+            dataset.outlier.values_new = explanatoryVariables(dataset.outliers.indices);
+
+        end 
     end
 
     % Zscore both variable sets. Keep mu & sigmas for better interprebility
