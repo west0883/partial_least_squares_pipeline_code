@@ -91,14 +91,31 @@ function [parameters] = DatasetPrep(parameters)
     % Horizontally concatenate the different response variable categories.
     responseVariables = horzcat(responseVariables_separateVariables{:}); 
 
+    % *** Deal with explanatory variable outliers, replace with NaNs ***
+    % Will be imputed int next step.
+    % If user says to (default is not to), remove outliers values
+    if isfield(parameters, 'removeOutliers') && parameters.removeOutliers
+       
+        disp('Removing outliers.');
+
+        explanatoryVariables_old = explanatoryVariables;
+       
+        % Run outlier removal code. Uses a PCA + Trimmed score regression
+        % method.
+        [explanatoryVariables, outliers] = OUTLIERS(explanatoryVariables_old);
+        
+    end
+
+
     % *** Deal with missing data values ***
 
     % Calculate number of missing values for each variable. 
     dataset.NaN_ratios.responseVariables = sum(isnan(responseVariables), 1)/size(responseVariables,1);
     dataset.NaN_ratios.explanatoryVariables = sum(isnan(explanatoryVariables), 1)/size(explanatoryVariables,1);
 
-    % If user says to (default is not to), impute missing values
-    if isfield(parameters, 'imputeMissing') && parameters.imputeMissing 
+    % If user says to (default is not to), impute missing values. MUST
+    % impute missing if outliers were removed.
+    if (isfield(parameters, 'imputeMissing') && parameters.imputeMissing) || (isfield(parameters, 'removeOutliers') && parameters.removeOutliers)
 
         disp('Imputing missing data.')
 
