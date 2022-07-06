@@ -242,7 +242,7 @@ parameters.loop_list.things_to_load.explanatory.variable= {'values'};
 parameters.loop_list.things_to_load.explanatory.level = 'mouse';
 
 % Output
-parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
@@ -308,13 +308,13 @@ parameters.stratify = false;
 parameters.permutationGeneration = false;
 
 % Input 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\'], 'comparison','\', 'mouse', '\'};
+parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\outliers removed\'], 'comparison','\', 'mouse', '\'};
 parameters.loop_list.things_to_save.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_save.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_save.results.level = 'comparison';
@@ -347,19 +347,19 @@ parameters.evaluation_instructions = {{};
                                             'data_evaluated = []; else; parameters.histogram = []; data_evaluated = []; end;'}};
 % Input 
 % Number of components used
-parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\outliers removed\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.data.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.data.variable= {'PLSR_results.ncomponents_used'}; 
 parameters.loop_list.things_to_load.data.level = 'comparison';
 
 % Output 
 % Concatenated data
-parameters.loop_list.things_to_save.concatenated_data.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\ncomponents\'],'mouse', '\'};
+parameters.loop_list.things_to_save.concatenated_data.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\ncomponents\outliers removed\'],'mouse', '\'};
 parameters.loop_list.things_to_save.concatenated_data.filename= {'ncomponents_used_allcomparisons.mat'};
 parameters.loop_list.things_to_save.concatenated_data.variable= {'ncomponents_used_allcomparisons'}; 
 parameters.loop_list.things_to_save.concatenated_data.level = 'mouse';
 % Histogram
-parameters.loop_list.things_to_save.histogram.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\ncomponents\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.histogram.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\ncomponents\outliers removed\'], 'mouse', '\'};
 parameters.loop_list.things_to_save.histogram.filename= {'ncomponents_used_allcomparisons.fig'};
 parameters.loop_list.things_to_save.histogram.variable= {'ncomponents_used_allcomparisons_fig'}; 
 parameters.loop_list.things_to_save.histogram.level = 'mouse';
@@ -395,12 +395,12 @@ parameters.plot_BICs = true;
 parameters.plot_percentVars = false;
 
 % Input
-parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\'], 'comparison','\', 'mouse', '\'};
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\outliers removed\'], 'comparison','\', 'mouse', '\'};
 parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_load.results.level = 'comparison';
 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
@@ -411,22 +411,22 @@ parameters.loop_list.things_to_load.dataset.level = 'comparison';
 % parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
 % parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
 
-parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\outliers removed\MSEPs to 20\'],  'mouse', '\'};
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.variable= {'fig_MSEPs_explanatory'}; 
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.level = 'mouse';
 
-parameters.loop_list.things_to_save.fig_MSEPs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_MSEPs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\outliers removed\MSEPs to 20\'],  'mouse', '\'};
 parameters.loop_list.things_to_save.fig_MSEPs_response.filename= {'PLSR_MSEPs_response.fig'};
 parameters.loop_list.things_to_save.fig_MSEPs_response.variable= {'fig_MSEPs_response'}; 
 parameters.loop_list.things_to_save.fig_MSEPs_response.level = 'mouse';
 
-parameters.loop_list.things_to_save.fig_BICs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_BICs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\outliers removed\MSEPs to 20\'],  'mouse', '\'};
 parameters.loop_list.things_to_save.fig_BICs_explanatory.filename= {'PLSR_BICs_explanatory.fig'};
 parameters.loop_list.things_to_save.fig_BICs_explanatory.variable= {'fig_BICs_explanatory'}; 
 parameters.loop_list.things_to_save.fig_BICs_explanatory.level = 'mouse';
 
-parameters.loop_list.things_to_save.fig_BICs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_BICs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\outliers removed\MSEPs to 20\'],  'mouse', '\'};
 parameters.loop_list.things_to_save.fig_BICs_response.filename= {'PLSR_BICs_response.fig'};
 parameters.loop_list.things_to_save.fig_BICs_response.variable= {'fig_BICs_response'}; 
 parameters.loop_list.things_to_save.fig_BICs_response.level = 'mouse';
@@ -544,19 +544,19 @@ parameters.loop_list.iterators = {
 parameters.adjust_beta = false;
 
 % Input 
-parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\'], 'comparison', '\' 'mouse', '\'}; 
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\outliers removed\'], 'comparison', '\' 'mouse', '\'}; 
 parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_load.results.level = 'comparison';
 
 % Also load in dataset values for the zscore sigma.
-parameters.loop_list.things_to_load.dataset_info.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset_info.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset_info.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset_info.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset_info.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\outliers removed\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_save.fig.filename= {'PLSR_betas.fig'};
 parameters.loop_list.things_to_save.fig.variable= {'fig'}; 
 parameters.loop_list.things_to_save.fig.level = 'comparison';
@@ -1312,13 +1312,13 @@ parameters.max_mice = size(parameters.mice_all, 2);
 parameters.concatenation_level = 'mouse';
 
 % Input 
-parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\outliers removed\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.response.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.response.variable= {'PLSR_results.BETA'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
-parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\'], 'comparison', '\'};
+parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\'], 'comparison', '\'};
 parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
@@ -1348,13 +1348,13 @@ parameters.run_with_max_components = true;
 parameters.permutationGeneration = false;
 
 % Input 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\'], 'comparison','\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\'], 'comparison','\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\'], 'comparison', '\'};
+parameters.loop_list.things_to_save.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\'], 'comparison', '\'};
 parameters.loop_list.things_to_save.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_save.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_save.results.level = 'comparison';
@@ -1384,33 +1384,33 @@ parameters.max_response_vars = 4;
 parameters.analysis_level = 2;
 
 % Input
-parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\'], 'comparison', '\'};
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\'], 'comparison', '\'};
 parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_load.results.level = 'comparison';
 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\'], 'comparison', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\'], 'comparison', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.variable= {'fig_MSEPs_explanatory'}; 
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.level = 'end';
 
-parameters.loop_list.things_to_save.fig_MSEPs_response.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
+parameters.loop_list.things_to_save.fig_MSEPs_response.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
 parameters.loop_list.things_to_save.fig_MSEPs_response.filename= {'PLSR_MSEPs_response.fig'};
 parameters.loop_list.things_to_save.fig_MSEPs_response.variable= {'fig_MSEPs_response'}; 
 parameters.loop_list.things_to_save.fig_MSEPs_response.level = 'end';
 
-parameters.loop_list.things_to_save.fig_BICs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
+parameters.loop_list.things_to_save.fig_BICs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
 parameters.loop_list.things_to_save.fig_BICs_explanatory.filename= {'PLSR_BICs_explanatory.fig'};
 parameters.loop_list.things_to_save.fig_BICs_explanatory.variable= {'fig_BICs_explanatory'}; 
 parameters.loop_list.things_to_save.fig_BICs_explanatory.level = 'end';
 
-parameters.loop_list.things_to_save.fig_BICs_response.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
+parameters.loop_list.things_to_save.fig_BICs_response.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\MSEPs to ' num2str(parameters.ncomponents_max) '\']};
 parameters.loop_list.things_to_save.fig_BICs_response.filename= {'PLSR_BICs_response.fig'};
 parameters.loop_list.things_to_save.fig_BICs_response.variable= {'fig_BICs_response'}; 
 parameters.loop_list.things_to_save.fig_BICs_response.level = 'end';
@@ -1573,18 +1573,18 @@ parameters.averageDim = 3;
 parameters.average_and_std_together = false;
 
 % Input 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison','\', 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison','\', 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'mouse';
 
 % Output 
-parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\'], 'comparison','\'};
+parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\'], 'comparison','\'};
 parameters.loop_list.things_to_save.average.filename= {'average_zscore_sigmas.mat'};
 parameters.loop_list.things_to_save.average.variable= {'average_zscore_sigmas'}; 
 parameters.loop_list.things_to_save.average.level = 'comparison';
 
-parameters.loop_list.things_to_save.std_dev.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\'], 'comparison','\'};
+parameters.loop_list.things_to_save.std_dev.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\'], 'comparison','\'};
 parameters.loop_list.things_to_save.std_dev.filename= {'std_dev_zscore_sigmas.mat'};
 parameters.loop_list.things_to_save.std_dev.variable= {'std_dev_zscore_sigmas'}; 
 parameters.loop_list.things_to_save.std_dev.level = 'comparison';
@@ -1603,7 +1603,7 @@ for i = 1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
-    for j = 1:numel(true_false_vector)
+    for j = 1 %numel(true_false_vector) % No significance right now.
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
@@ -1636,38 +1636,38 @@ for i = 1:numel(true_false_vector)
         title = [title '.fig'];
         
         % Input
-        parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\'], 'comparison', '\'};
+        parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\'], 'comparison', '\'};
         parameters.loop_list.things_to_load.results.filename = {'PLSR_results.mat'};
         parameters.loop_list.things_to_load.results.variable = {'PLSR_results'};
         parameters.loop_list.things_to_load.results.level = 'comparison';
         % significance matrix
-        parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\'], 'comparison', '\'};
+        parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\'], 'comparison', '\'};
         parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         % average sigmas 
-        parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\'], 'comparison','\'};
+        parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\'], 'comparison','\'};
         parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
         parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
         parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
 
         % Output
-        parameters.loop_list.things_to_save.speed_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\']};
+        parameters.loop_list.things_to_save.speed_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
         parameters.loop_list.things_to_save.speed_fig.filename = {['speed' title]};
         parameters.loop_list.things_to_save.speed_fig.variable = {'speed_betas'};
         parameters.loop_list.things_to_save.speed_fig.level = 'end';
         
-        parameters.loop_list.things_to_save.accel_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\']};
+        parameters.loop_list.things_to_save.accel_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
         parameters.loop_list.things_to_save.accel_fig.filename = {['accel' title]};
         parameters.loop_list.things_to_save.accel_fig.variable = {'accel_betas'};
         parameters.loop_list.things_to_save.accel_fig.level = 'end';
         
-        parameters.loop_list.things_to_save.duration_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\']};
+        parameters.loop_list.things_to_save.duration_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
         parameters.loop_list.things_to_save.duration_fig.filename = {['duration' title]};
         parameters.loop_list.things_to_save.duration_fig.variable = {'duration_betas'};
         parameters.loop_list.things_to_save.duration_fig.level = 'end';
         
-        parameters.loop_list.things_to_save.pupil_diameter_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\']};
+        parameters.loop_list.things_to_save.pupil_diameter_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
         parameters.loop_list.things_to_save.pupil_diameter_fig.filename = {['pupil_diameter' title]};
         parameters.loop_list.things_to_save.pupil_diameter_fig.variable = {'pupil_diameter_betas'};
         parameters.loop_list.things_to_save.pupil_diameter_fig.level = 'end';
