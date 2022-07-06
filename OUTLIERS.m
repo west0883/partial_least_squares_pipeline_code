@@ -98,44 +98,49 @@ while stop<1 && i<=length(OL)
 end
 
 % 10 times above LAST
-OLnew=[];
-EE_new=EE(OL(1:L))-ones(L,1)*LIM;
-LAST=EE_new(end);
 
-i=L;
-stop=0;
-while stop<1 && i>=2
-   
-    i=i-1;
-    if EE_new(i)<10*LAST
-       OLnew=OL(1:(i-1));  
-    else
-        stop=1;
+% If there are some outliers
+if ~isempty(OL)
+    OLnew=[];
+    EE_new=EE(OL(1:L))-ones(L,1)*LIM;
+    
+    LAST=EE_new(end);
+    
+    i=L;
+    stop=0;
+    while stop<1 && i>=2
+       
+        i=i-1;
+        if EE_new(i)<10*LAST
+           OLnew=OL(1:(i-1));  
+        else
+            stop=1;
+        end
+        
     end
     
-end
-
-OL=unique([OLnew;OL_2times]);
-L=length(OL);
-
-if L>0
-    OL_secondary = [];
-    for l=1:L
-
-        % Squared prediction error.
-        E2_OL=E(OL(l),:).^2;
-        [d I]=sort(E2_OL,'descend');
-
-        % Remove the largest squared prediction error. 
-        OL(l,2)=I(1);
-        
-        % Also, find any other values that have squared prediction error > 3 
-        [d2, I2] = find(d(2:end) > 3);
-        row_indices = repmat(OL(l,1), numel(I2),1);
-        OL_secondary = [OL_secondary; [row_indices, I(I2 + 1)']];
-
+    OL=unique([OLnew;OL_2times]);
+    L=length(OL);
+    
+    if L>0
+        OL_secondary = [];
+        for l=1:L
+    
+            % Squared prediction error.
+            E2_OL=E(OL(l),:).^2;
+            [d I]=sort(E2_OL,'descend');
+    
+            % Remove the largest squared prediction error. 
+            OL(l,2)=I(1);
+            
+            % Also, find any other values that have squared prediction error > 3 
+            [d2, I2] = find(d(2:end) > 3);
+            row_indices = repmat(OL(l,1), numel(I2),1);
+            OL_secondary = [OL_secondary; [row_indices, I(I2 + 1)']];
+    
+        end
+        OL = [OL; OL_secondary]; 
     end
-    OL = [OL; OL_secondary]; 
 end
 
 Xmd=Xol;
