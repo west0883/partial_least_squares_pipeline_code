@@ -226,12 +226,10 @@ parameters.removeOutliers = true;
 % Flag for whether or not missing data (NaNs) should be imputed.
 parameters.imputeMissing = true; 
 
-% Number of PLSR components that should be used for imputing missing data
-% (overfitting is probably better?).
-%parameters.imputation_ncomponents = 6; 
+% Number of PLSR components that should be used for imputing missing data.
 % Using just 85% instead of 90% usually cuts number of components needed by
 % half.
-parameters.imputation_components_variance_explained = 80; % in percents
+parameters.imputation_components_variance_explained = 75; % in percents
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
@@ -585,15 +583,19 @@ parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 
 parameters.removeOutliers = true; 
+parameters.imputeMissing = true; 
+% Amount of variance explained you want for the number of PCs used in
+% missing values imputation.
+parameters.imputation_components_variance_explained = 75; % in percents
 
 % Input 
 % The variables from the comparison
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 % The results from the continuous regression (for the Betas)
-parameters.loop_list.things_to_load.PLSR_results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.PLSR_results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\outliers removed\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.PLSR_results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.PLSR_results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_load.PLSR_results.level = 'comparison';
@@ -605,13 +607,23 @@ parameters.loop_list.things_to_load.values_old.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.values_new.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
-parameters.loop_list.things_to_save.values_new.filename= {'correlations_continuousSubtracted_withPupil_contiguousPartitions.mat'};
+parameters.loop_list.things_to_save.values_new.filename= {'correlations_continuousSubtracted_withPupil_contiguousPartitions_outliersRemoved.mat'};
 parameters.loop_list.things_to_save.values_new.variable= {'correlations'}; 
 parameters.loop_list.things_to_save.values_new.level = 'mouse';
+% Info about outliers
+if parameters.removeOutliers
+parameters.loop_list.things_to_save.dataset_out.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\outliers removed\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.dataset_out.filename= {'residuals_dataset_info.mat'};
+parameters.loop_list.things_to_save.dataset_out.variable= {'residuals_dataset_info'}; 
+parameters.loop_list.things_to_save.dataset_out.level = 'comparison';
+end
 
 RunAnalysis({@ResidualsFromContinuous}, parameters); 
 
-%% Prepare datasets per categorical comparison, continuous subtracted.
+parameters.removeOutliers = false; 
+parameters.imputeMissing =false;
+
+%% Level 1 categorical -- Prepare datasets, continuous subtracted.
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
 end
@@ -626,11 +638,9 @@ parameters.loop_list.iterators = {
 parameters.this_comparison_set = parameters.comparisons_categorical;
 
 % Flag for whether or not missing data (NaNs) should be imputed. (Don't
-% need it for these comparisons)
-parameters.removeOutliers = true;
-parameters.imputeMissing = true; 
-
-parameters.imputation_components_variance_explained = 80; % in percents
+% need it for these comparisons, already did it at residual level in previous step.)
+parameters.removeOutliers = false;
+parameters.imputeMissing = false; 
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
@@ -639,7 +649,7 @@ parameters.loop_list.things_to_load.response.variable= {'response_variables'};
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 parameters.loop_list.things_to_load.explanatory.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.explanatory.filename= {'correlations_continuousSubtracted_withPupil_contiguousPartitions.mat'};
+parameters.loop_list.things_to_load.explanatory.filename= {'correlations_continuousSubtracted_withPupil_contiguousPartitions_outliersRemoved.mat'};
 parameters.loop_list.things_to_load.explanatory.variable= {'correlations'}; 
 parameters.loop_list.things_to_load.explanatory.level = 'mouse';
 
@@ -650,9 +660,6 @@ parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrep}, parameters);
-
-parameters.removeOutliers = false;
-parameters.imputeMissing = false;
 
 %% Level 1 categorical -- optimize number of components
 % Will look at the outputs from 10 calculated components.
@@ -959,6 +966,8 @@ parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrepSecondLevel}, parameters);
+
+%% RUN AVERAGES WITH OUTLIERS REMOVED INSTEAD
 
 %% Level 2 categorical -- optimize number of components
 % Always clear loop list first. 
