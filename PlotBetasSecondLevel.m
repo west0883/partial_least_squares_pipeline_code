@@ -13,8 +13,17 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     % Just use the total number of comparisons.
     [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(parameters.this_comparison_set, 2),4/5);
 
-    % Pull out betas to use going forward (using just the intercepts).
-    betas = parameters.results.BETA(1, :);
+    % If using averaging,
+    if isfield(parameters, 'averaging_across_mice') && parameters.average_across_mice
+
+        betas = parameters.average_across_mice;
+
+    else
+        % If using 2nd-level PLSR
+        % Pull out betas to use going forward (using just the intercepts).
+        betas = parameters.results.BETA(1, :);
+
+    end
    
     % Adjust Betas based on z-score sigma. % First row is constant estimate
     % If user says so
