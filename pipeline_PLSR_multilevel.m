@@ -938,6 +938,8 @@ RunAnalysis({@ConcatenateData, @EvaluateOnData}, parameters);
 % 
 % parameters.permutationGeneration = false;
 
+%% RUN AVERAGES WITH OUTLIERS REMOVED INSTEAD
+
 %% Level 2 categorical -- Prep betas & mouse variables
 % For any spontaneous, don't include mouse 1100
 
@@ -975,8 +977,6 @@ parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrepSecondLevel}, parameters);
-
-%% RUN AVERAGES WITH OUTLIERS REMOVED INSTEAD
 
 %% Level 2 categorical -- prep shuffled datasets for PLSR on shuffles.
 % Always clear loop list first. 
@@ -1185,6 +1185,9 @@ parameters.loop_list.iterators = {
 
 % If the first level was categorical:
 parameters.firstLevelCategorical = false; 
+% Remove outliers & average
+parameters.averaging_across_mice = true;
+parameters.removeOutliers = true; 
 
 parameters.this_comparison_set = parameters.comparisons_continuous;
 parameters.max_mice = size(parameters.mice_all, 2);
@@ -1295,41 +1298,29 @@ parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
 parameters.this_comparison_set = parameters.comparisons_continuous;
-
-parameters.evaluation_instructions = {{'if strcmp(parameters.values(2), parameters.this_comparison_set(parameters.values{3}).mice_not_to_use);'... % Skip mice not to use
-                                       'data_evaluated = [];'...
-                                       'else;'...
-                                       'ysig = parameters.dataset.zscoring.responseVariables.sigma;'... 
-                                       'xsig = repmat(parameters.dataset.zscoring.explanatoryVariables.sigma, size(ysig,2),1);'...  % Make dimensions match (replicate corrs so there's a set for each response varaible.
-                                       'data_evaluated = reshape(transpose(transpose(ysig)./xsig), 1, []);'...
-                                       'end;'}};
-                                   
-parameters.concatDim = 3;
+parameters.comparison_type = 'continuous';                                   
+parameters.concatDim = 1;
+parameters.removeOutliers = true;
 parameters.concatenation_level = 'mouse';
-parameters.averageDim = 3;
-parameters.average_and_std_together = false;
 
 % Input 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison','\', 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\optimized components\outliers removed\'], 'comparison','\', 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'mouse';
 
 % Output 
-parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\outliers removed\'], 'comparison','\'};
-parameters.loop_list.things_to_save.average.filename= {'average_zscore_sigmas.mat'};
-parameters.loop_list.things_to_save.average.variable= {'average_zscore_sigmas'}; 
-parameters.loop_list.things_to_save.average.level = 'comparison';
+parameters.loop_list.things_to_save.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\'], 'comparison','\'};
+parameters.loop_list.things_to_save.average_sigmas.filename= {'average_zscore_sigmas.mat'};
+parameters.loop_list.things_to_save.average_sigmas.variable= {'average_zscore_sigmas'}; 
+parameters.loop_list.things_to_save.average_sigmas.level = 'comparison';
 
-parameters.loop_list.things_to_save.std_dev.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\outliers removed\'], 'comparison','\'};
-parameters.loop_list.things_to_save.std_dev.filename= {'std_dev_zscore_sigmas.mat'};
-parameters.loop_list.things_to_save.std_dev.variable= {'std_dev_zscore_sigmas'}; 
-parameters.loop_list.things_to_save.std_dev.level = 'comparison';
+parameters.loop_list.things_to_save.sigma_outliers.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\'], 'comparison','\'};
+parameters.loop_list.things_to_save.sigma_outliers.filename= {'outliers_zscore_sigmas.mat'};
+parameters.loop_list.things_to_save.sigma_outliers.variable= {'outliers_zscore_sigmas'}; 
+parameters.loop_list.things_to_save.sigma_outliers.level = 'comparison';
 
-parameters.loop_list.things_to_rename = {{'data_evaluated', 'data'};
-                                         {}}; 
-
-RunAnalysis({@EvaluateOnData, @ConcatenateData, @AverageData}, parameters);
+RunAnalysis({@AverageSigmas}, parameters);
 
 %% Level 2 continuous -- plot betas
 % Plot all the beta intercepts in a single plot 
@@ -1340,11 +1331,10 @@ for i = 1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
-    for j = 1:numel(true_false_vector) % No significance right now.
+    for j = 1 %:numel(true_false_vector)
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
-        % Always clear loop list first. 
         if isfield(parameters, 'loop_list')
         parameters = rmfield(parameters,'loop_list');
         end
@@ -1352,19 +1342,21 @@ for i = 1:numel(true_false_vector)
         % Iterators
         parameters.loop_list.iterators = {
                        'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-        
-        parameters.max_response_vars = 4;
+
+        % Averaging? 
+        parameters.averaging_across_mice = true;
+        parameters.removeOutliers = true;
 
         % Color range for all plots (if betas are adjusted).
-        parameters.useColorRange = false;
+        parameters.useColorRange = true;
+        parameters.color_range = [-0.02 0.02];
         
-        % Comparison type (categorical or continuous, is just for plot titles)
+        % Comparison type (continuous or continuous)
         parameters.comparison_type = 'continuous';
         parameters.this_comparison_set = parameters.comparisons_continuous;
         
-        % Make figure file title.
-        title = '_betas_all_comparisons';
-        if parameters.adjust_beta
+        title = 'PLSR_betas_all_comparisons';
+        if parameters.adjustBetas
             title = [title '_Adjusted'];
         end
         if parameters.useSignificance 
@@ -1373,10 +1365,10 @@ for i = 1:numel(true_false_vector)
         title = [title '.fig'];
         
         % Input
-        parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.results.filename = {'PLSR_results.mat'};
-        parameters.loop_list.things_to_load.results.variable = {'PLSR_results'};
-        parameters.loop_list.things_to_load.results.level = 'comparison';
+        parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\'], 'comparison', '\'};
+        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info.mat'};
+        parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
+        parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\'], 'comparison', '\'};
@@ -1384,36 +1376,24 @@ for i = 1:numel(true_false_vector)
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
-        % average sigmas 
-        parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\'], 'comparison','\'};
+        % Average sigmas.
+        if parameters.adjustBetas
+        parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\optimized components\outliers removed\'], 'comparison', '\'};
         parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
         parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
         parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
-
+        end
+        
         % Output
-        parameters.loop_list.things_to_save.speed_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
-        parameters.loop_list.things_to_save.speed_fig.filename = {['speed' title]};
-        parameters.loop_list.things_to_save.speed_fig.variable = {'speed_betas'};
-        parameters.loop_list.things_to_save.speed_fig.level = 'end';
-        
-        parameters.loop_list.things_to_save.accel_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
-        parameters.loop_list.things_to_save.accel_fig.filename = {['accel' title]};
-        parameters.loop_list.things_to_save.accel_fig.variable = {'accel_betas'};
-        parameters.loop_list.things_to_save.accel_fig.level = 'end';
-        
-        parameters.loop_list.things_to_save.duration_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
-        parameters.loop_list.things_to_save.duration_fig.filename = {['duration' title]};
-        parameters.loop_list.things_to_save.duration_fig.variable = {'duration_betas'};
-        parameters.loop_list.things_to_save.duration_fig.level = 'end';
-        
-        parameters.loop_list.things_to_save.pupil_diameter_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
-        parameters.loop_list.things_to_save.pupil_diameter_fig.filename = {['pupil_diameter' title]};
-        parameters.loop_list.things_to_save.pupil_diameter_fig.variable = {'pupil_diameter_betas'};
-        parameters.loop_list.things_to_save.pupil_diameter_fig.level = 'end';
+        parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
+        parameters.loop_list.things_to_save.fig.filename = {title};
+        parameters.loop_list.things_to_save.fig.variable = {'PLSR_betas'};
+        parameters.loop_list.things_to_save.fig.level = 'end';
         
         RunAnalysis({@PlotBetasSecondLevel}, parameters);
-    end 
-end
+    end
+end 
+%close all;
 clear i j true_false_vector;
 
 %% Level 2 continuous across categories
