@@ -1304,7 +1304,7 @@ parameters.removeOutliers = true;
 parameters.concatenation_level = 'mouse';
 
 % Input 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\optimized components\outliers removed\'], 'comparison','\', 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison','\', 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'mouse';
