@@ -25,15 +25,15 @@ function [parameters] = ResidualsFromContinuous(parameters)
 
     % Make a version of Xnew that won't have any outliers removed (for
     % counting where to find instances that were entirely removed as
-    % outliers)
+    % outliers). Same with responseVariables.
     Xnew_old = Xnew; 
-
+  
     % Un-normalize (because will need to be normalized with other behavior
     % types in across-category comparisons later).
     Xnew = Xnew .* parameters.dataset.zscoring.explanatoryVariables.sigma + parameters.dataset.zscoring.explanatoryVariables.mu;
 
     % Remove any outliers, if user says so.
-    if isfield (parameters, 'removeOutliers') && parameters.removeOutliers
+    if isfield(parameters, 'removeOutliers') && parameters.removeOutliers
         outliers = isoutlier(Xnew, 1);
 
         % Replace outliers with NaN
@@ -59,6 +59,7 @@ function [parameters] = ResidualsFromContinuous(parameters)
         if ~isempty(holder)
             Xnew(holder, :) = [];
             responseVariables(holder, :) = [];
+            Xnew_old(holder, :) = NaN;
         end
     end
 
@@ -76,6 +77,53 @@ function [parameters] = ResidualsFromContinuous(parameters)
         dataset_out.missing_data_imputation.iterations_needed = iterations_needed;
         dataset_out.missing_data_imputation.tolerance_reached = tolerance_reached;
         dataset_out.missing_data_imputation.components_needed = components_needed;
+    end
+
+    % Put the removed instances back in. 
+    if (isfield(parameters, 'removeOutliers') && parameters.removeOutliers) && (isfield(parameters, 'imputeMissing') && parameters.imputeMissing)
+
+        Xholder = Xnew_old;
+
+        % find indices of Xnew_old that aren't NaNs, put in Xnew.
+        Xholder(~isnan(Xnew_old)) = Xnew;
+        
+        % Make Xnew into Xholder. 
+        Xnew = Xholder;
+    end 
+
+    % Put in instances removed during continuous variable regression prep, too. 
+    if isfield(parameters.dataset, 'outliers')
+        if ~isempty(parameters.dataset.outliers.removed_indices)
+
+            removed_indices = parameters.dataset.outliers.removed_indices; % Pull out for clarity
+            Xholder = NaN(size(Xnew,1) + numel(removed_indices), size(Xnew, 2));
+
+            % Handle first entry
+            Xholder(1:removed_indices(1) - 1, :) = Xnew(1:removed_indices(1) - 1, :);
+            counter = 1 + removed_indices(1);
+            
+            % If more than one removed instance, need to skip lines
+            if numel(removed_indices) > 1
+                
+                for instancei = 2:numel(removed_indices)
+    
+                    % In Xnew, need to remove each instance already accounted
+                    % for when looking at the range.
+                    Xholder(counter:removed_indices(instancei) - 1, :) = Xnew((counter - instancei): ...
+                        (counter - instancei + removed_indices(instancei) - 1), :);
+                    
+                    % Add removed instances to counter.
+                    counter = counter + removed_indices(instancei);
+                end
+            end
+            
+            % Now for everything after the last removed index.
+            Xholder(counter:end, :) = Xnew((counter - numel(removed_indices)):end, :);
+
+            % Rename Xholder to Xnew.
+            Xnew = Xholder;
+
+        end
     end
 
     % Start putting Xnew back into the big correlations matrix
@@ -107,27 +155,31 @@ function [parameters] = ResidualsFromContinuous(parameters)
         % period/index of values_old.
         subset_instances_vector = counter : (counter + rollnumber * instancesnumber - 1);
 
-        % Deal with any instances removed because had too many outliers.
-
-        % If outliers were found, 
-        if isfield (parameters, 'removeOutliers') && parameters.removeOutliers
-
-            % See if holder (has the observations that were thrown out for
-            % too many outliers) intersects with subset_instances_vector.
-            if ~isempty(holder) && ~isempty(instersect(holder, subset_instances_vector))
-                
-                number_instances_removed = numel(instersect(holder, subset_instances_vector));
-
-                % Remove the instances that should be removed. 
-                subset_instances_vector = subset_instances_vector(1:end - number_instances_removed); 
-
-                % Update instances number.
-                instancesnumber = instancesnumber - number_instances_removed;
-            end
-        end
- 
+%         % Deal with any instances removed because had too many outliers.
+% 
+%         % If outliers were found, 
+%         if isfield (parameters, 'removeOutliers') && parameters.removeOutliers
+% 
+%             % See if holder (has the observations that were thrown out for
+%             % too many outliers) intersects with subset_instances_vector.
+%             if ~isempty(holder) && ~isempty(intersect(holder, subset_instances_vector))
+%                 
+%                 number_instances_removed = numel(intersect(holder, subset_instances_vector));
+% 
+%                 % Remove the instances that should be removed. 
+%                 subset_instances_vector = subset_instances_vector(1:end - number_instances_removed); 
+% 
+%                 % Update instances number.
+%                 instancesnumber = instancesnumber - number_instances_removed;
+%             end
+%         end
+%  
         % Pull out the matrices that belong to this cell/period
+        try
         subset = Xnew(:, subset_instances_vector);
+        catch
+            error('problem at line 144');
+        end
 
         % Reshape to match this cell/period, put into place.
         parameters.values_new{index} = reshape(subset, size(subset,1), rollnumber, instancesnumber);
