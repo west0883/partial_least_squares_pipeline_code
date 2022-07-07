@@ -955,7 +955,7 @@ parameters.loop_list.iterators = {
 parameters.firstLevelCategorical = true; 
 
 parameters.this_comparison_set = parameters.comparisons_categorical;
-parameters.max_mice = size(parameters.mice_all, 2);
+parameters.max_mice = size(parameters.mice_all, 1);
 parameters.concatenation_level = 'mouse';
 
 % Input 
