@@ -12,7 +12,7 @@
 % way to apply zscoring without NaNs.
 
 
-function [X,Y, It, diff, A] = plsmbtsr1_TSRonly(X, Y, percent_explained)
+function [X,Y, It, diff, A] = plsmbtsr1_TSRonly(X, Y, percent_explained, max_components)
 % TSR 1 for PLS-MB (adapted from PCA-MB)
 %
 % INPUTS:
@@ -83,10 +83,10 @@ end
 [~, ~, ~, ~, explained, ~] = pca(Xoriginal_centered);
 
 % Find number of components to reach the desired percent variance explaned.
-% Maximum of 10 components, because of the PLSR component number.
+% But must be under the max component number.
 A = find(cumsum(explained) >= percent_explained, 1);
-if A > 15
-    A = 15;
+if A > max_components
+    A = max_components;
 end
 disp(['Need ' num2str(A) ' components.']);
 
