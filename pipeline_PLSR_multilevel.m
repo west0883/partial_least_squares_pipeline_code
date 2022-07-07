@@ -1072,19 +1072,10 @@ parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
 parameters.this_comparison_set = parameters.comparisons_categorical;
-
-parameters.evaluation_instructions = {{'if strcmp(parameters.values(2), parameters.this_comparison_set(parameters.values{3}).mice_not_to_use);'... % Skip mice not to use
-                                       'data_evaluated = [];'...
-                                       'else;'...
-                                       'ysig = parameters.dataset.zscoring.responseVariables.sigma;'... 
-                                       'xsig = repmat(parameters.dataset.zscoring.explanatoryVariables.sigma, size(ysig,2),1);'...  % Make dimensions match (replicate corrs so there's a set for each response varaible.
-                                       'data_evaluated = reshape(transpose(transpose(ysig)./xsig), 1, []);'...
-                                       'end;'}};
-                                   
-parameters.concatDim = 3;
+parameters.comparison_type = 'categorical';                                   
+parameters.concatDim = 1;
+parameters.removeOutliers = true;
 parameters.concatenation_level = 'mouse';
-parameters.averageDim = 3;
-parameters.average_and_std_together = false;
 
 % Input 
 parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\optimized components\outliers removed\'], 'comparison','\', 'mouse', '\'};
@@ -1093,27 +1084,24 @@ parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_load.dataset.level = 'mouse';
 
 % Output 
-parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\optimized components\outliers removed\'], 'comparison','\'};
-parameters.loop_list.things_to_save.average.filename= {'average_zscore_sigmas.mat'};
-parameters.loop_list.things_to_save.average.variable= {'average_zscore_sigmas'}; 
-parameters.loop_list.things_to_save.average.level = 'comparison';
+parameters.loop_list.things_to_save.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\optimized components\outliers removed\'], 'comparison','\'};
+parameters.loop_list.things_to_save.average_sigmas.filename= {'average_zscore_sigmas.mat'};
+parameters.loop_list.things_to_save.average_sigmas.variable= {'average_zscore_sigmas'}; 
+parameters.loop_list.things_to_save.average_sigmas.level = 'comparison';
 
-parameters.loop_list.things_to_save.std_dev.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\optimized components\outliers removed\'], 'comparison','\'};
-parameters.loop_list.things_to_save.std_dev.filename= {'std_dev_zscore_sigmas.mat'};
-parameters.loop_list.things_to_save.std_dev.variable= {'std_dev_zscore_sigmas'}; 
-parameters.loop_list.things_to_save.std_dev.level = 'comparison';
+parameters.loop_list.things_to_save.sigma_outliers.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\optimized components\outliers removed\'], 'comparison','\'};
+parameters.loop_list.things_to_save.sigma_outliers.filename= {'outliers_zscore_sigmas.mat'};
+parameters.loop_list.things_to_save.sigma_outliers.variable= {'outliers_zscore_sigmas'}; 
+parameters.loop_list.things_to_save.sigma_outliers.level = 'comparison';
 
-parameters.loop_list.things_to_rename = {{'data_evaluated', 'data'};
-                                         {}}; 
-
-RunAnalysis({@EvaluateOnData, @ConcatenateData, @AverageData}, parameters);
+RunAnalysis({@AverageSigmas}, parameters);
 
 %% Level 2 categorical -- plot betas
 % Plot all the beta intercepts in a single plot 
 
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
-for i = 1 %:numel(true_false_vector)
+for i = 1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
@@ -1128,7 +1116,6 @@ for i = 1 %:numel(true_false_vector)
         % Iterators
         parameters.loop_list.iterators = {
                        'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
-        
 
         % Averaging? 
         parameters.averaging_across_mice = true;
