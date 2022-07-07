@@ -1348,7 +1348,7 @@ for i = 1:numel(true_false_vector)
         parameters.removeOutliers = true;
 
         % Color range for all plots (if betas are adjusted).
-        parameters.useColorRange = true;
+        parameters.useColorRange = false;
         parameters.color_range = [-0.02 0.02];
         
         % Comparison type (continuous or continuous)
@@ -1385,10 +1385,25 @@ for i = 1:numel(true_false_vector)
         end
         
         % Output
-        parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
-        parameters.loop_list.things_to_save.fig.filename = {title};
-        parameters.loop_list.things_to_save.fig.variable = {'PLSR_betas'};
-        parameters.loop_list.things_to_save.fig.level = 'end';
+        parameters.loop_list.things_to_save.speed_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
+        parameters.loop_list.things_to_save.speed_fig.filename = {['speed_ ' title]};
+        parameters.loop_list.things_to_save.speed_fig.variable = {'speed_fig'};
+        parameters.loop_list.things_to_save.speed_fig.level = 'end';
+
+        parameters.loop_list.things_to_save.accel_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
+        parameters.loop_list.things_to_save.accel_fig.filename = {['accel_ ' title]};
+        parameters.loop_list.things_to_save.accel_fig.variable = {'accel_fig'};
+        parameters.loop_list.things_to_save.accel_fig.level = 'end';
+
+        parameters.loop_list.things_to_save.duration_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
+        parameters.loop_list.things_to_save.duration_fig.filename = {['duration_ ' title]};
+        parameters.loop_list.things_to_save.duration_fig.variable = {'duration_fig'};
+        parameters.loop_list.things_to_save.duration_fig.level = 'end';
+
+        parameters.loop_list.things_to_save.pupil_diameter_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\outliers removed\']};
+        parameters.loop_list.things_to_save.pupil_diameter_fig.filename = {['pupil_diameter_ ' title]};
+        parameters.loop_list.things_to_save.pupil_diameter_fig.variable = {'pupil_diameter_fig'};
+        parameters.loop_list.things_to_save.pupil_diameter_fig.level = 'end';
         
         RunAnalysis({@PlotBetasSecondLevel}, parameters);
     end
