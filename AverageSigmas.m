@@ -6,12 +6,24 @@
 % necessary/asked for.
 
 function [parameters] = AverageSigmas(parameters)
+
+    MessageToUser('Averaging sigmas for ', parameters);
     
     % Don't include this mouse if this mouse is in list of mice not to use.
     if strcmp(parameters.values(2), parameters.this_comparison_set(parameters.values{3}).mice_not_to_use)
         % Skip
+        return
     else
+
        ysig = parameters.dataset.zscoring.responseVariables.sigma;
+
+       % Keep only the first response variable if comparison type is
+       % categorical.
+       if strcmp(parameters.comparison_type, 'categorical')
+
+           ysig = ysig(1);
+
+       end
 
        % Make dimensions match (replicate corrs so there's a set for each response varaible.
        xsig = repmat(parameters.dataset.zscoring.explanatoryVariables.sigma, size(ysig,2),1); 
@@ -19,6 +31,21 @@ function [parameters] = AverageSigmas(parameters)
        % Calculate sigmas
        sigmas = reshape(transpose(transpose(ysig)./xsig), 1, []);
     end
+
+    % If the user gave a concatenation level value field (from
+    % ConcatenateData.m code)
+    if isfield(parameters,'concatenation_level')
+
+        % Get the current iterator value for that level
+        iterator_level = find(strcmp(parameters.loop_list.iterators(:,1), parameters.concatenation_level));
+        current_iterator = parameters.values{numel(parameters.values)/2 + iterator_level};
+
+        % If the current iterator is 1, that means you're starting a new
+        % concatenation, clear any previously concatenated data.
+        if current_iterator == 1 && isfield(parameters, 'sigmas_concatenated')
+            parameters = rmfield(parameters, 'sigmas_concatenated'); 
+        end 
+    end 
 
     % Concatenate across mice, if sigmas_concatenated exists
     if isfield(parameters, 'sigmas_concatenated') 
