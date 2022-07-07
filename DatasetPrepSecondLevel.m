@@ -127,23 +127,30 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
     parameters.explanatoryVariables_concatenated = explanatoryVariables_concatenated;
     parameters.responseVariables_concatenated = responseVariables_concatenated;
 
-    % *** Normalize ***
     % (does this for each concatenation, but will only save the last)
-%    [explanatoryVariables_normalized, mu_explanatory, sigma_explanatory] = zscore(parameters.explanatoryVariables_concatenated);
-%    [responseVariables_normalized, mu_response, sigma_response] = zscore(parameters.responseVariables_concatenated);
-% 
-%    % *** Put into output structure ***
-% 
-%    % Zscoring info.
-%    dataset.zscoring.explanatoryVariables.mu = mu_explanatory;
-%    dataset.zscoring.explanatoryVariables.sigma = sigma_explanatory;
-%    dataset.zscoring.responseVariables.mu = mu_response;
-%    dataset.zscoring.responseVariables.sigma = sigma_response;
+    % Find & remove outliers
+    if isfield(parameters, 'removeOutliers') && parameters.removeOutliers
 
-   % Put both variable sets for this comparison into a stucture for saving. 
-%    dataset.explanatoryVariables = explanatoryVariables_normalized;
-%    dataset.responseVariables = responseVariables_normalized;
+        outliers = isoutlier(responseVariables_concatenated);
 
+        dataset.outliers = outliers;
+        dataset.responseVariables_original = responseVariables_concatenated;
+
+        responseVariables_toaverage = responseVariables_concatenated;
+        responseVariables_toaverage(outliers) = NaN;
+
+    else 
+        responseVariables_toaverage = responseVariables_concatenated; 
+    end
+
+    % Take average
+    if isfield(parameters, 'averaging_across_mice') && parameters.averaging_across_mice
+
+        dataset.average_across_mice = mean(responseVariables_toaverage, 1, 'omitnan');
+
+    end 
+
+   % Put concatenated data into output.
    dataset.explanatoryVariables = explanatoryVariables_concatenated;
    dataset.responseVariables = responseVariables_concatenated;
 
