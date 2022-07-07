@@ -902,41 +902,41 @@ RunAnalysis({@ConcatenateData, @EvaluateOnData}, parameters);
 
 %% Level 1 categorical -- run random permutations.
 % Always clear loop list first. 
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {
-               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' }; 
-
-% Do you want permutations?
-parameters.permutationGeneration = true;
-parameters.n_permutations = 5000;
-parameters.stratify = true;
-parameters.comparison_type = 'categorical';
-
-% Input 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\optimized components\outliers removed\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
-parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
-parameters.loop_list.things_to_load.dataset.level = 'comparison';
-% optimized number of components to use.
-parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\outliers removed\'], 'comparison','\', 'mouse', '\'};
-parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
-parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
-
-% Output
-parameters.loop_list.things_to_save.betas_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\outliers removed\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_save.betas_randomPermutations.filename= {'PLSR_betas_randomPermutations.mat'};
-parameters.loop_list.things_to_save.betas_randomPermutations.variable= {'betas_randomPermutations'}; 
-parameters.loop_list.things_to_save.betas_randomPermutations.level = 'comparison';
-
-RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
-
-parameters.permutationGeneration = false;
+% if isfield(parameters, 'loop_list')
+% parameters = rmfield(parameters,'loop_list');
+% end
+% 
+% % Iterators
+% parameters.loop_list.iterators = {
+%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+%                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' }; 
+% 
+% % Do you want permutations?
+% parameters.permutationGeneration = true;
+% parameters.n_permutations = 5000;
+% parameters.stratify = true;
+% parameters.comparison_type = 'categorical';
+% 
+% % Input 
+% parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\optimized components\outliers removed\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+% parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+% parameters.loop_list.things_to_load.dataset.level = 'comparison';
+% % optimized number of components to use.
+% parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\outliers removed\'], 'comparison','\', 'mouse', '\'};
+% parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
+% parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
+% parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
+% 
+% % Output
+% parameters.loop_list.things_to_save.betas_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\outliers removed\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_save.betas_randomPermutations.filename= {'PLSR_betas_randomPermutations.mat'};
+% parameters.loop_list.things_to_save.betas_randomPermutations.variable= {'betas_randomPermutations'}; 
+% parameters.loop_list.things_to_save.betas_randomPermutations.level = 'comparison';
+% 
+% RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+% 
+% parameters.permutationGeneration = false;
 
 %% Level 2 categorical -- Prep betas & mouse variables
 % For any spontaneous, don't include mouse 1100
