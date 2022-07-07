@@ -70,7 +70,7 @@ function [parameters] = ResidualsFromContinuous(parameters)
         disp('Imputing missing data.')
 
         % Run the modified code for trimmed square regression (TSR) for PLS
-        [Xnew, ~, iterations_needed, tolerance_reached, components_needed] = plsmbtsr1_TSRonly(Xnew, responseVariables, parameters.imputation_components_variance_explained);% parameters.imputation_ncomponents); 
+        [Xnew, ~, iterations_needed, tolerance_reached, components_needed] = plsmbtsr1_TSRonly(Xnew, responseVariables, parameters.imputation_components_variance_explained, parameters.imputation_max_components);% parameters.imputation_ncomponents); 
 
         % Put iterations needed and tolerance reached into dataset_out
         % structure.
