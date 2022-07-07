@@ -14,7 +14,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(parameters.this_comparison_set, 2),4/5);
 
     % If using averaging,
-    if isfield(parameters, 'averaging_across_mice') && parameters.average_across_mice
+    if isfield(parameters, 'averaging_across_mice') && parameters.averaging_across_mice
 
         betas = parameters.average_across_mice;
 
