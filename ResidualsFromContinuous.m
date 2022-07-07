@@ -155,31 +155,8 @@ function [parameters] = ResidualsFromContinuous(parameters)
         % period/index of values_old.
         subset_instances_vector = counter : (counter + rollnumber * instancesnumber - 1);
 
-%         % Deal with any instances removed because had too many outliers.
-% 
-%         % If outliers were found, 
-%         if isfield (parameters, 'removeOutliers') && parameters.removeOutliers
-% 
-%             % See if holder (has the observations that were thrown out for
-%             % too many outliers) intersects with subset_instances_vector.
-%             if ~isempty(holder) && ~isempty(intersect(holder, subset_instances_vector))
-%                 
-%                 number_instances_removed = numel(intersect(holder, subset_instances_vector));
-% 
-%                 % Remove the instances that should be removed. 
-%                 subset_instances_vector = subset_instances_vector(1:end - number_instances_removed); 
-% 
-%                 % Update instances number.
-%                 instancesnumber = instancesnumber - number_instances_removed;
-%             end
-%         end
-%  
         % Pull out the matrices that belong to this cell/period
-        try
         subset = Xnew(:, subset_instances_vector);
-        catch
-            error('problem at line 144');
-        end
 
         % Reshape to match this cell/period, put into place.
         parameters.values_new{index} = reshape(subset, size(subset,1), rollnumber, instancesnumber);
