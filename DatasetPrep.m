@@ -93,8 +93,8 @@ function [parameters] = DatasetPrep(parameters)
 
     % Remove any rows/observations that are all NaNs in the explanatory
     % variables. (Comes from any previous outlier removal). 
-    removed_observations = all(isnan(exlanatoryVariables), 2);
-    if any(removed_observation)
+    removed_observations = all(isnan(explanatoryVariables), 2);
+    if any(removed_observations)
         explanatoryVariables(removed_observations, :) = [];
         responseVariables(removed_observations, :) = [];
     end
