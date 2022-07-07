@@ -21,7 +21,7 @@ function [parameters] = ResidualsFromContinuous(parameters)
     Xnew = parameters.PLSR_results.stats.Xresiduals;
 
     % Get out response variables (for outlier replacement imputation).
-    responseVariables = parameters.responseVariables; s
+    responseVariables = parameters.dataset.responseVariables;
 
     % Make a version of Xnew that won't have any outliers removed (for
     % counting where to find instances that were entirely removed as
@@ -40,20 +40,20 @@ function [parameters] = ResidualsFromContinuous(parameters)
         Xnew(outliers) = NaN;
 
         % Put important info into output structures.
-        dataset.outliers.indices = find(outliers);
+        dataset_out.outliers.indices = find(outliers);
         if ~isempty(outliers)
             [row, column] =  ind2sub([size(Xnew)], find(outliers));
-            dataset.outliers.indices_rowcolumn = [row, column];
+            dataset_out.outliers.indices_rowcolumn = [row, column];
         else
-            dataset.outliers.indices = [];
+            dataset_out.outliers.indices = [];
         end
-        dataset.outliers.values_old = Xnew_old(dataset.outliers.indices);
+        dataset_out.outliers.values_old = Xnew_old(dataset_out.outliers.indices);
 
         % If any rows (observations) have more than 1/10 the explanatory values
         % as outliers, remove that observation.
         summation = sum(outliers,2);
         holder = find(summation > size(Xnew,2) * 1/10);
-        dataset.outliers.removed_indices = holder;
+        dataset_out.outliers.removed_indices = holder;
 
         % If there are observations with this, remove. 
         if ~isempty(holder)
@@ -71,11 +71,11 @@ function [parameters] = ResidualsFromContinuous(parameters)
         % Run the modified code for trimmed square regression (TSR) for PLS
         [Xnew, ~, iterations_needed, tolerance_reached, components_needed] = plsmbtsr1_TSRonly(Xnew, responseVariables, parameters.imputation_components_variance_explained);% parameters.imputation_ncomponents); 
 
-        % Put iterations needed and tolerance reached into dataset
+        % Put iterations needed and tolerance reached into dataset_out
         % structure.
-        dataset.missing_data_imputation.iterations_needed = iterations_needed;
-        dataset.missing_data_imputation.tolerance_reached = tolerance_reached;
-        dataset.missing_data_imputation.components_needed = components_needed;
+        dataset_out.missing_data_imputation.iterations_needed = iterations_needed;
+        dataset_out.missing_data_imputation.tolerance_reached = tolerance_reached;
+        dataset_out.missing_data_imputation.components_needed = components_needed;
     end
 
     % Start putting Xnew back into the big correlations matrix
@@ -141,6 +141,6 @@ function [parameters] = ResidualsFromContinuous(parameters)
         error('counter should equal 1 more than size of the new explanatory value');
     end
 
-    % Put dataset info into output structure
-    parameters.dataset = dataset;
+    % Put dataset_out info into output structure
+    parameters.dataset_out = dataset_out;
 end 
