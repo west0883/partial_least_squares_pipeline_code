@@ -109,11 +109,11 @@ function [parameters] = ResidualsFromContinuous(parameters)
     
                     % In Xnew, need to remove each instance already accounted
                     % for when looking at the range.
-                    Xholder(counter:removed_indices(instancei) - 1, :) = Xnew((counter - instancei): ...
-                        (counter - instancei + removed_indices(instancei) - 1), :);
+                    Xholder(counter:removed_indices(instancei) - 1, :) = Xnew((counter - instancei + 1): ...
+                        (removed_indices(instancei) - instancei), :);
                     
                     % Add removed instances to counter.
-                    counter = counter + removed_indices(instancei);
+                    counter = removed_indices(instancei) + 1;
                 end
             end
             
