@@ -151,7 +151,7 @@ function [parameters] = DatasetPrep(parameters)
         dataset.missing_data_imputation.induces_rowcolumn = ind2sub(size(responseVariables), dataset.missing_data_imputation.indices);
 
         % Run the modified code for trimmed square regression (TSR) for PLS
-        [explanatoryVariables, responseVariables, iterations_needed, tolerance_reached, components_needed] = plsmbtsr1_TSRonly(explanatoryVariables, responseVariables, parameters.imputation_components_variance_explained);% parameters.imputation_ncomponents); 
+        [explanatoryVariables, responseVariables, iterations_needed, tolerance_reached, components_needed] = plsmbtsr1_TSRonly(explanatoryVariables, responseVariables, parameters.imputation_components_variance_explained, parameters.imputation_max_components);% parameters.imputation_ncomponents); 
 
         % Put iterations needed and tolerance reached into dataset
         % structure.
