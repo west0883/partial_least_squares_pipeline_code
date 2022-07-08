@@ -89,23 +89,6 @@ end
 
 counter = counter + typei + 1; 
 
-%% Continuous variables, Finished periods (not stopping)
-% Use speed & duration. 
-
-% Only relevant for motorized.
-comparisons(counter).name = 'motorized_finished_continuousVars';
-comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector'};
-comparisons(counter).type = 'finished';
-comparisons(counter).mice_not_to_use = {};
-
-% Get relevent indices for this type.
-indices_type = strcmp(period_types, 'finished');
-
-% Get intersection of motorized & type. 
-comparisons(counter).indices = find(indices_motorized & indices_type);
-
-counter = counter + 1; 
-
 %% Continuous variables, finished stop periods. 
 
 % Motorized
@@ -193,5 +176,57 @@ indices_type = strcmp(period_types, 'rest');
 comparisons(counter).indices = find(indices_spontaneous & indices_type);
 
 counter = counter + 1;
+
+%% Continuous variables, finished_start 
+% Use speed & duration. 
+
+% Only relevant for motorized.
+comparisons(counter).name = 'motorized_finished_start_continuousVars';
+comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector'};
+comparisons(counter).type = 'finished_start';
+comparisons(counter).mice_not_to_use = {};
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'finished_start');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1; 
+
+%% Continuous variables, finished_accel
+% Use speed & duration. 
+
+% Only relevant for motorized.
+comparisons(counter).name = 'motorized_finished_accel_continuousVars';
+comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector'};
+comparisons(counter).type = 'finished_accel';
+comparisons(counter).mice_not_to_use = {};
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'finished_accel');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1;
+
+%% Continuous variables, finished_decel
+% Use speed & duration. 
+
+% Only relevant for motorized.
+comparisons(counter).name = 'motorized_finished_decel_continuousVars';
+comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector'};
+comparisons(counter).type = 'finished_decel';
+comparisons(counter).mice_not_to_use = {};
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'finished_decel');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1;
+
 %% Save 
 save([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat'], 'comparisons');
