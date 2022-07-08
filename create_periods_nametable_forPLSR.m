@@ -122,58 +122,48 @@ save([parameters.dir_exper 'PLSR\indices_to_remove.mat'], 'indices_to_remove');
 % = finished.
 % No prep for now.
 look_for = {'m_start','startwalk', 'm_stop', 'stopwalk', 'm_accel', 'm_decel',...
-          'c_rest', 'rest', 'c_walk', 'walk', 'postwalk'}; 
-look_for_pattern = { 'm_f'};
+          'c_rest', 'rest', 'c_walk', 'walk', 'postwalk', 'm_fstop', 'm_fstart', 'm_faccel', 'm_fdecel', }; 
            
 types = cell(size(periods,1), 1);
 
 for i = 1:size(periods, 1)
    
     this_condition = repmat(periods{i, 'condition'}, 1, numel(look_for));
-    type1 = cellfun(@strcmp, this_condition, look_for);
-    this_condition = repmat(periods{i, 'condition'}, 1, numel(look_for_pattern));
-    type2 = cellfun(@contains, this_condition, look_for_pattern);
+    type = find(cellfun(@strcmp, this_condition, look_for));
 
-    type = find([type1, type2]);
+    switch type
 
-        switch type
-   
-            case {1, 2}   % start
-                types{i} = 'start';
-        
-            case {3, 4} % stop
-                types{i} = 'stop';
-
-            case 5
-                 types{i} = 'accel';
-
-            case 6 % decel
-                types{i} = 'decel';     
-
-            case {7, 8} 
-                types{i} = 'rest';
-
-            case {9, 10} % walk
-                types{i} = 'walk';
-
-%             case 11
-%                 types{i} = 'prep';
+        case {1, 2}   % start
+            types{i} = 'start';
     
-            case 11  % postwalk --> finished_stop
-                types{i} = 'finished_stop'; 
-   
-%             case 13
-%                 types{i} = 'prep';
-    
-            case 12  % finished, all others.
+        case {3, 4} % stop
+            types{i} = 'stop';
 
-                % Check if this condition is specifically finished stop 
-                if strcmp(periods{i, 'condition'}, 'm_fstop')
-                     types{i} = 'finished_stop'; 
-                else
-                    types{i} = 'finished'; 
-                end
-        end
+        case 5 % accel
+             types{i} = 'accel';
+
+        case 6 % decel
+            types{i} = 'decel';     
+
+        case {7, 8} 
+            types{i} = 'rest';
+
+        case {9, 10} % walk
+            types{i} = 'walk';
+
+        case {11,12}  % postwalk, m_fstop --> finished_stop
+            types{i} = 'finished_stop'; 
+
+        case 13  % finished start
+            types{i} = 'finished_start'; 
+
+        case 14 % m_faccel
+            types{i} = 'finished_accel';
+
+        case 15 % m_fdecel
+            types{i} = 'finished_decel';
+           
+    end
 end
 periods.type = types; 
 clear types type type1 type2 look_for_pattern look_for this_condition;
@@ -186,14 +176,16 @@ periods.pupil_diameter = pupil_diameter;
 
 clear pupil_diameter;
 
-%% Put in accel = 0 for motorized prep, finished, finished_stop, & walk periods
+%% Put in accel = 0 for all finisheds, walk, & rest periods
 % Leave spontaneous blank (Nan) for now
 % No prep periods for now.
 for i = 1:size(periods,1)
 
     if strcmp(periods{i, 'motorized_vs_spon'}, 'motorized') 
         
-       if strcmp(periods{i, 'type'}, 'finished') || strcmp(periods{i, 'type'}, 'finished_stop') || strcmp(periods{i, 'type'}, 'walk') || strcmp(periods{i, 'type'}, 'rest')  % strcmp(periods{i, 'type'}, 'prep') ||
+       if strcmp(periods{i, 'type'}, 'finished_start') || strcmp(periods{i, 'type'}, 'finished_stop') ...
+               || strcmp(periods{i, 'type'}, 'finished_accel') || strcmp(periods{i, 'type'}, 'finished_decel') ...
+               || strcmp(periods{i, 'type'}, 'walk') || strcmp(periods{i, 'type'}, 'rest')  % strcmp(periods{i, 'type'}, 'prep') ||
        
            periods{i, 'accel'} = {0} ;      
        end
@@ -215,20 +207,6 @@ for i = 1:size(periods,1)
 end
 
 clear look_for i this_condition change;
-%% If a motorized prep, take off the first 2 seconds of "duration"
-% Save the indices of the motorized prep, so you can easily find them &
-% remove data from correlation data variables later. 
-% No prep periods for now.
-% indices_to_shorten = [];
-% for i = 1:size(periods,1)
-% 
-%     if strcmp(periods{i, 'motorized_vs_spon'}, 'motorized') && strcmp(periods{i, 'type'}, 'prep') 
-%         
-%         periods{i, 'duration'} = {periods{i, 'duration'}{1} - fps *2};
-%         indices_to_shorten = [indices_to_shorten; i];
-%     end
-% end
-% save([parameters.dir_exper 'PLSR\indices_to_shorten.mat'], 'indices_to_shorten');
 
 %% Calculate new "roll numbers" for periods & duration you have left. 
 % Figure out how many rolls you can get out of it (should be a whole number). 
@@ -337,6 +315,7 @@ end
 periods.motorized_vs_spon_dummyvars = motorized_vs_spon_dummyvars;
 periods.type_dummyvars = type_dummyvars;
 periods.transition_or_not_dummyvars = transition_or_not_dummyvars;
+
 %% Replicate dummy vars by roll number. 
 motorized_vs_spon_dummyvars_vector = cell(size(periods,1),1);
 type_dummyvars_vector = cell(size(periods,1),1);
@@ -357,23 +336,6 @@ periods.motorized_vs_spon_dummyvars_vector = motorized_vs_spon_dummyvars_vector;
 periods.type_dummyvars_vector = type_dummyvars_vector;
 periods.transition_or_not_dummyvars_vector = transition_or_not_dummyvars_vector;
 
-%% Replicate all variables by number of instances 
-% Instances in 3rd dimension. Dummy variables for categorical. 
-% variables = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', ...
-%     'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector'};
-% 
-% % for each mouse, 
-% for mousei = 1:size(parameters.mice_all,2)
-% 
-% 
-%     % Load correlation values
-%     load('Y:\Sarah\Analysis\Experiments\Random Motorized Treadmill\fluorescence analysis\correlations\Fisher transformed\1107\all concatenated\correlations_all_concatenated_mean_removed.mat')
-%     % Remove corelation periods you're not interested in (using
-%     % indices_to_remove)
-% 
-%     % Use instances for replicating. 
-% 
-% end
 
 %% Save 
 save([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'], 'periods', '-v7.3');
