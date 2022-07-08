@@ -172,20 +172,6 @@ comparisons(counter).indices = find(indices_motorized & indices_type);
 
 counter = counter + 1; 
 
-%% Walk vs Finished categorical
-% Motorized
-comparisons(counter).name = 'motorized_walkvsfinished_categorical';
-comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
-comparisons(counter).mice_not_to_use = {};
-comparisons(counter).plotMultiplier = -1;
-
-% Get relevent indices for this type.
-indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'finished');
-
-% Get intersection of motorized & type. 
-comparisons(counter).indices = find(indices_motorized & indices_type);
-
-counter = counter + 1; 
 
 %% Rest vs finished stop categorical 
 
@@ -426,6 +412,119 @@ comparisons(counter).indices = find(indices_spontaneous & indices_type);
 
 counter = counter + 1; 
 
+%% Accel vs finished accel 
+% motorized
+comparisons(counter).name = 'motorized_accelvsfaccel_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = -1;
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'accel') | strcmp(period_types, 'finished_accel');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1;
+
+%% Decel vs finished decel    
+% motorized
+comparisons(counter).name = 'motorized_decelvsfdecel_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = -1;
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'decel') | strcmp(period_types, 'finished_decel');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1;
+
+%% Walk vs finished accel
+% motorized
+comparisons(counter).name = 'motorized_walkvsfaccel_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = -1;
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'finished_accel');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1;
+
+%% Walk vs finished decel 
+comparisons(counter).name = 'motorized_walkvsfdecel_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = -1;
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'finished_decel');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1;
+
+%% Finished accel vs finished decel
+comparisons(counter).name = 'motorized_faccelvsfdecel_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = 1;
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'finished_accel') | strcmp(period_types, 'finished_decel');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1;
+
+%% Finished accel vs finished start
+comparisons(counter).name = 'motorized_fstartvsfaccel_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = 1;
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'finished_accel') | strcmp(period_types, 'finished_start');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1;
+%% Start vs finished start 
+comparisons(counter).name = 'motorized_startvsfstart_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = -1;
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'start') | strcmp(period_types, 'finished_start');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1;
+
+%% Finished start vs walk
+comparisons(counter).name = 'motorized_fstartvswalk_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = 1;
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'finished_start');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1;
 
 %% Save 
 save(filename_out, 'comparisons');
