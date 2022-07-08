@@ -60,11 +60,12 @@ variablesToSubtract.start = {'speed_vector', 'accel_vector', 'duration_vector'};
 variablesToSubtract.stop = {'speed_vector', 'accel_vector', 'duration_vector'};
 variablesToSubtract.accel = {'speed_vector', 'accel_vector', 'duration_vector'};
 variablesToSubtract.decel = {'speed_vector', 'accel_vector', 'duration_vector'};
-variablesToSubtract.finished = {'speed_vector', 'duration_vector'};
+variablesToSubtract.finished_start = {'speed_vector', 'duration_vector'};
 variablesToSubtract.finished_stop = {'duration_vector'};
+variablesToSubtract.finished_accel = {'speed_vector', 'duration_vector'};
+variablesToSubtract.finished_decel = {'speed_vector', 'duration_vector'};
 
 save(filename_out_variablesToSubtract, 'variablesToSubtract');
-
 
 %% Rest vs walk 
 % Motorized
