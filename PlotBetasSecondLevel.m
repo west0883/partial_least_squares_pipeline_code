@@ -66,63 +66,20 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     cmap= flipud(cbrewer('div', 'RdBu', 512, 'linear'));
 
     % Start plotting. 
+
+    % If NOT plotting individually,
+    if ~isfield(parameters, 'plotIndividually') || ~parameters.plotIndividually
     
-    % If categorical, 
-    if strcmp(parameters.comparison_type, 'categorical')
-
-        % If there isn't a figure for this yet, make one.
-        if ~isfield(parameters, 'fig')
-            fig = figure;
-            fig.WindowState = 'maximized';
-
-            % Make title.
-            title_string = ['Betas, second level ' parameters.comparison_type];
-            if isfield(parameters, 'adjustBetas') && parameters.adjustBetas
-                title_string = [title_string ', sigma adjusted'];
-            end
-            if isfield(parameters, 'useSignificance') && parameters.useSignificance
-                title_string = [title_string ', significant only'];
-            end
-            title_string = strrep(title_string, '_', ' ');
-            sgtitle(title_string);
-
-            % Put into output structure.
-            parameters.fig = fig;
-        end
-
-        % Just need one plot per comparison.
-        holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
-        holder(parameters.indices) = betas_adjusted;
+        % If categorical, 
+        if strcmp(parameters.comparison_type, 'categorical')
     
-        % If adjusted, use a standard color range for each plot.
-        if isfield(parameters, 'adjustBetas') && parameters.adjustBetas
-            color_range = parameters.color_range;
-        % If not adjusted, make a fitted color range for this plot.
-        else
-            extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
-            color_range = [-extreme extreme]; 
-        end
-
-        % Plot.
-        subplot(subplot_rows, subplot_columns, comparison_iterator); imagesc(holder); 
-        colormap(cmap); colorbar; caxis(color_range);
+            % If there isn't a figure for this yet, make one.
+            if ~isfield(parameters, 'fig')
+                fig = figure;
+                fig.WindowState = 'maximized';
     
-        % Make subplot title.
-        title_string = erase(comparison, parameters.comparison_type); 
-        title(strrep(title_string, '_', ' ')); axis square;
-
-    % If continuous, 
-    else
-        % Make figures for each variable type.
-        for variablei = 1:numel(parameters.continuous_variable_names)
-            variable = parameters.continuous_variable_names{variablei};
-
-            if ~isfield(parameters, [variable '_fig'])
-                figure_holder = figure;
-                figure_holder.WindowState = 'maximized';
-                
                 % Make title.
-                title_string = ['Betas, ' variable ' second level ' parameters.comparison_type];
+                title_string = ['Betas, second level ' parameters.comparison_type];
                 if isfield(parameters, 'adjustBetas') && parameters.adjustBetas
                     title_string = [title_string ', sigma adjusted'];
                 end
@@ -131,48 +88,147 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 end
                 title_string = strrep(title_string, '_', ' ');
                 sgtitle(title_string);
-
+    
                 % Put into output structure.
-                parameters.([variable '_fig']) = figure_holder;
+                parameters.fig = fig;
+            end
+    
+            % Just need one plot per comparison.
+            holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
+            holder(parameters.indices) = betas_adjusted;
+        
+            % Check if this comparison needs to be multiplied by -1 or not.
+            
 
+            
+            % If adjusted, use a standard color range for each plot.
+            if isfield(parameters, 'adjustBetas') && parameters.adjustBetas
+                color_range = parameters.color_range;
+            % If not adjusted, make a fitted color range for this plot.
+            else
+                extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
+                color_range = [-extreme extreme]; 
+            end
+    
+            % Plot.
+            subplot(subplot_rows, subplot_columns, comparison_iterator); imagesc(holder); 
+            colormap(cmap); colorbar; caxis(color_range);
+        
+            % Make subplot title.
+            title_string = erase(comparison, parameters.comparison_type); 
+            title(strrep(title_string, '_', ' ')); axis square;
+    
+        % If continuous, 
+        else
+            % Make figures for each variable type.
+            for variablei = 1:numel(parameters.continuous_variable_names)
+                variable = parameters.continuous_variable_names{variablei};
+    
+                if ~isfield(parameters, [variable '_fig'])
+                    figure_holder = figure;
+                    figure_holder.WindowState = 'maximized';
+                    
+                    % Make title.
+                    title_string = ['Betas, ' variable ' second level ' parameters.comparison_type];
+                    if isfield(parameters, 'adjustBetas') && parameters.adjustBetas
+                        title_string = [title_string ', sigma adjusted'];
+                    end
+                    if isfield(parameters, 'useSignificance') && parameters.useSignificance
+                        title_string = [title_string ', significant only'];
+                    end
+                    title_string = strrep(title_string, '_', ' ');
+                    sgtitle(title_string);
+    
+                    % Put into output structure.
+                    parameters.([variable '_fig']) = figure_holder;
+    
+                end
+            end
+    
+            % Figure out where each beta matrix needs to go. 
+            
+            % Use the comparisons matrix to get the variables you're using for
+            % this comparison.
+            variablesToUse = parameters.this_comparison_set(comparison_iterator).variablesToUse;
+    
+            % Make a holder matrix for separated variable betas
+            betas_separated_variables = NaN(parameters.number_of_sources, parameters.number_of_sources, numel(variablesToUse));
+         
+            % Separate out each beta matrix per variable
+            for variablei = 1:numel(variablesToUse)
+    
+                % Make a 2D holder (because lists of indices are weird).
+                holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
+                
+                % Separate
+                holder(parameters.indices) = betas_adjusted((variablei - 1) * numel(parameters.indices) + [1:numel(parameters.indices)]);
+    
+                % Put into 3D holder.
+                betas_separated_variables(:,:, variablei) = holder; 
+    
+            end
+    
+            % Plot each beta matrix depending on where the variable belongs.
+            for variablei = 1:numel(variablesToUse)
+    
+                % Get the variable name
+                variable = erase(variablesToUse{variablei}, '_vector');
+    
+                % Set the current figure to the one you're interested in
+                set(0, 'CurrentFigure', parameters.([variable '_fig']));
+    
+                % Find its place in the order of variables in continuous_variables_names
+                %variable_location = find(strcmp(parameters.continuous_variable_names, {variable}));
+            
+                % If adjusted, use a standard color range for each plot.
+                if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'useColorRange') && parameters.useColorRange
+                    color_range = parameters.color_range;
+                % If not adjusted, make a fitted color range for this plot.
+                else
+                    extreme = max(max(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan'), abs(min(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan')));
+                    color_range = [-extreme extreme]; 
+                end
+                
+                % Get subplot index.
+                %subplot_index = sub2ind([subplot_rows subplot_columns], variable_location, comparison_iterator);
+    
+                % Plot
+                subplot(subplot_rows, subplot_columns, comparison_iterator); imagesc(betas_separated_variables(:,:, variablei)); 
+                colormap(cmap); colorbar; 
+                
+                % Don't use the color range if both values are 0.
+                if any(color_range)
+                    caxis(color_range);
+                end
+               
+                % Make subplot title.
+                title_string = [erase(comparison, parameters.comparison_type)]; 
+                title(strrep(title_string, '_', ' '));  axis square;
+    
             end
         end
 
-        % Figure out where each beta matrix needs to go. 
-        
-        % Use the comparisons matrix to get the variables you're using for
-        % this comparison.
-        variablesToUse = parameters.this_comparison_set(comparison_iterator).variablesToUse;
+    
 
-        % Make a holder matrix for separated variable betas
-        betas_separated_variables = NaN(parameters.number_of_sources, parameters.number_of_sources, numel(variablesToUse));
-     
-        % Separate out each beta matrix per variable
-        for variablei = 1:numel(variablesToUse)
+    % Plot individually
+    else
 
-            % Make a 2D holder (because lists of indices are weird).
-            holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
-            
-            % Separate
-            holder(parameters.indices) = betas_adjusted((variablei - 1) * numel(parameters.indices) + [1:numel(parameters.indices)]);
+         % If categorical, 
+        if strcmp(parameters.comparison_type, 'categorical')
 
-            % Put into 3D holder.
-            betas_separated_variables(:,:, variablei) = holder; 
+            % Duplicate betas across diagonal.
 
-        end
 
-        % Plot each beta matrix depending on where the variable belongs.
-        for variablei = 1:numel(variablesToUse)
+            % Make diagonal = 0;
 
-            % Get the variable name
-            variable = erase(variablesToUse{variablei}, '_vector');
 
-            % Set the current figure to the one you're interested in
-            set(0, 'CurrentFigure', parameters.([variable '_fig']));
+            % Check if this comparison needs to be multiplied by -1 or not.
 
-            % Find its place in the order of variables in continuous_variables_names
-            %variable_location = find(strcmp(parameters.continuous_variable_names, {variable}));
-        
+
+           
+            % Make a figure
+            fig = figure;
+
             % If adjusted, use a standard color range for each plot.
             if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'useColorRange') && parameters.useColorRange
                 color_range = parameters.color_range;
@@ -181,24 +237,61 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 extreme = max(max(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan'), abs(min(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan')));
                 color_range = [-extreme extreme]; 
             end
-            
-            % Get subplot index.
-            %subplot_index = sub2ind([subplot_rows subplot_columns], variable_location, comparison_iterator);
 
-            % Plot
-            subplot(subplot_rows, subplot_columns, comparison_iterator); imagesc(betas_separated_variables(:,:, variablei)); 
-            colormap(cmap); colorbar; 
-            
-            % Don't use the color range if both values are 0.
-            if any(color_range)
-                caxis(color_range);
+
+            % Plot 
+
+            % Make a title.
+
+            % Put figure into parameters output structure.
+            parameters.fig = fig;
+    
+        % If continuous, 
+        else
+
+            % Use the comparisons matrix to get the variables you're using for
+            % this comparison.
+            variablesToUse = parameters.this_comparison_set(comparison_iterator).variablesToUse;
+
+            % Separate out each beta matrix per variable
+            for variablei = 1:numel(variablesToUse)
+
+                % Get the variable name
+                variable = erase(variablesToUse{variablei}, '_vector');
+    
+                % Make a 2D holder (because lists of indices are weird).
+                betas_separated = NaN(parameters.number_of_sources, parameters.number_of_sources);
+                
+                % Separate
+                betas_separated(parameters.indices) = betas_adjusted((variablei - 1) * numel(parameters.indices) + [1:numel(parameters.indices)]);
+                
+                % Duplicate betas across diagonal
+
+                % Make diagonal blank = 0
+
+
+                % Make a figure for this variable.
+                fig = figure;
+                
+                % If adjusted, use a standard color range for each plot.
+                if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'useColorRange') && parameters.useColorRange
+                    color_range = parameters.color_range;
+                % If not adjusted, make a fitted color range for this plot.
+                else
+                    extreme = max(max(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan'), abs(min(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan')));
+                    color_range = [-extreme extreme]; 
+                end
+
+
+                % Plot 
+
+                % Make a title
+
+
+                % Rename figure handle, put into parameters output structure.
+                parameters.([variable '_fig']) = fig;
+
             end
-           
-            % Make subplot title.
-            title_string = [erase(comparison, parameters.comparison_type)]; 
-            title(strrep(title_string, '_', ' '));  axis square;
-
         end
     end
-
 end 
