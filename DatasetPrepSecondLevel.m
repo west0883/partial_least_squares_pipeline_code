@@ -146,7 +146,7 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
     % Take average
     if isfield(parameters, 'averaging_across_mice') && parameters.averaging_across_mice
 
-        dataset.average_across_mice = mean(responseVariables_toaverage, 1, 'omitnan');
+        dataset.average_across_mice = squeeze(mean(responseVariables_toaverage, 1, 'omitnan'));
 
     end 
 
