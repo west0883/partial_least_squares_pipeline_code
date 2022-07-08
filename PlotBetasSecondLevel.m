@@ -213,23 +213,27 @@ function [parameters] = PlotBetasSecondLevel(parameters)
         end
 
     
-
     % Plot individually
     else
 
          % If categorical, 
         if strcmp(parameters.comparison_type, 'categorical')
 
+            % Make holder matrix
+            holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
+            holder(parameters.indices) = betas_adjusted;
+            
             % Duplicate betas across diagonal.
+            indices_upper = find(triu(ones(parameters.number_of_sources), 1));
+            betas_flipped = holder';
+            elements_upper = betas_flipped(indices_upper);
+            holder(indices_upper) = elements_upper;
 
+            % Make diagonal blank = 0
+            for i = 1:parameters.number_of_sources
+                holder(i, i) = 0;
+            end
 
-            % Make diagonal = 0;
-
-
-            % Check if this comparison needs to be multiplied by -1 or not.
-
-
-           
             % Make a figure
             fig = figure;
 
@@ -238,14 +242,22 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 color_range = parameters.color_range;
             % If not adjusted, make a fitted color range for this plot.
             else
-                extreme = max(max(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan'), abs(min(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan')));
-                color_range = [-extreme extreme]; 
+                extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
+                if extreme == 0
+                    color_range = parameters.color_range;
+                else
+                    color_range = [-extreme extreme]; 
+                end
+               
             end
 
-
             % Plot 
+            imagesc(holder); axis square;
+            colorbar; caxis(color_range); colormap(cmap);
 
             % Make a title.
+            title_string = comparison; 
+            title(strrep(title_string, '_', ' '));
 
             % Put figure into parameters output structure.
             parameters.fig = fig;
@@ -268,11 +280,20 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 
                 % Separate
                 betas_separated(parameters.indices) = betas_adjusted((variablei - 1) * numel(parameters.indices) + [1:numel(parameters.indices)]);
-                
+
+                % Rename back to holder to keep things easier
+                holder = betas_separated;
+ 
                 % Duplicate betas across diagonal
+                indices_upper = find(triu(ones(parameters.number_of_sources), 1));
+                betas_flipped = holder';
+                elements_upper = betas_flipped(indices_upper);
+                holder(indices_upper) = elements_upper;
 
                 % Make diagonal blank = 0
-
+                for i = 1:parameters.number_of_sources
+                    holder(i, i) = 0;
+                end
 
                 % Make a figure for this variable.
                 fig = figure;
@@ -282,15 +303,22 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                     color_range = parameters.color_range;
                 % If not adjusted, make a fitted color range for this plot.
                 else
-                    extreme = max(max(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan'), abs(min(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan')));
-                    color_range = [-extreme extreme]; 
+                    extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
+                    
+                    if extreme == 0
+                        color_range = parameters.color_range;
+                    else
+                        color_range = [-extreme extreme]; 
+                    end
                 end
 
-
                 % Plot 
+                imagesc(holder); axis square;
+                colorbar; caxis(color_range); colormap(cmap);
 
                 % Make a title
-
+                title_string = [variable ', ' comparison]; 
+                title(strrep(title_string, '_', ' '));
 
                 % Rename figure handle, put into parameters output structure.
                 parameters.([variable '_fig']) = fig;
