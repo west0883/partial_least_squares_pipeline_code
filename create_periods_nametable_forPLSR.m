@@ -49,7 +49,7 @@ end
 % other organizing period_nametable code.
 % No prep for now.
 categories.motorized_vs_spon = {'motorized', 'spontaneous'};
-categories.type = {'rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished', 'finished_stop'}; % 'prep'
+categories.type = {'rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished_start','finished_stop', 'finished_accel', 'finished_decel'}; % 'prep'
 
 save([parameters.dir_exper 'PLSR\response_categories.mat'], 'categories');
 
