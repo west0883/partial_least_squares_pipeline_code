@@ -127,34 +127,41 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
     parameters.explanatoryVariables_concatenated = explanatoryVariables_concatenated;
     parameters.responseVariables_concatenated = responseVariables_concatenated;
 
-    % (does this for each concatenation, but will only save the last)
-    % Find & remove outliers
-    if isfield(parameters, 'removeOutliers') && parameters.removeOutliers
+    % Only do if the mouse iterator is the maximum number of mice,
+    if current_iterator == parameters.max_mice
 
-        outliers = isoutlier(responseVariables_concatenated);
-
-        dataset.outliers = outliers;
-        dataset.responseVariables_original = responseVariables_concatenated;
-
-        responseVariables_toaverage = responseVariables_concatenated;
-        responseVariables_toaverage(outliers) = NaN;
-
+        % Find & remove outliers
+        if isfield(parameters, 'removeOutliers') && parameters.removeOutliers
+    
+            outliers = isoutlier(responseVariables_concatenated);
+    
+            dataset.outliers = outliers;
+            dataset.responseVariables_original = responseVariables_concatenated;
+    
+            responseVariables_toaverage = responseVariables_concatenated;
+            responseVariables_toaverage(outliers) = NaN;
+    
+        else 
+            responseVariables_toaverage = responseVariables_concatenated; 
+        end
+    
+        % Take average
+        if isfield(parameters, 'averaging_across_mice') && parameters.averaging_across_mice
+    
+            dataset.average_across_mice = squeeze(mean(responseVariables_toaverage, 1, 'omitnan'));
+    
+        end 
+    
+        % Put concatenated data into output.
+        dataset.explanatoryVariables = explanatoryVariables_concatenated;
+        dataset.responseVariables = responseVariables_concatenated;
+        
     else 
-        responseVariables_toaverage = responseVariables_concatenated; 
+        % Make an empty output so RunAnalysis doesn't freak out.
+        dataset = [];
     end
 
-    % Take average
-    if isfield(parameters, 'averaging_across_mice') && parameters.averaging_across_mice
-
-        dataset.average_across_mice = squeeze(mean(responseVariables_toaverage, 1, 'omitnan'));
-
-    end 
-
-   % Put concatenated data into output.
-   dataset.explanatoryVariables = explanatoryVariables_concatenated;
-   dataset.responseVariables = responseVariables_concatenated;
-
-   % Put into parameters
-   parameters.dataset = dataset;
-   
+    % Put into parameters
+    parameters.dataset = dataset;
+       
 end
