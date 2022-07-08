@@ -40,9 +40,17 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
     % If user wants to use significance for plotting,
     if isfield(parameters, 'useSignificance') && parameters.useSignificance
-        
+
+        % If significance matrix doesn't match in size, transpose it.
+        if ~isequal(size(betas_adjusted), size(parameters.significance))
+
+            significance = parameters.significance';
+        else
+            significance = parameters.significance;
+        end
+
         % Only keep/plot beta values that reach significance 
-        betas_adjusted = betas_adjusted .* parameters.significance'; 
+        betas_adjusted = betas_adjusted .* significance; 
 
     end
     
