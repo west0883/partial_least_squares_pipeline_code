@@ -315,7 +315,7 @@ counter = counter + 1;
 comparisons(counter).name = 'motorized_walkvsstart_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
-comparisons(counter).plotMultiplier = -1;
+comparisons(counter).plotMultiplier = 1;
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'start');
@@ -329,7 +329,7 @@ counter = counter + 1;
 comparisons(counter).name = 'spontaneous_walkvsstart_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
-comparisons(counter).plotMultiplier = -1;
+comparisons(counter).plotMultiplier = 1;
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'start');
