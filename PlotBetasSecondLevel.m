@@ -62,6 +62,14 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     name_location = strcmp(parameters.keywords, {'comparison'});
     comparison = parameters.values{name_location};
 
+    % Check if this needs to be flipped.
+    if isfield(parameters.this_comparison_set(comparison_iterator), 'plotMultiplier')
+        
+        % Multiply by plot multipier.
+        betas_adjusted = betas_adjusted .* parameters.this_comparison_set(comparison_iterator).plotMultiplier;
+
+    end
+
     % Make a colormap with cbrewer; 
     cmap= flipud(cbrewer('div', 'RdBu', 512, 'linear'));
 
@@ -96,10 +104,6 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             % Just need one plot per comparison.
             holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
             holder(parameters.indices) = betas_adjusted;
-        
-            % Check if this comparison needs to be multiplied by -1 or not.
-            
-
             
             % If adjusted, use a standard color range for each plot.
             if isfield(parameters, 'adjustBetas') && parameters.adjustBetas
