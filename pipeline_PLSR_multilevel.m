@@ -1028,7 +1028,7 @@ parameters.shufflesDim = 2;
 parameters.find_significance = true;
 
 % The statistical alpha value
-parameters.alphaValue = 0.05; % / numel(parameters.comparisons_categorical);
+parameters.alphaValue = 0.05;  %/(numel(parameters.comparisons_categorical) - 4;
 
 % If you want to fit a normal distribution before t-test (default = true)
 parameters.useNormalDistribution = false; 
@@ -1248,7 +1248,7 @@ parameters.shufflesDim = 2; % After the EvaluateOnData reduction
 parameters.find_significance = true;
 
 % The statistical alpha value
-parameters.alphaValue = 0.05; %/ numel(parameters.comparisons_continuous);
+parameters.alphaValue = 0.05; %/numel(parameters.comparisons_continuous);
 
 % If you want to fit a normal distribution before t-test (default = true)
 parameters.useNormalDistribution = false; 
@@ -1399,5 +1399,8 @@ end
 %close all;
 clear i j true_false_vector;
 
-%% Level 2 continuous across categories
-% take difference of betas between 2 categories, concatenate, normalize
+%% Plot betas individually, for making pretty figures. 
+
+% Categorical outputs
+
+% Continuous outputs
