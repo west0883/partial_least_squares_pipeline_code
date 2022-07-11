@@ -56,8 +56,7 @@ end
 % Load comparisons for first level continuous, if it exists yet.
 if isfile([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat'])
     load([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat']);
-    parameters.comparisons_continuous = comparisons(13:15);
-    continuous_comparisons = comparisons;
+    parameters.comparisons_continuous = comparisons;
     parameters.loop_variables.comparisons_continuous = parameters.comparisons_continuous; 
     clear comparisons;
 end
@@ -65,8 +64,7 @@ end
 % Load comparisons for first level categorical, if it exists yet.
 if isfile([parameters.dir_exper 'PLSR\comparisons_level1_categorical.mat'])
     load([parameters.dir_exper 'PLSR\comparisons_level1_categorical.mat']);
-    parameters.comparisons_categorical = comparisons(25:32);
-    categorical_comparisons = comparisons;
+    parameters.comparisons_categorical = comparisons;
     parameters.loop_variables.comparisons_categorical = parameters.comparisons_categorical;
     clear comparisons;
 end
@@ -331,9 +329,6 @@ RunAnalysis({@PLSR_forRunAnalysis}, parameters);
 parameters.findBestNComponents = false;
 
 %% Level 1 continuous -- plot histograms of number of components used .
-parameters.loop_variables.comparisons_continuous = continuous_comparisons;
-parameters.comparisons_continuous = continuous_comparisons;
-
 % Concatenate the nubmer of components used per mouse.
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -374,16 +369,9 @@ parameters.loop_list.things_to_save.histogram.variable= {'ncomponents_used_allco
 parameters.loop_list.things_to_save.histogram.level = 'mouse';
 
 RunAnalysis({@ConcatenateData, @EvaluateOnData}, parameters);
-
-parameters.loop_variables.comparisons_continuous = continuous_comparisons(13:15);
-parameters.comparisons_continuous = continuous_comparisons(13:15);
-
 close all;
 
 %% PLSR Level 1, continuous: check components 
-
-parameters.loop_variables.comparisons_continuous = continuous_comparisons;
-parameters.comparisons_continuous = continuous_comparisons;
 
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
@@ -458,10 +446,6 @@ parameters.loop_list.things_to_save.fig_BICs_response.level = 'mouse';
 % parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
 
 RunAnalysis({@CheckComponents}, parameters);
-
-parameters.loop_variables.comparisons_continuous = continuous_comparisons(13:15);
-parameters.comparisons_continuous = continuous_comparisons(13:15);
-
 close all;
 
 %% Level 1 continuous -- run random permutations.
@@ -587,9 +571,6 @@ RunAnalysis({@PlotBetas}, parameters);
 close all;
 
 %% Remove continuous variables effects from each behavior type. 
-parameters.loop_variables.comparisons_continuous = continuous_comparisons;
-parameters.comparisons_continuous = continuous_comparisons;
-
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -638,9 +619,6 @@ parameters.loop_list.things_to_save.dataset_out.level = 'comparison';
 end
 
 RunAnalysis({@ResidualsFromContinuous}, parameters); 
-
-parameters.loop_variables.comparisons_continuous = continuous_comparisons(13:15);
-parameters.comparisons_continuous = continuous_comparisons(13:15);
 
 parameters.removeOutliers = false; 
 parameters.imputeMissing =false;
@@ -727,9 +705,6 @@ RunAnalysis({@PLSR_forRunAnalysis}, parameters);
 parameters.findBestNComponents = false;
 
 %% Level 1 categorical -- check components
-parameters.loop_list.comparisons_categorical = categorical_comparisons;
-parameters.comparisons_categorical = categorical_comparisons;
-
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -796,9 +771,6 @@ parameters.loop_list.things_to_save.fig_BICs_response.level = 'mouse';
 % parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
 
 RunAnalysis({@CheckComponents}, parameters);
-
-parameters.loop_list.comparisons_categorical = categorical_comparisons(25:32);
-parameters.comparisons_categorical = categorical_comparisons(25:32);
 
 close all;
 
@@ -882,8 +854,6 @@ RunAnalysis({@PlotBetas}, parameters);
 close all;
 
 %% Level 1 categorical -- plot histograms of number of components used .
-parameters.loop_list.comparisons_categorical = categorical_comparisons;
-parameters.comparisons_categorical = categorical_comparisons;
 
 % Concatenate the nubmer of components used per mouse.
 if isfield(parameters, 'loop_list')
@@ -925,9 +895,6 @@ parameters.loop_list.things_to_save.histogram.variable= {'ncomponents_used_allco
 parameters.loop_list.things_to_save.histogram.level = 'mouse';
 
 RunAnalysis({@ConcatenateData, @EvaluateOnData}, parameters);
-
-parameters.loop_list.comparisons_categorical = categorical_comparisons(25:32);
-parameters.comparisons_categorical = categorical_comparisons(25:32);
 
 
 %% Level 1 categorical -- run random permutations.
@@ -1123,9 +1090,6 @@ RunAnalysis({@AverageSigmas}, parameters);
 %% Level 2 categorical -- plot betas
 % Plot all the beta intercepts in a single plot 
 
-parameters.loop_list.comparisons_categorical = categorical_comparisons;
-parameters.comparisons_categorical = categorical_comparisons;
-
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
 for i = 1:numel(true_false_vector)
@@ -1196,10 +1160,6 @@ for i = 1:numel(true_false_vector)
 end 
 %close all;
 clear i j true_false_vector;
-
-parameters.loop_list.comparisons_categorical = categorical_comparisons(25:32);
-parameters.comparisons_categorical = categorical_comparisons(25:32);
-
 
 %% *** LEVEL 2 CONTINUOUS ***
 
@@ -1349,8 +1309,6 @@ RunAnalysis({@AverageSigmas}, parameters);
 
 %% Level 2 continuous -- plot betas
 % Plot all the beta intercepts in a single plot 
-parameters.loop_variables.comparisons_continuous = continuous_comparisons;
-parameters.comparisons_continuous = continuous_comparisons;
 
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
@@ -1435,11 +1393,7 @@ for i = 1:numel(true_false_vector)
         RunAnalysis({@PlotBetasSecondLevel}, parameters);
     end
 end 
-
-parameters.loop_variables.comparisons_continuous = continuous_comparisons(13:15);
-parameters.comparisons_continuous = continuous_comparisons(13:15);
-
-close all;
+%close all;
 clear i j true_false_vector;
 
 %% Plot betas individually, for making pretty figures. 
