@@ -1089,7 +1089,7 @@ RunAnalysis({@AverageSigmas}, parameters);
 
 %% Level 2 categorical -- plot betas
 % Plot all the beta intercepts in a single plot 
-
+parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
 for i = 1:numel(true_false_vector)
@@ -1309,7 +1309,7 @@ RunAnalysis({@AverageSigmas}, parameters);
 
 %% Level 2 continuous -- plot betas
 % Plot all the beta intercepts in a single plot 
-
+parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
 for i = 1:numel(true_false_vector)
@@ -1488,4 +1488,164 @@ for typei = 1:numel(comparison_types)
 
     close all;
 end
+parameters.plotIndividually = false;
+%% Individual plots: Re-do walk vs faccel with new color range.
+parameters.plotIndividually = true;
+parameters.adjustBetas = true;
+parameters.useSignificance = true;
 
+% Accel & decel-relevant comparisons 
+parameters.this_comparison_set = parameters.comparisons_categorical([27]);
+parameters.loop_variables.comparisons_acceldecel = parameters.this_comparison_set;
+parameters.comparison_type = 'categorical';
+
+% Averaging? 
+parameters.averaging_across_mice = true;
+parameters.removeOutliers = true;
+
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'comparison', {['loop_variables.comparisons_acceldecel(:).name']}, 'comparison_iterator' };
+
+% Color range for all plots (if betas are adjusted).
+parameters.useColorRange = true;
+parameters.color_range = [-0.04 0.04];
+
+% Input
+parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 ' parameters.comparison_type '\optimized components\outliers removed\'], 'comparison', '\'};
+parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
+parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
+% significance matrix
+if parameters.useSignificance
+parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\optimized components\outliers removed\'], 'comparison', '\'};
+parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance.mat'};
+parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
+parameters.loop_list.things_to_load.significance.level = 'comparison';
+end
+% Average sigmas.
+if parameters.adjustBetas
+parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 ' parameters.comparison_type '\optimized components\outliers removed\'], 'comparison', '\'};
+parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
+parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
+parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
+end
+
+% Output
+parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\optimized components\outliers removed\individual plots\']};
+parameters.loop_list.things_to_save.fig.filename = {'comparison'};
+parameters.loop_list.things_to_save.fig.variable = {'fig'};
+parameters.loop_list.things_to_save.fig.level = 'comparison';
+parameters.loop_list.things_to_save.fig.saveas_type = 'svg';
+
+RunAnalysis({@PlotBetasSecondLevel}, parameters);
+
+%close all;
+parameters.plotIndividually = false;
+
+%% Separate variables from level 2 results of continuous to make other calculations easier
+
+
+%% Make histograms of betas per mouse for each comparison.
+comparison_types = {'categorical', 'continuous'};
+
+for typei = 1 %:numel(comparison_types)
+
+    parameters.comparison_type = comparison_types{typei};
+    parameters.this_comparison_set = parameters.(['comparisons_' parameters.comparison_type]);
+
+    if isfield(parameters, 'loop_list')
+    parameters = rmfield(parameters,'loop_list');
+    end
+
+    % Iterators
+    parameters.loop_list.iterators = {
+                   'comparison', {['loop_variables.comparisons_'  parameters.comparison_type '(:).name']}, 'comparison_iterator'};
+    
+    % Input
+    parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 ' parameters.comparison_type '\optimized components\outliers removed\'], 'comparison', '\'};
+    parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info.mat'};
+    parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
+    parameters.loop_list.things_to_load.data.level = 'comparison';
+    
+    % Output
+    % Categorical
+    if strcmp(parameters.comparison_type, 'categorical')
+        parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\optimized components\outliers removed\histogram plots\']};
+        parameters.loop_list.things_to_save.fig.filename = {'comparison'};
+        parameters.loop_list.things_to_save.fig.variable = {'fig'};
+        parameters.loop_list.things_to_save.fig.level = 'comparison';
+        %parameters.loop_list.things_to_save.fig.saveas_type = 'svg';
+
+    else
+        % Continuous
+        parameters.loop_list.things_to_save.speed_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\optimized components\outliers removed\histogram plots\']};
+        parameters.loop_list.things_to_save.speed_fig.filename = {'speed_', 'comparison'};
+        parameters.loop_list.things_to_save.speed_fig.variable = {'speed_fig'};
+        parameters.loop_list.things_to_save.speed_fig.level = 'comparison';
+        %parameters.loop_list.things_to_save.speed_fig.saveas_type = 'svg';
+
+        parameters.loop_list.things_to_save.accel_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\optimized components\outliers removed\individual plots\']};
+        parameters.loop_list.things_to_save.accel_fig.filename = {'accel_ ',  'comparison'};
+        parameters.loop_list.things_to_save.accel_fig.variable = {'accel_fig'};
+        parameters.loop_list.things_to_save.accel_fig.level = 'comparison';
+        %parameters.loop_list.things_to_save.accel_fig.saveas_type = 'svg';
+    
+        parameters.loop_list.things_to_save.duration_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\optimized components\outliers removed\individual plots\']};
+        parameters.loop_list.things_to_save.duration_fig.filename = {'duration_ ',  'comparison'};
+        parameters.loop_list.things_to_save.duration_fig.variable = {'duration_fig'};
+        parameters.loop_list.things_to_save.duration_fig.level = 'comparison';
+        %parameters.loop_list.things_to_save.duration_fig.saveas_type = 'svg';
+    
+        parameters.loop_list.things_to_save.pupil_diameter_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\optimized components\outliers removed\individual plots\']};
+        parameters.loop_list.things_to_save.pupil_diameter_fig.filename = {'pupil_diameter_ ',  'comparison'};
+        parameters.loop_list.things_to_save.pupil_diameter_fig.variable = {'pupil_diameter_fig'};
+        parameters.loop_list.things_to_save.pupil_diameter_fig.level = 'comparison';
+        %parameters.loop_list.things_to_save.pupil_diameter_fig.saveas_type = 'svg';
+    end
+
+    RunAnalysis({@HistogramsOfBetas}, parameters);
+
+    %close all;
+end
+
+%% Calculate correlation between number of components used and standard deviation of all betas
+% (the betas plotted in histograms above).
+
+comparison_types = {'categorical', 'continuous'};
+for typei = 1 %:numel(comparison_types)
+
+    parameters.comparison_type = comparison_types{typei};
+    parameters.this_comparison_set = parameters.(['comparisons_' parameters.comparison_type]);
+    
+    if isfield(parameters, 'loop_list')
+    parameters = rmfield(parameters,'loop_list');
+    end
+    
+    % Iterators
+    parameters.loop_list.iterators = {
+                   'comparison', {['loop_variables.comparisons_'  parameters.comparison_type '(:).name']}, 'comparison_iterator';
+                   'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
+    % Input
+    parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 ' parameters.comparison_type '\optimized components\outliers removed\'], 'comparison', '\'};
+    parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info.mat'};
+    parameters.loop_list.things_to_load.data.variable = {'dataset_info'};
+    parameters.loop_list.things_to_load.data.level = 'comparison';
+
+    parameters.loop_list.things_to_load.ncomponents_used.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\outliers removed\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_load.ncomponents_used.filename= {'PLSR_results.mat'};
+    parameters.loop_list.things_to_load.ncomponents_used.variable= {'PLSR_results.ncomponents_used'}; 
+    parameters.loop_list.things_to_load.ncomponents_used.level = 'mouse';
+
+    % Output
+    parameters.loop_list.things_to_save.correlation.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\optimized components\outliers removed\']};
+    parameters.loop_list.things_to_save.correlation.filename = {'ncomponents_std_correlation.mat'};
+    parameters.loop_list.things_to_save.correlation.variable = {'correlation'};
+    parameters.loop_list.things_to_save.correlation.level = 'end';
+    
+    RunAnalysis({@ncomponents_std_correlate}, parameters);
+end
