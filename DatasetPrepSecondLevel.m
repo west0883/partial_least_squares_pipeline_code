@@ -145,10 +145,11 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
             responseVariables_toaverage = responseVariables_concatenated; 
         end
     
-        % Take average
+        % Take average & std.
         if isfield(parameters, 'averaging_across_mice') && parameters.averaging_across_mice
     
             dataset.average_across_mice = squeeze(mean(responseVariables_toaverage, 1, 'omitnan'));
+            dataset.std_across_mice = squeeze(std(responseVariables_toaverage, [], 1, 'omitnan'));
     
         end 
     
