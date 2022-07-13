@@ -221,7 +221,7 @@ parameters.loop_list.iterators = {
 parameters.this_comparison_set = parameters.comparisons_continuous;
 
 % Remove outliers from explanatory variables.
-parameters.removeOutliers = true;
+parameters.removeOutliers = false;
 
 % Flag for whether or not missing data (NaNs) should be imputed.
 parameters.imputeMissing = true; 
@@ -244,7 +244,7 @@ parameters.loop_list.things_to_load.explanatory.variable= {'values'};
 parameters.loop_list.things_to_load.explanatory.level = 'mouse';
 
 % Output
-parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
@@ -313,7 +313,7 @@ parameters.stratify = false;
 parameters.permutationGeneration = false;
 
 % Input 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
@@ -404,7 +404,7 @@ parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
 parameters.loop_list.things_to_load.results.level = 'comparison';
 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
@@ -459,11 +459,11 @@ parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator';
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
-parameters.removeOutliers = true; 
+parameters.removeOutliers = false; 
 parameters.concatDim = 1;
 parameters.concatenation_level = 'mouse';
 parameters.averageDim = 1;
-parameters.evaluation_instructions ={{}; {}; {'data_evaluated = round(parameters.average);'}};
+parameters.evaluation_instructions ={{}; {}; {'data_evaluated = floor(parameters.average);'}};
 
 % Input
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\optimized components\outliers removed\'], 'comparison','\', 'mouse', '\'};
@@ -502,7 +502,7 @@ parameters.comparison_type = 'continuous';
 parameters.permutationGeneration = false;
 
 % Input 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
@@ -542,7 +542,7 @@ if do
     
     % Input 
     % dataset
-    parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
     parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
     parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
     parameters.loop_list.things_to_load.dataset.level = 'comparison';
@@ -584,7 +584,7 @@ parameters.loop_list.things_to_load.results.variable= {'PLSR_results'};
 parameters.loop_list.things_to_load.results.level = 'comparison';
 
 % Also load in dataset values for the zscore sigma.
-parameters.loop_list.things_to_load.dataset_info.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset_info.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset_info.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset_info.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset_info.level = 'comparison';
@@ -610,8 +610,8 @@ parameters.loop_list.iterators = {
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 
-parameters.removeOutliers = true; 
-parameters.imputeMissing = true; 
+parameters.removeOutliers = false; 
+parameters.imputeMissing = false; 
 % Amount of variance explained you want for the number of PCs used in
 % missing values imputation.
 parameters.imputation_components_variance_explained = 75; % in percents
@@ -619,7 +619,7 @@ parameters.imputation_max_components = 10;
 
 % Input 
 % The variables from the comparison
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
@@ -718,7 +718,7 @@ parameters.stratify = true;
 parameters.permutationGeneration = false;
 
 % Input 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\average optimized components\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
@@ -870,7 +870,7 @@ parameters.loop_list.things_to_load.data.variable= {'PLSR_results.ncomponents_us
 parameters.loop_list.things_to_load.data.level = 'mouse';
 
 % Output
-parameters.loop_list.things_to_save.data_evaluated.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\outliers removed\'], 'comparison', '\'};
+parameters.loop_list.things_to_save.data_evaluated.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\average optimized components pre\'], 'comparison', '\'};
 parameters.loop_list.things_to_save.data_evaluated.filename= {'average_ncomponents_used.mat'};
 parameters.loop_list.things_to_save.data_evaluated.variable= {'average_ncomponents_used'}; 
 parameters.loop_list.things_to_save.data_evaluated.level = 'comparison';
@@ -899,7 +899,7 @@ parameters.comparison_type = 'categorical';
 parameters.permutationGeneration = false;
 
 % Input 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\average optimized components pre\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\average optimized components\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
@@ -957,41 +957,41 @@ close all;
 
 %% Level 1 categorical -- run random permutations.
 % Always clear loop list first. 
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {
-               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' }; 
-
-% Do you want permutations?
-parameters.permutationGeneration = true;
-parameters.n_permutations = 5000;
-parameters.stratify = true;
-parameters.comparison_type = 'categorical';
-
-% Input 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\average optimized components\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
-parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
-parameters.loop_list.things_to_load.dataset.level = 'comparison';
-% optimized number of components to use.
-parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\average optimized components\'], 'comparison','\', 'mouse', '\'};
-parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
-parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
-
-% Output
-parameters.loop_list.things_to_save.betas_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\average optimized components\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_save.betas_randomPermutations.filename= {'PLSR_betas_randomPermutations.mat'};
-parameters.loop_list.things_to_save.betas_randomPermutations.variable= {'betas_randomPermutations'}; 
-parameters.loop_list.things_to_save.betas_randomPermutations.level = 'comparison';
-
-RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
-
-parameters.permutationGeneration = false;
+% if isfield(parameters, 'loop_list')
+% parameters = rmfield(parameters,'loop_list');
+% end
+% 
+% % Iterators
+% parameters.loop_list.iterators = {
+%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+%                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' }; 
+% 
+% % Do you want permutations?
+% parameters.permutationGeneration = true;
+% parameters.n_permutations = 5000;
+% parameters.stratify = true;
+% parameters.comparison_type = 'categorical';
+% 
+% % Input 
+% parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\average optimized components\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+% parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+% parameters.loop_list.things_to_load.dataset.level = 'comparison';
+% % optimized number of components to use.
+% parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\average optimized components\'], 'comparison','\', 'mouse', '\'};
+% parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
+% parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
+% parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
+% 
+% % Output
+% parameters.loop_list.things_to_save.betas_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\average optimized components\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_save.betas_randomPermutations.filename= {'PLSR_betas_randomPermutations.mat'};
+% parameters.loop_list.things_to_save.betas_randomPermutations.variable= {'betas_randomPermutations'}; 
+% parameters.loop_list.things_to_save.betas_randomPermutations.level = 'comparison';
+% 
+% RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+% 
+% parameters.permutationGeneration = false;
 
 %% RUN AVERAGES WITH OUTLIERS REMOVED INSTEAD
 
@@ -1010,7 +1010,7 @@ parameters.loop_list.iterators = {
 
 % Remove outliers & average
 parameters.averaging_across_mice = true;
-parameters.removeOutliers = true; 
+parameters.removeOutliers = false; 
 
 % If the first level was categorical:
 parameters.firstLevelCategorical = true; 
@@ -1035,78 +1035,78 @@ RunAnalysis({@DatasetPrepSecondLevel}, parameters);
 
 %% Level 2 categorical -- prep shuffled datasets for PLSR on shuffles.
 % Always clear loop list first. 
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {
-               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
-               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
-
-% If the first level was categorical:
-parameters.firstLevelCategorical = true; 
-
-% Remove outliers & average
-parameters.averaging_across_mice = true;
-parameters.removeOutliers = true; 
-
-parameters.this_comparison_set = parameters.comparisons_categorical;
-parameters.max_mice = size(parameters.mice_all, 2);
-parameters.concatenation_level = 'mouse';
-
-% Input 
-parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\average optimized components\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_betas_randomPermutations.mat'};
-parameters.loop_list.things_to_load.response.variable= {'betas_randomPermutations'}; 
-parameters.loop_list.things_to_load.response.level = 'mouse';
-
-% Output
-parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\average optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations.mat'};
-parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
-parameters.loop_list.things_to_save.dataset.level = 'comparison';
-
-RunAnalysis({@DatasetPrepSecondLevel}, parameters);
+% if isfield(parameters, 'loop_list')
+% parameters = rmfield(parameters,'loop_list');
+% end
+% 
+% % Iterators
+% parameters.loop_list.iterators = {
+%                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
+%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
+% 
+% % If the first level was categorical:
+% parameters.firstLevelCategorical = true; 
+% 
+% % Remove outliers & average
+% parameters.averaging_across_mice = true;
+% parameters.removeOutliers = false; 
+% 
+% parameters.this_comparison_set = parameters.comparisons_categorical;
+% parameters.max_mice = size(parameters.mice_all, 2);
+% parameters.concatenation_level = 'mouse';
+% 
+% % Input 
+% parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\average optimized components\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_load.response.filename= {'PLSR_betas_randomPermutations.mat'};
+% parameters.loop_list.things_to_load.response.variable= {'betas_randomPermutations'}; 
+% parameters.loop_list.things_to_load.response.level = 'mouse';
+% 
+% % Output
+% parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\average optimized components\'], 'comparison', '\'};
+% parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations.mat'};
+% parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
+% parameters.loop_list.things_to_save.dataset.level = 'comparison';
+% 
+% RunAnalysis({@DatasetPrepSecondLevel}, parameters);
 
 %% Level 2 categorical -- check significance
 % Always clear loop list first. 
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {
-               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
-
-parameters.shufflesDim = 2;
-parameters.find_significance = true;
-
-% The statistical alpha value
-parameters.alphaValue = 0.05;  %/(numel(parameters.comparisons_categorical) - 4;
-
-% If you want to fit a normal distribution before t-test (default = true)
-parameters.useNormalDistribution = false; 
-
-% Inputs:
-% Test values
-parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\average optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info.mat'};
-parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
-parameters.loop_list.things_to_load.test_values.level = 'comparison';
-% Null distribution
-parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\average optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations.mat'};
-parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
-parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
-
-% Outputs
-parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\average optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance.mat'};
-parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
-parameters.loop_list.things_to_save.significance.level = 'comparison';
-
-RunAnalysis({@SignificanceCalculation}, parameters);
+% if isfield(parameters, 'loop_list')
+% parameters = rmfield(parameters,'loop_list');
+% end
+% 
+% % Iterators
+% parameters.loop_list.iterators = {
+%                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
+% 
+% parameters.shufflesDim = 2;
+% parameters.find_significance = true;
+% 
+% % The statistical alpha value
+% parameters.alphaValue = 0.05;  %/(numel(parameters.comparisons_categorical) - 4;
+% 
+% % If you want to fit a normal distribution before t-test (default = true)
+% parameters.useNormalDistribution = false; 
+% 
+% % Inputs:
+% % Test values
+% parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\average optimized components\'], 'comparison', '\'};
+% parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info.mat'};
+% parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
+% parameters.loop_list.things_to_load.test_values.level = 'comparison';
+% % Null distribution
+% parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\average optimized components\'], 'comparison', '\'};
+% parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations.mat'};
+% parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
+% parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
+% 
+% % Outputs
+% parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\average optimized components\'], 'comparison', '\'};
+% parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance.mat'};
+% parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
+% parameters.loop_list.things_to_save.significance.level = 'comparison';
+% 
+% RunAnalysis({@SignificanceCalculation}, parameters);
 
 %% Level 2 categorical -- concatenate & average sigmas
 % For each comparison. For adjusting betas in plots below. 
@@ -1123,7 +1123,7 @@ parameters.loop_list.iterators = {
 parameters.this_comparison_set = parameters.comparisons_categorical;
 parameters.comparison_type = 'categorical';                                   
 parameters.concatDim = 1;
-parameters.removeOutliers = true;
+parameters.removeOutliers = false;
 parameters.concatenation_level = 'mouse';
 
 % Input 
@@ -1138,11 +1138,12 @@ parameters.loop_list.things_to_save.average_sigmas.filename= {'average_zscore_si
 parameters.loop_list.things_to_save.average_sigmas.variable= {'average_zscore_sigmas'}; 
 parameters.loop_list.things_to_save.average_sigmas.level = 'comparison';
 
+if parameters.removeOutliers
 parameters.loop_list.things_to_save.sigma_outliers.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\average optimized components\'], 'comparison','\'};
 parameters.loop_list.things_to_save.sigma_outliers.filename= {'outliers_zscore_sigmas.mat'};
 parameters.loop_list.things_to_save.sigma_outliers.variable= {'outliers_zscore_sigmas'}; 
 parameters.loop_list.things_to_save.sigma_outliers.level = 'comparison';
-
+end
 RunAnalysis({@AverageSigmas}, parameters);
 
 %% Level 2 categorical -- plot betas
@@ -1154,7 +1155,7 @@ for i = 1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
-    for j = 1:numel(true_false_vector)
+    for j = 1%:numel(true_false_vector)
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
@@ -1168,7 +1169,7 @@ for i = 1:numel(true_false_vector)
 
         % Averaging? 
         parameters.averaging_across_mice = true;
-        parameters.removeOutliers = true;
+        parameters.removeOutliers = false;
 
         % Color range for all plots (if betas are adjusted).
         parameters.useColorRange = true;
@@ -1236,7 +1237,7 @@ parameters.loop_list.iterators = {
 parameters.firstLevelCategorical = false; 
 % Remove outliers & average
 parameters.averaging_across_mice = true;
-parameters.removeOutliers = true; 
+parameters.removeOutliers = false; 
 
 parameters.this_comparison_set = parameters.comparisons_continuous;
 parameters.max_mice = size(parameters.mice_all, 2);
@@ -1258,75 +1259,75 @@ RunAnalysis({@DatasetPrepSecondLevel}, parameters);
 
 %% Level 2 continuous -- prep shuffled datasets for PLSR on shuffles.
 % Always clear loop list first. 
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {
-               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator';
-               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
-
-% If the first level was categorical:
-parameters.firstLevelCategorical = false; 
-
-parameters.this_comparison_set = parameters.comparisons_continuous;
-parameters.max_mice = size(parameters.mice_all, 2);
-parameters.concatenation_level = 'mouse';
-parameters.averaging_across_mice = true;
-parameters.removeOutliers = true;
-
-% Input 
-parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\average optimized components\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_betas_randomPermutations.mat'};
-parameters.loop_list.things_to_load.response.variable= {'betas_randomPermutations'}; 
-parameters.loop_list.things_to_load.response.level = 'mouse';
-
-% Output
-parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\average optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations.mat'};
-parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
-parameters.loop_list.things_to_save.dataset.level = 'comparison';
-
-RunAnalysis({@DatasetPrepSecondLevel}, parameters);
+% if isfield(parameters, 'loop_list')
+% parameters = rmfield(parameters,'loop_list');
+% end
+% 
+% % Iterators
+% parameters.loop_list.iterators = {
+%                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator';
+%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
+% 
+% % If the first level was categorical:
+% parameters.firstLevelCategorical = false; 
+% 
+% parameters.this_comparison_set = parameters.comparisons_continuous;
+% parameters.max_mice = size(parameters.mice_all, 2);
+% parameters.concatenation_level = 'mouse';
+% parameters.averaging_across_mice = true;
+% parameters.removeOutliers = false;
+% 
+% % Input 
+% parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\average optimized components\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_load.response.filename= {'PLSR_betas_randomPermutations.mat'};
+% parameters.loop_list.things_to_load.response.variable= {'betas_randomPermutations'}; 
+% parameters.loop_list.things_to_load.response.level = 'mouse';
+% 
+% % Output
+% parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\average optimized components\'], 'comparison', '\'};
+% parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations.mat'};
+% parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
+% parameters.loop_list.things_to_save.dataset.level = 'comparison';
+% 
+% RunAnalysis({@DatasetPrepSecondLevel}, parameters);
 
 %% Level 2 continuous -- check significance
 % Always clear loop list first. 
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {
-               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-parameters.shufflesDim = 2; % After the EvaluateOnData reduction
-parameters.find_significance = true;
-
-% The statistical alpha value
-parameters.alphaValue = 0.05; %/numel(parameters.comparisons_continuous);
-
-% If you want to fit a normal distribution before t-test (default = true)
-parameters.useNormalDistribution = false; 
-
-% Inputs:
-% Test values (will grab only the intercepts with EvaluateOnData)
-parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\average optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info.mat'};
-parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
-parameters.loop_list.things_to_load.test_values.level = 'comparison';
-% Null distribution
-parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\average optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations.mat'};
-parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
-parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
-
-% Outputs
-parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\average optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance.mat'};
-parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
-parameters.loop_list.things_to_save.significance.level = 'comparison';
-
-RunAnalysis({@SignificanceCalculation}, parameters);
+% if isfield(parameters, 'loop_list')
+% parameters = rmfield(parameters,'loop_list');
+% end
+% 
+% % Iterators
+% parameters.loop_list.iterators = {
+%                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+% parameters.shufflesDim = 2; % After the EvaluateOnData reduction
+% parameters.find_significance = true;
+% 
+% % The statistical alpha value
+% parameters.alphaValue = 0.05; %/numel(parameters.comparisons_continuous);
+% 
+% % If you want to fit a normal distribution before t-test (default = true)
+% parameters.useNormalDistribution = false; 
+% 
+% % Inputs:
+% % Test values (will grab only the intercepts with EvaluateOnData)
+% parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\average optimized components\'], 'comparison', '\'};
+% parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info.mat'};
+% parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
+% parameters.loop_list.things_to_load.test_values.level = 'comparison';
+% % Null distribution
+% parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\average optimized components\'], 'comparison', '\'};
+% parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations.mat'};
+% parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
+% parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
+% 
+% % Outputs
+% parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\average optimized components\'], 'comparison', '\'};
+% parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance.mat'};
+% parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
+% parameters.loop_list.things_to_save.significance.level = 'comparison';
+% 
+% RunAnalysis({@SignificanceCalculation}, parameters);
 
 %% Level 2 continuous -- concatenate & average sigmas
 % For each comparison. For adjusting betas in plots below. 
@@ -1343,11 +1344,11 @@ parameters.loop_list.iterators = {
 parameters.this_comparison_set = parameters.comparisons_continuous;
 parameters.comparison_type = 'continuous';                                   
 parameters.concatDim = 1;
-parameters.removeOutliers = true;
+parameters.removeOutliers = false;
 parameters.concatenation_level = 'mouse';
 
 % Input 
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\outliers removed\'], 'comparison','\', 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison','\', 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'mouse';
@@ -1374,7 +1375,7 @@ for i = 1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
-    for j = 1:numel(true_false_vector)
+    for j = 1 %:numel(true_false_vector)
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
@@ -1388,7 +1389,7 @@ for i = 1:numel(true_false_vector)
 
         % Averaging? 
         parameters.averaging_across_mice = true;
-        parameters.removeOutliers = true;
+        parameters.removeOutliers = false;
 
         % Color range for all plots (if betas are adjusted).
         parameters.useColorRange = false;
@@ -1463,7 +1464,7 @@ parameters.useSignificance = true;
 
 % Averaging? 
 parameters.averaging_across_mice = true;
-parameters.removeOutliers = true;
+parameters.removeOutliers = false;
 
 for typei = 1:numel(comparison_types)
 
