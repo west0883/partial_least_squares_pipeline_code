@@ -16,10 +16,9 @@
 % to this comparison & will find the related brain data & response
 % variable pairs. Is important for when comparison dataset is first
 % removecd from larger dataset. 
-% variablesToSubtract --> continuous variables whose effect have already
-% been calculated in a level 1 continuous variable comparison, which you
-% want to subtract out of the data here before running a categorical
-% comparison.
+% Will also have a "figure_type" identifier, which is for determining the
+% color range of final figures. Can be "continued", "startstop", or
+% "acceldecel".
 
 %% Initial setup
 clear all; 
@@ -73,6 +72,7 @@ comparisons(counter).name = 'motorized_restvswalk';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'continued';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'rest');
@@ -87,6 +87,7 @@ comparisons(counter).name = 'spontaneous_restvswalk';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'continued';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'rest');
@@ -104,6 +105,7 @@ comparisons(counter).name = 'motorized_startvsstop_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'start') | strcmp(period_types, 'stop');
@@ -118,6 +120,7 @@ comparisons(counter).name = 'spontaneous_startvsstop_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'start') | strcmp(period_types, 'stop');
@@ -133,6 +136,7 @@ comparisons(counter).name = 'motorized_accelvsdecel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'accel') | strcmp(period_types, 'decel');
@@ -149,6 +153,7 @@ comparisons(counter).name = 'motorized_startvsaccel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'start') | strcmp(period_types, 'accel');
@@ -164,6 +169,7 @@ comparisons(counter).name = 'motorized_stopvsdecel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'stop') | strcmp(period_types, 'decel');
@@ -181,6 +187,7 @@ comparisons(counter).name = 'motorized_restvsfinishedstop_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'rest') | strcmp(period_types, 'finished_stop');
@@ -195,6 +202,7 @@ comparisons(counter).name = 'spontaneous_restvsfinishedstop_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'rest') | strcmp(period_types, 'finished_stop');
@@ -209,6 +217,7 @@ comparisons(counter).name = 'rest_motorizedvsspon_categorical';
 comparisons(counter).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'continued';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'rest');
@@ -222,6 +231,7 @@ comparisons(counter).name = 'walk_motorizedvsspon_categorical';
 comparisons(counter).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'continued';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk');
@@ -235,6 +245,7 @@ comparisons(counter).name = 'start_motorizedvsspon_categorical';
 comparisons(counter).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'start');
@@ -248,6 +259,7 @@ comparisons(counter).name = 'stop_motorizedvsspon_categorical';
 comparisons(counter).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'stop');
@@ -261,6 +273,7 @@ comparisons(counter).name = 'finished_stop_motorizedvsspon_categorical';
 comparisons(counter).variablesToUse = {'motorized_vs_spon_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'finished_stop');
@@ -274,6 +287,7 @@ comparisons(counter).name = 'motorized_walkvsaccel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'accel');
@@ -288,6 +302,7 @@ comparisons(counter).name = 'motorized_walkvsdecel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'decel');
@@ -303,6 +318,7 @@ comparisons(counter).name = 'motorized_walkvsstart_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'start');
@@ -317,6 +333,7 @@ comparisons(counter).name = 'spontaneous_walkvsstart_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'start');
@@ -332,6 +349,7 @@ comparisons(counter).name = 'motorized_walkvsstop_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'stop');
@@ -346,6 +364,7 @@ comparisons(counter).name = 'spontaneous_walkvsstop_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'stop');
@@ -361,6 +380,7 @@ comparisons(counter).name = 'motorized_restvsstart_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'rest') | strcmp(period_types, 'start');
@@ -375,6 +395,7 @@ comparisons(counter).name = 'spontaneous_restvsstart_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'rest') | strcmp(period_types, 'start');
@@ -390,6 +411,7 @@ comparisons(counter).name = 'motorized_restvsstop_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'rest') | strcmp(period_types, 'stop');
@@ -404,6 +426,7 @@ comparisons(counter).name = 'spontaneous_restvstop_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'rest') | strcmp(period_types, 'stop');
@@ -419,6 +442,7 @@ comparisons(counter).name = 'motorized_accelvsfaccel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'accel') | strcmp(period_types, 'finished_accel');
@@ -434,6 +458,7 @@ comparisons(counter).name = 'motorized_decelvsfdecel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'decel') | strcmp(period_types, 'finished_decel');
@@ -449,6 +474,7 @@ comparisons(counter).name = 'motorized_walkvsfaccel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'finished_accel');
@@ -463,6 +489,7 @@ comparisons(counter).name = 'motorized_walkvsfdecel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'finished_decel');
@@ -477,6 +504,7 @@ comparisons(counter).name = 'motorized_faccelvsfdecel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'finished_accel') | strcmp(period_types, 'finished_decel');
@@ -491,6 +519,7 @@ comparisons(counter).name = 'motorized_fstartvsfaccel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'finished_accel') | strcmp(period_types, 'finished_start');
@@ -504,6 +533,7 @@ comparisons(counter).name = 'motorized_startvsfstart_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'start') | strcmp(period_types, 'finished_start');
@@ -518,6 +548,7 @@ comparisons(counter).name = 'motorized_fstartvswalk_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk') | strcmp(period_types, 'finished_start');
