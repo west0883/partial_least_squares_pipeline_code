@@ -65,6 +65,14 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     % Get figure type for this comparison.
     figure_type = parameters.this_comparison_set(comparison_iterator).figure_type;
 
+    % Check if this comparison needs a special color range.
+    color_indices = strcmp(parameters.color_range.specials(:,1), comparison);
+    if any(color_indices)
+        color_range_special = parameters.color_range.specials(color_indices, 2:3);
+    else
+        color_range_special = {};
+    end
+
     % Check if this needs to be flipped.
     if isfield(parameters.this_comparison_set(comparison_iterator), 'plotMultiplier')
         
@@ -115,6 +123,11 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             else
                 extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
                 color_range = [-extreme extreme]; 
+            end
+
+            % If the color range for this comparison was special,
+            if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && ~isempty(color_range_special)
+                color_range = color_range_special{2};
             end
     
             % Plot.
@@ -196,6 +209,17 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                     color_range = [-extreme extreme]; 
                 end
                 
+                % If the color range for this comparison was special,
+                if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && ~isempty(color_range_special)
+                    
+                    % See if the "special" applies to this variable
+                    if strcmp(color_range_special{1}, variable)
+
+                        % If it does, change color range to that.
+                        color_range = color_range_special{2};
+                    end
+                end
+                
                 % Get subplot index.
                 %subplot_index = sub2ind([subplot_rows subplot_columns], variable_location, comparison_iterator);
     
@@ -258,16 +282,25 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                
             end
 
+            % If the color range for this comparison was special,
+            if ~isempty(color_range_special)
+                % If it was, change color range to that.
+                color_range = color_range_special{2};
+            end
+
             % Plot 
             imagesc(holder); axis square;
             Colorbar_handle = colorbar; caxis(color_range); colormap(cmap);
-
-            % Make a title.
-            title_string = comparison; 
-            title(strrep(title_string, '_', ' '));
-
-            % Put in grid lines.
+            
+            % Get axis handle.
             ax = gca;
+
+            title_string = comparison; 
+            ax.TitleFontSizeMultiplier = 0.5;
+            title_handle = title(strrep(title_string, '_', ' '));
+            set(title_handle,'position',get(title_handle,'position') - [0 2 0]);
+            
+            % Put in grid lines.
 
             % Minor grid lines. 
             ax.XAxis.MinorTick = 'on';
@@ -275,17 +308,20 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             ax.XAxis.MinorTickValues = grid_locations_minor;
             ax.YAxis.MinorTickValues = grid_locations_minor;
             ax.MinorGridLineStyle = '-'; % Make solid lines.
-            ax.MinorGridColor = [0.5 0.5 0.5];
+            ax.MinorGridColor = [0.75 0.75 0.75];
+            ax.MinorGridAlpha = 1;
             ax.XMinorGrid = 'on';
             ax.YMinorGrid = 'on';
+            ax.Layer = 'top';
 
             % Major grid lines. (adjust style/width so you can see them)
+            grid on;
             ax.XTick = grid_locations_major;
             ax.YTick = grid_locations_major; 
             ax.GridColor = [0, 0, 0]; % Make darker than minor grid.
-            ax.GridAlpha = 0.4; % Make more opaque.
+            ax.GridAlpha = 1; % Make more opaque.
             ax.Layer = 'top';
-            grid on;
+          
     
             % Make ticks themselves invisible.
             set(gca, 'TickLength',[0 0]);
@@ -300,23 +336,23 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     
             % Make outline of box thicker. (Controls width of all grid
             % lines, too??)
-            ax.LineWidth = 1.5;
+            ax.LineWidth = 0.4;
 
             % Make figure background white.
             fig.Color = 'w';
 
             % Make colorbar outline thicker
-            Colorbar_handle.LineWidth = 1.5;
+            Colorbar_handle.LineWidth = 0.4;
 
             % Make tick labels larger. (Don't make bold because they
             % weren't bold in the spontaneous paper).
-            ax.FontSize = 12;
+            ax.FontSize = 18;
 
             % Add x and y axis labels. 
             ax.XLabel.String = 'node';
             ax.YLabel.String = 'node';
-            ax.XLabel.FontSize = 14;
-            ax.YLabel.FontSize = 14;
+            ax.XLabel.FontSize = 24;
+            ax.YLabel.FontSize = 24;
 
             % Scoot y label slightly to left.
             positions = ax.YLabel.Position;
@@ -329,18 +365,18 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             Colorbar_handle.TickLength = .015;
 
             % Make colorbar tick labels certain size.
-            Colorbar_handle.FontSize = 12;
+            Colorbar_handle.FontSize = 18;
 
             % Make colorbar label. (Don't make bold because they
             % weren't bold in the spontaneous paper).
             Colorbar_handle.Label.String = {'sig. change in';
                                     'correlation coeff'};
-            Colorbar_handle.Label.FontSize = 14;
+            Colorbar_handle.Label.FontSize = 24;
             Colorbar_handle.Label.Rotation = -90;
 
             % Move colorbar label to the right.
             positions = Colorbar_handle.Label.Position;
-            Colorbar_handle.Label.Position = [positions(1) + 1, positions(2), positions(3)];
+            Colorbar_handle.Label.Position = [positions(1) + 4, positions(2), positions(3)];
 
             % Make diagonals black. 
             hold on; 
@@ -410,36 +446,50 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                     end
                 end
 
+                % See if color range for this comparison was special.
+                if ~isempty(color_range_special)
+                    % If it was, see if the "special" applies to this variable
+                    if strcmp(color_range_special{1}, variable)
+    
+                        % If it does, change color range to that.
+                        color_range = color_range_special{2};
+                    end
+                end
+
                 % Plot 
                 imagesc(holder); axis square;
                 Colorbar_handle = colorbar; caxis(color_range); colormap(cmap);
 
+                % Get axis handle
+                ax = gca;
+
                 % Make a title
                 title_string = [variable ', ' comparison]; 
-                title(strrep(title_string, '_', ' '));
-
-                % Put in grid lines.
-                ax = gca;
+                ax.TitleFontSizeMultiplier = 0.5;
+                title_handle = title(strrep(title_string, '_', ' '));
+                set(title_handle,'position',get(title_handle,'position') - [0 2 0]);
     
+                % Put in grid lines.
                 % Minor grid lines. 
                 ax.XAxis.MinorTick = 'on';
                 ax.YAxis.MinorTick = 'on';
                 ax.XAxis.MinorTickValues = grid_locations_minor;
                 ax.YAxis.MinorTickValues = grid_locations_minor;
                 ax.MinorGridLineStyle = '-'; % Make solid lines.
-                ax.MinorGridColor = [0.5 0.5 0.5];
+                ax.MinorGridColor = [0.75 0.75 0.75];
+                ax.MinorGridAlpha = 1;
                 ax.XMinorGrid = 'on';
                 ax.YMinorGrid = 'on';
+                ax.Layer = 'top';
     
                 % Major grid lines. (adjust style/width so you can see them)
+                grid on;
                 ax.XTick = grid_locations_major;
                 ax.YTick = grid_locations_major; 
                 ax.GridColor = [0, 0, 0]; % Make darker than minor grid.
-                ax.GridAlpha = 0.4; % Make more opaque.
+                ax.GridAlpha = 1; % Make more opaque.
                 ax.Layer = 'top';
     
-                grid on;
-        
                 % Make ticks themselves invisible.
                 set(gca, 'TickLength',[0 0]);
         
@@ -453,23 +503,27 @@ function [parameters] = PlotBetasSecondLevel(parameters)
         
                 % Make outline of box thicker. (Controls width of all grid
                 % lines, too??)
-                ax.LineWidth = 1.5;
+                ax.LineWidth = 0.4;
+
+                 ax.Layer = 'top';
+
+               % box_handle = get(boxFrame);
     
                 % Make figure background white.
                 fig.Color = 'w';
     
                 % Make colorbar outline thicker
-                Colorbar_handle.LineWidth = 1.5;
+                Colorbar_handle.LineWidth = 0.4;
     
                 % Make tick labels larger. (Don't make bold because they
                 % weren't bold in the spontaneous paper).
-                ax.FontSize = 12;
+                ax.FontSize = 18;
     
                 % Add x and y axis labels. 
                 ax.XLabel.String = 'node';
                 ax.YLabel.String = 'node';
-                ax.XLabel.FontSize = 14;
-                ax.YLabel.FontSize = 14;
+                ax.XLabel.FontSize = 24;
+                ax.YLabel.FontSize = 24;
     
                 % Scoot y label slightly to left.
                 positions = ax.YLabel.Position;
@@ -482,18 +536,18 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 Colorbar_handle.TickLength = .015;
     
                 % Make colorbar tick labels certain size.
-                Colorbar_handle.FontSize = 12;
+                Colorbar_handle.FontSize = 18;
     
                 % Make colorbar label. (Don't make bold because they
                 % weren't bold in the spontaneous paper).
                 Colorbar_handle.Label.String = {'sig. change in';
                                         'correlation coeff'};
-                Colorbar_handle.Label.FontSize = 14;
+                Colorbar_handle.Label.FontSize = 24;
                 Colorbar_handle.Label.Rotation = -90;
     
                 % Move colorbar label to the right.
                 positions = Colorbar_handle.Label.Position;
-                Colorbar_handle.Label.Position = [positions(1) + 1, positions(2), positions(3)];
+                Colorbar_handle.Label.Position = [positions(1) + 4, positions(2), positions(3)];
 
                 % Make diagonals black. 
                 hold on; 
