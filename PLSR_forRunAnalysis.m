@@ -411,12 +411,12 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     if isfield(parameters, 'useBootstrapping') && parameters.useBootstrapping
 
         disp('Running bootstrapping.'); 
-        
-        if isfield(parameters, 'comparison_type') && strcmp(comparison_type, 'categorical')
-            columns_to_use = 1;
-        else 
+%         
+%         if isfield(parameters, 'comparison_type') && strcmp(comparison_type, 'categorical')
+%             columns_to_use = 1;
+%         else 
             columns_to_use = 1:size(responseVariables, 2);
-        end
+     %   end
 
        % If stratifying,
        if parameters.stratify
@@ -447,7 +447,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
        end 
 
        % Make a holding matrix for beta permutations.
-       betas_bootstrap = NaN(size(results.BETA,1), numel(columns_to_use), size(bootstrap_indices,1));  %size(results.BETA, 2)
+       betas_bootstrap = NaN(size(results.BETA,1), numel(columns_to_use), size(bootstrap_indices,2));  %size(results.BETA, 2)
         
        % Now run bootstraps
       parfor repi = 1:size(bootstrap_indices,2) 
@@ -463,8 +463,16 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             
         end 
 
+        % If categorical, 
+        if isfield(parameters, 'comparison_type') && strcmp(comparison_type, 'categorical')
+            
+            % Keep only the first variable
+            betas_bootstrap = betas_bootstrap(:, 1, :);
+        end 
+        
+        % Convert to single precision to take up less space. 
         % Put betas_bootstraps into output structure
-        parameters.betas_bootstrap = betas_bootstrap;
+        parameters.betas_bootstrap = single(betas_bootstrap);
 
     end 
 end 
