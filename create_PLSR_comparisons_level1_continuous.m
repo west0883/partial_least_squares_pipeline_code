@@ -18,6 +18,9 @@
 % dataset from the larger 
 % type --> just the name of the behavior type in its own entry, to make it
 % easier to manipulate later.
+% Will also have a "figure_type" identifier, which is for determining the
+% color range of final figures. Can be "continued", "startstop", or
+% "acceldecel".
 
 %% Initial setup
 clear all; 
@@ -58,6 +61,12 @@ for typei = 1:numel(types)
     comparisons(counter + typei).variablesToUse = continuous_variable_names;
     comparisons(counter + typei).type = types{typei};
     comparisons(counter + typei).mice_not_to_use = {};
+    
+    if typei == 1 || typei == 2
+        comparisons(counter + typei).figure_type = 'startstop';
+    else
+        comparisons(counter + typei).figure_type = 'acceldecel'; 
+    end
 
     % Get relevent indices for this type.
     indices_type = strcmp(period_types, types{typei});
@@ -78,6 +87,7 @@ for typei = 1:numel(types)
     comparisons(counter + typei).variablesToUse = continuous_variable_names;
     comparisons(counter + typei).type = types{typei};
     comparisons(counter +typei).mice_not_to_use = {'1100'};
+    comparisons(counter + typei).figure_type = 'startstop';
 
     % Get relevent indices for this type.
     indices_type = strcmp(period_types, types{typei});
@@ -96,6 +106,7 @@ comparisons(counter).name = 'motorized_finished_stop_continuousVars';
 comparisons(counter).variablesToUse = {'duration_vector', 'pupil_diameter_vector'};
 comparisons(counter).type = 'finished_stop';
 comparisons(counter).mice_not_to_use = {};
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'finished_stop');
@@ -110,6 +121,7 @@ comparisons(counter).name = 'spontaneous_finished_stop_continuousVars';
 comparisons(counter).variablesToUse = {'duration_vector', 'pupil_diameter_vector'};
 comparisons(counter).type = 'finished_stop';
 comparisons(counter).mice_not_to_use = {'1100'};
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'finished_stop');
@@ -125,6 +137,7 @@ comparisons(counter).name = 'motorized_walk_continuousVars';
 comparisons(counter).variablesToUse = {'speed_vector','pupil_diameter_vector' };
 comparisons(counter).type = 'walk';
 comparisons(counter).mice_not_to_use = {};
+comparisons(counter).figure_type = 'continued';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk');
@@ -139,6 +152,7 @@ comparisons(counter).name = 'spontaneous_walk_continuousVars';
 comparisons(counter).variablesToUse = {'speed_vector', 'pupil_diameter_vector'};
 comparisons(counter).type = 'walk';
 comparisons(counter).mice_not_to_use = {'1100'};
+comparisons(counter).figure_type = 'continued';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'walk');
@@ -154,6 +168,7 @@ comparisons(counter).name = 'motorized_rest_continuousVars';
 comparisons(counter).variablesToUse = {'pupil_diameter_vector' };
 comparisons(counter).type = 'rest';
 comparisons(counter).mice_not_to_use = {};
+comparisons(counter).figure_type = 'continued';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'rest');
@@ -168,6 +183,7 @@ comparisons(counter).name = 'spontaneous_rest_continuousVars';
 comparisons(counter).variablesToUse = {'pupil_diameter_vector'};
 comparisons(counter).type = 'rest';
 comparisons(counter).mice_not_to_use = {};
+comparisons(counter).figure_type = 'continued';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'rest');
@@ -185,6 +201,7 @@ comparisons(counter).name = 'motorized_finished_start_continuousVars';
 comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector'};
 comparisons(counter).type = 'finished_start';
 comparisons(counter).mice_not_to_use = {};
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'finished_start');
@@ -202,6 +219,7 @@ comparisons(counter).name = 'motorized_finished_accel_continuousVars';
 comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector'};
 comparisons(counter).type = 'finished_accel';
 comparisons(counter).mice_not_to_use = {};
+comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'finished_accel');
@@ -219,8 +237,9 @@ comparisons(counter).name = 'motorized_finished_decel_continuousVars';
 comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector'};
 comparisons(counter).type = 'finished_decel';
 comparisons(counter).mice_not_to_use = {};
+comparisons(counter).figure_type = 'acceldecel';
 
-% Get relevent indices for this type.
+% Get relevent indices for this ty pe.
 indices_type = strcmp(period_types, 'finished_decel');
 
 % Get intersection of motorized & type. 
