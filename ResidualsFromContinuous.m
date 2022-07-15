@@ -61,6 +61,8 @@ function [parameters] = ResidualsFromContinuous(parameters)
             responseVariables(holder, :) = [];
             Xnew_old(holder, :) = NaN;
         end
+    else 
+        dataset_out.outliers = [];
     end
 
     % If user says to (default is not to), impute missing values. MUST
