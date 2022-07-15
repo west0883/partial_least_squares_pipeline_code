@@ -62,6 +62,9 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     name_location = strcmp(parameters.keywords, {'comparison'});
     comparison = parameters.values{name_location};
 
+    % Get figure type for this comparison.
+    figure_type = parameters.this_comparison_set(comparison_iterator).figure_type;
+
     % Check if this needs to be flipped.
     if isfield(parameters.this_comparison_set(comparison_iterator), 'plotMultiplier')
         
@@ -72,10 +75,6 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
     % Make a colormap with cbrewer; 
     cmap= flipud(cbrewer('div', 'RdBu', 2000, 'linear'));
-%     if isfield(parameters, 'plotIndividually') && parameters.plotIndividually 
-%         cmap = [0 0 0; cmap];
-% 
-%     end
 
     % Start plotting. 
 
@@ -111,7 +110,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             
             % If adjusted, use a standard color range for each plot.
             if isfield(parameters, 'adjustBetas') && parameters.adjustBetas
-                color_range = parameters.color_range;
+                color_range = parameters.color_range.(figure_type).categorical;
             % If not adjusted, make a fitted color range for this plot.
             else
                 extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
@@ -190,7 +189,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             
                 % If adjusted, use a standard color range for each plot.
                 if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'useColorRange') && parameters.useColorRange
-                    color_range = parameters.color_range;
+                    color_range = parameters.color_range.(figure_type).(variable);
                 % If not adjusted, make a fitted color range for this plot.
                 else
                     extreme = max(max(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan'), abs(min(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan')));
@@ -247,7 +246,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
             % If adjusted, use a standard color range for each plot.
             if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'useColorRange') && parameters.useColorRange
-                color_range = parameters.color_range;
+                color_range = parameters.color_range.(figure_type).categorical;
             % If not adjusted, make a fitted color range for this plot.
             else
                 extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
@@ -399,7 +398,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 
                 % If adjusted, use a standard color range for each plot.
                 if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'useColorRange') && parameters.useColorRange
-                    color_range = parameters.color_range;
+                    color_range = parameters.color_range.(figure_type).(variable);
                 % If not adjusted, make a fitted color range for this plot.
                 else
                     extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
