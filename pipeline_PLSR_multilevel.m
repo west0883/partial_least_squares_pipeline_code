@@ -79,24 +79,27 @@ end
 
 % Make color ranges for each type of comparison, for final figures.
 parameters.color_range.continued.categorical = [-0.02 0.02];
-parameters.color_range.continued.speed = [-0.01 0.01];
-parameters.color_range.continued.accel = [-0.002 0.002];
-parameters.color_range.continued.duration = [-0.02 0.02];
-parameters.color_range.continued.pupil_diameter = [-0.001 0.001 ];
+parameters.color_range.continued.speed = [-0.05 0.05];
+parameters.color_range.continued.accel = [];
+parameters.color_range.continued.duration = [];
+parameters.color_range.continued.pupil_diameter = [-0.002 0.002 ];
 
 parameters.color_range.startstop.categorical = [-0.02 0.02];
-parameters.color_range.startstop.speed = [-0.01 0.01];
+parameters.color_range.startstop.speed = [-0.02 0.02];
 parameters.color_range.startstop.accel = [-0.002 0.002];
-parameters.color_range.startstop.duration = [-0.02 0.02];
-parameters.color_range.startstop.pupil_diameter = [-0.001 0.001 ];
+parameters.color_range.startstop.duration = [-0.01 0.01];
+parameters.color_range.startstop.pupil_diameter = [-0.001 0.001];
 
 parameters.color_range.acceldecel.categorical = [-0.02 0.02];
-parameters.color_range.acceldecel.speed = [-0.01 0.01];
-parameters.color_range.acceldecel.accel = [-0.002 0.002];
-parameters.color_range.acceldecel.duration = [-0.02 0.02];
-parameters.color_range.acceldecel.pupil_diameter = [-0.001 0.001 ];
-        
+parameters.color_range.acceldecel.speed = [-0.001 0.001];
+parameters.color_range.acceldecel.accel = [-0.0002 0.0002];
+parameters.color_range.acceldecel.duration = [-0.001 0.001];
+parameters.color_range.acceldecel.pupil_diameter = [-0.0002 0.0002 ];
 
+% special figures that get their own color ranges
+parameters.color_range.specials = {'motorized_transitions_continuousVars_start', 'duration', [- 0.05 0.05];
+                                    'motorized_finished_start_continuousVars', 'speed', [-0.002 0.002]};
+        
 % Names of all continuous variables.
 parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter'};
 
@@ -1475,7 +1478,7 @@ RunAnalysis({@AverageSigmas}, parameters);
 parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
-for i = 1:numel(true_false_vector)
+for i = 2 %1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
@@ -1497,12 +1500,7 @@ for i = 1:numel(true_false_vector)
 
         % Color range for all plots (if betas are adjusted).
         parameters.useColorRange = true;
-        parameters.color_range.categorical = [-0.02 0.02];
-        parameters.color_range.speed = [-0.01 0.01];
-        parameters.color_range.accel = [-0.002 0.002];
-        parameters.color_range.duration = [-0.02 0.02];
-        parameters.color_range.pupil_diameter = [-0.001 0.001 ];
-        
+
         % Comparison type (continuous or continuous)
         parameters.comparison_type = 'continuous';
         parameters.this_comparison_set = parameters.comparisons_continuous;
@@ -1574,7 +1572,7 @@ parameters.useSignificance = true;
 parameters.averaging_across_mice = true;
 parameters.removeOutliers = false;
 
-for typei = 1:numel(comparison_types)
+for typei = 2 %1:numel(comparison_types)
 
     parameters.comparison_type = comparison_types{typei};
     parameters.this_comparison_set = parameters.(['comparisons_' parameters.comparison_type]);
@@ -1653,7 +1651,7 @@ for typei = 1:numel(comparison_types)
     end
 
     RunAnalysis({@PlotBetasSecondLevel}, parameters);
-
+c
     close all;
 end
 parameters.plotIndividually = false;
