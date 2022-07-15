@@ -56,7 +56,7 @@ end
 % Load comparisons for first level continuous, if it exists yet.
 if isfile([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat'])
     load([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat']);
-    parameters.comparisons_continuous = comparisons;
+    parameters.comparisons_continuous = comparisons([1:8 10:end]);
     parameters.loop_variables.comparisons_continuous = parameters.comparisons_continuous; 
     clear comparisons;
 end
@@ -76,6 +76,26 @@ if isfile([parameters.dir_exper 'PLSR\variablesToSubtract_level1_categorical.mat
     parameters.variablesToSubtract = variablesToSubtract;
     clear variablesToSubtract;
 end
+
+% Make color ranges for each type of comparison, for final figures.
+parameters.color_range.continued.categorical = [-0.02 0.02];
+parameters.color_range.continued.speed = [-0.01 0.01];
+parameters.color_range.continued.accel = [-0.002 0.002];
+parameters.color_range.continued.duration = [-0.02 0.02];
+parameters.color_range.continued.pupil_diameter = [-0.001 0.001 ];
+
+parameters.color_range.startstop.categorical = [-0.02 0.02];
+parameters.color_range.startstop.speed = [-0.01 0.01];
+parameters.color_range.startstop.accel = [-0.002 0.002];
+parameters.color_range.startstop.duration = [-0.02 0.02];
+parameters.color_range.startstop.pupil_diameter = [-0.001 0.001 ];
+
+parameters.color_range.acceldecel.categorical = [-0.02 0.02];
+parameters.color_range.acceldecel.speed = [-0.01 0.01];
+parameters.color_range.acceldecel.accel = [-0.002 0.002];
+parameters.color_range.acceldecel.duration = [-0.02 0.02];
+parameters.color_range.acceldecel.pupil_diameter = [-0.001 0.001 ];
+        
 
 % Names of all continuous variables.
 parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter'};
@@ -1251,7 +1271,11 @@ for i = 1:numel(true_false_vector)
 
         % Color range for all plots (if betas are adjusted).
         parameters.useColorRange = true;
-        parameters.color_range = [-0.02 0.02];
+        parameters.color_range.categorical = [-0.02 0.02];
+        parameters.color_range.speed = [-0.01 0.01];
+        parameters.color_range.accel = [-0.002 0.002];
+        parameters.color_range.duration = [-0.02 0.02];
+        parameters.color_range.pupil_diameter = [-0.001 0.001 ];
         
         % Comparison type (categorical or continuous)
         parameters.comparison_type = 'categorical';
@@ -1343,14 +1367,14 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
-               'comparison', {'loop_variables.comparisons_continuous(1).name'}, 'comparison_iterator';
-               'mouse', {'loop_variables.mice_all(1:6).name'}, 'mouse_iterator'; };
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator';
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
 % If the first level was categorical:
 parameters.firstLevelCategorical = false; 
 
 parameters.this_comparison_set = parameters.comparisons_continuous;
-parameters.max_mice = 6; %size(parameters.mice_all, 2);
+parameters.max_mice = size(parameters.mice_all, 2);
 parameters.concatenation_level = 'mouse';
 parameters.averaging_across_mice = true;
 parameters.removeOutliers = false;
@@ -1377,7 +1401,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
-               'comparison', {'loop_variables.comparisons_continuous(1).name'}, 'comparison_iterator' };
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 parameters.shufflesDim = 2; % After the EvaluateOnData reduction
 parameters.find_significance = true;
 
@@ -1472,8 +1496,12 @@ for i = 1:numel(true_false_vector)
         parameters.removeOutliers = false;
 
         % Color range for all plots (if betas are adjusted).
-        parameters.useColorRange = false;
-        parameters.color_range = [-0.02 0.02];
+        parameters.useColorRange = true;
+        parameters.color_range.categorical = [-0.02 0.02];
+        parameters.color_range.speed = [-0.01 0.01];
+        parameters.color_range.accel = [-0.002 0.002];
+        parameters.color_range.duration = [-0.02 0.02];
+        parameters.color_range.pupil_diameter = [-0.001 0.001 ];
         
         % Comparison type (continuous or continuous)
         parameters.comparison_type = 'continuous';
@@ -1496,7 +1524,7 @@ for i = 1:numel(true_false_vector)
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\optimized components\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance.mat'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
@@ -1560,12 +1588,13 @@ for typei = 1:numel(comparison_types)
                    'comparison', {['loop_variables.comparisons_'  parameters.comparison_type '(:).name']}, 'comparison_iterator' };
     
     % Color range for all plots (if betas are adjusted).
-    if strcmp(parameters.comparison_type, 'continuous')
-        parameters.useColorRange = false;
-    else 
-        parameters.useColorRange = true;
-        parameters.color_range = [-0.02 0.02];
-    end
+    parameters.useColorRange = true;
+    parameters.color_range.categorical = [-0.02 0.02];
+    parameters.color_range.speed = [-0.01 0.01];
+    parameters.color_range.accel = [-0.002 0.002];
+    parameters.color_range.duration = [-0.02 0.02];
+    parameters.color_range.pupil_diameter = [-0.001 0.001 ];
+   
     
     % Input
     parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 ' parameters.comparison_type '\optimized components\'], 'comparison', '\'};
