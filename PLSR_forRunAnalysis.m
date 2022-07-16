@@ -436,9 +436,9 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                
            end
 
-           % Concatenate horizontally 
-           bootstrap_indices = cellfun(@horzcat, bootstrap_indices_holder(1), ...
-                     bootstrap_indices_holder(2), 'UniformOutput', true);
+           % Concatenate vertically. 
+           bootstrap_indices = [bootstrap_indices_holder{1}; bootstrap_indices_holder{2}];
+           %cellfun(@horzcat, bootstrap_indices_holder(1) bootstrap_indices_holder(2), 'UniformOutput', true);
 
        % If not stratifying,
        else
