@@ -1599,7 +1599,7 @@ for typei = 2 %1:numel(comparison_types)
     % significance matrix
     if parameters.useSignificance
     parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\optimized components\'], 'comparison', '\'};
-    parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance.mat'};
+    parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap.mat'};
     parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
     parameters.loop_list.things_to_load.significance.level = 'comparison';
     end
