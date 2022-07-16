@@ -369,8 +369,9 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
             % Make colorbar label. (Don't make bold because they
             % weren't bold in the spontaneous paper).
-            Colorbar_handle.Label.String = {'sig. change in';
-                                    'correlation coeff'};
+            Colorbar_handle.Label.String = { '\Delta{\it r}'}; % Change in r (delta symbol, italisized r)
+            
+                                    %{'sig. change in';'correlation coeff'};
             Colorbar_handle.Label.FontSize = 24;
             Colorbar_handle.Label.Rotation = -90;
 
@@ -404,6 +405,24 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
                 % Get the variable name
                 variable = erase(variablesToUse{variablei}, '_vector');
+
+                % Get units for colorbar label based on variable.
+                index = find(strcmp(parameters.continuous_variable_names, variable));
+
+                switch index
+
+                    case 1 % speed
+                        units = 'per cm/s';
+
+                    case 2 % accel
+                        units = 'per cm/s/s';
+
+                    case 3 % duration
+                        units = 'per s';
+
+                    case 4 % pupil diameter
+                        units = 'per % max diameter';
+                end
 
                 % For saving, see if this variable is in the list of continuous
                 % variables. 
@@ -539,9 +558,10 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 Colorbar_handle.FontSize = 18;
     
                 % Make colorbar label. (Don't make bold because they
-                % weren't bold in the spontaneous paper).
-                Colorbar_handle.Label.String = {'sig. change in';
-                                        'correlation coeff'};
+                % weren't bold in the spontaneous paper). Include units for
+                % continuous.
+                Colorbar_handle.Label.String =   {['\Delta{\it r} ' units]};
+                    %{'sig. change in'; 'correlation coeff'};
                 Colorbar_handle.Label.FontSize = 24;
                 Colorbar_handle.Label.Rotation = -90;
     
