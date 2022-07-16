@@ -999,12 +999,12 @@ parameters.loop_list.iterators = {
 % Do you want permutations?
 parameters.useBootstrapping = true;
 parameters.n_bootstraps = 10000;
-parameters.stratify = false;
+parameters.stratify = true;
 parameters.comparison_type = 'categorical';
 
 % Input
 % dataset
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\optimized components\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
