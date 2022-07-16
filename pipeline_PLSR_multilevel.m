@@ -88,18 +88,21 @@ parameters.color_range.startstop.categorical = [-0.02 0.02];
 parameters.color_range.startstop.speed = [-0.02 0.02];
 parameters.color_range.startstop.accel = [-0.002 0.002];
 parameters.color_range.startstop.duration = [-0.01 0.01];
-parameters.color_range.startstop.pupil_diameter = [-0.001 0.001];
+parameters.color_range.startstop.pupil_diameter = [-0.0005 0.0005];
 
 parameters.color_range.acceldecel.categorical = [-0.02 0.02];
-parameters.color_range.acceldecel.speed = [-0.001 0.001];
+parameters.color_range.acceldecel.speed = [-0.0008 0.0008];
 parameters.color_range.acceldecel.accel = [-0.0002 0.0002];
 parameters.color_range.acceldecel.duration = [-0.001 0.001];
 parameters.color_range.acceldecel.pupil_diameter = [-0.0002 0.0002 ];
 
 % special figures that get their own color ranges
-parameters.color_range.specials = {'motorized_transitions_continuousVars_start', 'duration', [- 0.05 0.05];
-                                    'motorized_finished_start_continuousVars', 'speed', [-0.002 0.002]};
-        
+parameters.color_range.specials = {'motorized_transitions_continuousVars_start', 'duration', [- 0.04 0.04];
+                                   'motorized_transitions_continuousVars_stop', 'duration', [- 0.01 0.01];
+                                    'motorized_walk_continuousVars', 'speed',[-0.01 0.01]
+                                    'motorized_finished_accel_continuousVars', 'speed', [-0.0015 0.0015];
+                                    'motorized_finished_start_continuousVars', 'speed', [-0.004 0.004];
+                                     };
 % Names of all continuous variables.
 parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter'};
 
@@ -1587,13 +1590,7 @@ for typei = 2 %1:numel(comparison_types)
     
     % Color range for all plots (if betas are adjusted).
     parameters.useColorRange = true;
-    parameters.color_range.categorical = [-0.02 0.02];
-    parameters.color_range.speed = [-0.01 0.01];
-    parameters.color_range.accel = [-0.002 0.002];
-    parameters.color_range.duration = [-0.02 0.02];
-    parameters.color_range.pupil_diameter = [-0.001 0.001 ];
    
-    
     % Input
     parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 ' parameters.comparison_type '\optimized components\'], 'comparison', '\'};
     parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info.mat'};
@@ -1651,7 +1648,6 @@ for typei = 2 %1:numel(comparison_types)
     end
 
     RunAnalysis({@PlotBetasSecondLevel}, parameters);
-c
     close all;
 end
 parameters.plotIndividually = false;
