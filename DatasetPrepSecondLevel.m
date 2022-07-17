@@ -136,7 +136,7 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
             outliers = isoutlier(responseVariables_concatenated);
     
             dataset.outliers = outliers;
-            dataset.responseVariables_original = responseVariables_concatenated;
+            dataset.responseVariables_original = single(responseVariables_concatenated);
     
             responseVariables_toaverage = responseVariables_concatenated;
             responseVariables_toaverage(outliers) = NaN;
@@ -145,17 +145,17 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
             responseVariables_toaverage = responseVariables_concatenated; 
         end
     
-        % Take average & std.
+        % Take average & std. Make single precision.
         if isfield(parameters, 'averaging_across_mice') && parameters.averaging_across_mice
     
-            dataset.average_across_mice = squeeze(mean(responseVariables_toaverage, 1, 'omitnan'));
-            dataset.std_across_mice = squeeze(std(responseVariables_toaverage, [], 1, 'omitnan'));
+            dataset.average_across_mice = single(squeeze(mean(responseVariables_toaverage, 1, 'omitnan')));
+            dataset.std_across_mice = single(squeeze(std(responseVariables_toaverage, [], 1, 'omitnan')));
     
         end 
     
-        % Put concatenated data into output.
-        dataset.explanatoryVariables = explanatoryVariables_concatenated;
-        dataset.responseVariables = responseVariables_concatenated;
+        % Put concatenated data into output. Make single precision.
+        dataset.explanatoryVariables = single(explanatoryVariables_concatenated);
+        dataset.responseVariables = single(responseVariables_concatenated);
         
     else 
         % Make an empty output so RunAnalysis doesn't freak out.
