@@ -56,7 +56,7 @@ end
 % Load comparisons for first level continuous, if it exists yet.
 if isfile([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat'])
     load([parameters.dir_exper 'PLSR\comparisons_level1_continuous.mat']);
-    parameters.comparisons_continuous = comparisons([1:8 10:end]);
+    parameters.comparisons_continuous = comparisons;
     parameters.loop_variables.comparisons_continuous = parameters.comparisons_continuous; 
     clear comparisons;
 end
@@ -1161,13 +1161,13 @@ parameters.concatenation_level = 'mouse';
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\optimized components\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_betas_randomPermutations.mat'};
-parameters.loop_list.things_to_load.response.variable= {'betas_randomPermutations'}; 
+parameters.loop_list.things_to_load.response.filename= {'PLSR_betas_bootstrap.mat'};
+parameters.loop_list.things_to_load.response.variable= {'betas_bootstrap'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_bootstrap.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -1190,7 +1190,7 @@ parameters.find_significance = true;
 parameters.alphaValue = 0.05;  %/(numel(parameters.comparisons_categorical) - 4;
 
 % If you want to fit a normal distribution before t-test (default = true)
-parameters.useNormalDistribution = true; 
+parameters.useNormalDistribution = false; 
 
 % Inputs:
 % Test values
@@ -1200,13 +1200,13 @@ parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average
 parameters.loop_list.things_to_load.test_values.level = 'comparison';
 % Null distribution
 parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations.mat'};
+parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_bootstrap.mat'};
 parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
 
 % Outputs
 parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance.mat'};
+parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_bootstrap.mat'};
 parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
 parameters.loop_list.things_to_save.significance.level = 'comparison';
 
@@ -1259,7 +1259,7 @@ for i = 1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
-    for j = 1:numel(true_false_vector)
+    for j = 2 %1:numel(true_false_vector)
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
@@ -1304,7 +1304,7 @@ for i = 1:numel(true_false_vector)
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\optimized components\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance.mat'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
@@ -1575,7 +1575,7 @@ parameters.useSignificance = true;
 parameters.averaging_across_mice = true;
 parameters.removeOutliers = false;
 
-for typei = 2 %1:numel(comparison_types)
+for typei = 1:numel(comparison_types)
 
     parameters.comparison_type = comparison_types{typei};
     parameters.this_comparison_set = parameters.(['comparisons_' parameters.comparison_type]);
