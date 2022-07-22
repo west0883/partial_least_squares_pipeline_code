@@ -41,29 +41,77 @@ continuous_variable_names = {'speed_vector', 'accel_vector', 'duration_vector', 
 
 counter = 0; 
 
-%% All walking warnings against walk warning maintaining
+%% Assign "types"
+% make no change warnings into regular warnings.
+
+%%
+% Continuous:
+% (normal transitions, continued have already been done)
+
+% Motor periods:
+% Maintaining rest: pupil diameter
+% Maintaining walk: speed, pupil diameter
+% start no warning: speed, accel, duration, pupil diamter
+% stop no warning: speed, accel, duration, pupil diamter
+% accel no warning: speed, accel, duration, pupil diamter
+% decel no warning: speed, accel, duration, pupil diamter
+
+% Warning periods (now includes the no change warnings here, too):
+% Maintaining rest: pupil diameter
+% Maintaining walk: speed, pupil diameter
+% start: pupil diameter
+% stop: speed, pupil diamter
+% accel: speed, pupil diamter
+% decel: speed, pupil diameter
+
+% Save 
+
+%% 
+% Categorical
+
+%% Walking warnings against walk warning maintaining
+% maintain vs stop
+% maint vs accel
+% maint vs decel
 
 %% Rest (start) warning vs rest warning maintaining
-
-%% Warned transitions vs unwarned matching transitions
-% Do a second (mid-level) comparison across these before moving up to
-% across mice.
-% start
-% stop
-% accel 
-% decel 
+% maint vs start
 
 %% Walk maintaining vs walk m_p no change
+% maint vs stop
+% maint vs accel
+% maint vs decel
 
 %% Rest maintaining vs rest m_p no change
+% maint vs start
 
 %% Different (walk) transition warnings
 % See if there's any clear indication the mouse can tell the difference.
+% stop vs accel
+% stop vs decel
 % accel vs decel
-% decel vs stop
-% accel vs stop
 
-
+%% Warned transitions vs not-warned transitions.
+% start 
+% stop
+% accel
+% decel
 
 %% Save 
 save([parameters.dir_exper 'PLSR\comparisons_level1_warningPeriods_categorical.mat'], 'comparisons');
+
+%% Second-level (within mice)
+% all walk maintaining warnings vs walk transition warnings
+% all walk warned transitions vs not-warned transitions (stop, accel,
+% decel)
+
+% Save
+
+%% Third-level (sort of) (within mice) 
+% rest warnings (stop) vs all walk warnings (they're differences from maintain
+% warnings)
+% rest nochange (stop) vs all walk nochange
+% rest unwarned (stop) vs all walk unwarned
+
+% Save
+
