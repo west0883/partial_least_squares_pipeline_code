@@ -477,7 +477,7 @@ RunAnalysis({@CheckComponents}, parameters);
 close all;
 
 
-% %% Plot Betas from continuous level 1 
+%% Plot Betas from continuous level 1 
 % if isfield(parameters, 'loop_list')
 % parameters = rmfield(parameters,'loop_list');
 % end
@@ -513,59 +513,59 @@ close all;
 % 
 % close all;
 % 
-% %% Remove continuous variables effects from each behavior type. 
-% % Always clear loop list first. 
-% if isfield(parameters, 'loop_list')
-% parameters = rmfield(parameters,'loop_list');
-% end
-% 
-% % Iterators
-% parameters.loop_list.iterators = {
-%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-%                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-% 
-% parameters.removeOutliers = false; 
-% parameters.imputeMissing = false; 
-% % Amount of variance explained you want for the number of PCs used in
-% % missing values imputation.
-% parameters.imputation_components_variance_explained = 75; % in percents
-% parameters.imputation_max_components = 10; 
-% 
-% % Input 
-% % The variables from the comparison
-% parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
-% parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
-% parameters.loop_list.things_to_load.dataset.level = 'comparison';
-% % The results from the continuous regression (for the Betas)
-% parameters.loop_list.things_to_load.PLSR_results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_load.PLSR_results.filename= {'PLSR_results.mat'};
-% parameters.loop_list.things_to_load.PLSR_results.variable= {'PLSR_results'}; 
-% parameters.loop_list.things_to_load.PLSR_results.level = 'comparison';
-% % Old correlation values 
-% parameters.loop_list.things_to_load.values_old.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations Ipsa Contra\'], 'mouse', '\'};
-% parameters.loop_list.things_to_load.values_old.filename= {'values.mat'};
-% parameters.loop_list.things_to_load.values_old.variable= {'values'}; 
-% parameters.loop_list.things_to_load.values_old.level = 'mouse';
-% 
-% % Output
-% parameters.loop_list.things_to_save.values_new.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations Ipsa Contra\'], 'mouse', '\'};
-% parameters.loop_list.things_to_save.values_new.filename= {'correlations_continuousSubtracted_averageOptimizedComponents.mat'};
-% parameters.loop_list.things_to_save.values_new.variable= {'correlations'}; 
-% parameters.loop_list.things_to_save.values_new.level = 'mouse';
-% % Info about outliers
-% if parameters.removeOutliers
-% parameters.loop_list.things_to_save.dataset_out.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'mouse', '\'};
-% parameters.loop_list.things_to_save.dataset_out.filename= {'residuals_dataset_info.mat'};
-% parameters.loop_list.things_to_save.dataset_out.variable= {'residuals_dataset_info'}; 
-% parameters.loop_list.things_to_save.dataset_out.level = 'comparison';
-% end
-% 
-% RunAnalysis({@ResidualsFromContinuous}, parameters); 
-% 
-% parameters.removeOutliers = false; 
-% parameters.imputeMissing =false;
-% 
+%% Remove continuous variables effects from each behavior type. 
+% Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+
+parameters.removeOutliers = false; 
+parameters.imputeMissing = false; 
+% Amount of variance explained you want for the number of PCs used in
+% missing values imputation.
+parameters.imputation_components_variance_explained = 75; % in percents
+parameters.imputation_max_components = 10; 
+
+% Input 
+% The variables from the comparison
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset.level = 'comparison';
+% The results from the continuous regression (for the Betas)
+parameters.loop_list.things_to_load.PLSR_results.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.PLSR_results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.PLSR_results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_load.PLSR_results.level = 'comparison';
+% Old correlation values 
+parameters.loop_list.things_to_load.values_old.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations Ipsa Contra\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.values_old.filename= {'values.mat'};
+parameters.loop_list.things_to_load.values_old.variable= {'values'}; 
+parameters.loop_list.things_to_load.values_old.level = 'mouse';
+
+% Output
+parameters.loop_list.things_to_save.values_new.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations Ipsa Contra\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.values_new.filename= {'correlations_continuousSubtracted_averageOptimizedComponents.mat'};
+parameters.loop_list.things_to_save.values_new.variable= {'correlations'}; 
+parameters.loop_list.things_to_save.values_new.level = 'mouse';
+% Info about outliers
+if parameters.removeOutliers
+parameters.loop_list.things_to_save.dataset_out.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.dataset_out.filename= {'residuals_dataset_info.mat'};
+parameters.loop_list.things_to_save.dataset_out.variable= {'residuals_dataset_info'}; 
+parameters.loop_list.things_to_save.dataset_out.level = 'comparison';
+end
+
+RunAnalysis({@ResidualsFromContinuous}, parameters); 
+
+parameters.removeOutliers = false; 
+parameters.imputeMissing =false;
+
 %% Level 1 categorical -- Prepare datasets, continuous subtracted.
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -647,7 +647,7 @@ RunAnalysis({@PLSR_forRunAnalysis}, parameters);
 
 parameters.findBestNComponents = false;
 
- %% Level 1 categorical -- plot histograms of number of components used .
+%% Level 1 categorical -- plot histograms of number of components used .
 % 
 % % Concatenate the nubmer of components used per mouse.
 % if isfield(parameters, 'loop_list')
@@ -690,75 +690,75 @@ parameters.findBestNComponents = false;
 % 
 % RunAnalysis({@ConcatenateData, @EvaluateOnData}, parameters);
 % 
-% %% Level 1 categorical -- check components
-% % Always clear loop list first. 
-% if isfield(parameters, 'loop_list')
-% parameters = rmfield(parameters,'loop_list');
-% end
+ % Level 1 categorical -- check components
+% Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
+
+parameters.this_comparison_set = parameters.comparisons_categorical;
+parameters.max_response_vars = 2;
+
+parameters.plot_weights = false;
+parameters.plot_MSEPs = true;
+parameters.plot_BICs = true;
+parameters.plot_percentVars = false;
+
+% Input
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_load.results.level = 'comparison';
+
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset.level = 'comparison';
+
+% Output
+% parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
+% parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
+% parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
+
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.variable= {'fig_MSEPs_explanatory'}; 
+parameters.loop_list.things_to_save.fig_MSEPs_explanatory.level = 'mouse';
+
+parameters.loop_list.things_to_save.fig_MSEPs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_MSEPs_response.filename= {'PLSR_MSEPs_response.fig'};
+parameters.loop_list.things_to_save.fig_MSEPs_response.variable= {'fig_MSEPs_response'}; 
+parameters.loop_list.things_to_save.fig_MSEPs_response.level = 'mouse';
+
+parameters.loop_list.things_to_save.fig_BICs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_BICs_explanatory.filename= {'PLSR_BICs_explanatory.fig'};
+parameters.loop_list.things_to_save.fig_BICs_explanatory.variable= {'fig_BICs_explanatory'}; 
+parameters.loop_list.things_to_save.fig_BICs_explanatory.level = 'mouse';
+
+parameters.loop_list.things_to_save.fig_BICs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
+parameters.loop_list.things_to_save.fig_BICs_response.filename= {'PLSR_BICs_response.fig'};
+parameters.loop_list.things_to_save.fig_BICs_response.variable= {'fig_BICs_response'}; 
+parameters.loop_list.things_to_save.fig_BICs_response.level = 'mouse';
+
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'mouse';
 % 
-% % Iterators
-% parameters.loop_list.iterators = {
-%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-%                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
-% 
-% parameters.this_comparison_set = parameters.comparisons_categorical;
-% parameters.max_response_vars = 2;
-% 
-% parameters.plot_weights = false;
-% parameters.plot_MSEPs = true;
-% parameters.plot_BICs = true;
-% parameters.plot_percentVars = false;
-% 
-% % Input
-% parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
-% parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
-% parameters.loop_list.things_to_load.results.level = 'comparison';
-% 
-% parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
-% parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
-% parameters.loop_list.things_to_load.dataset.level = 'comparison';
-% 
-% % Output
-% % parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-% % parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
-% % parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
-% % parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
-% 
-% parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
-% parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
-% parameters.loop_list.things_to_save.fig_MSEPs_explanatory.variable= {'fig_MSEPs_explanatory'}; 
-% parameters.loop_list.things_to_save.fig_MSEPs_explanatory.level = 'mouse';
-% 
-% parameters.loop_list.things_to_save.fig_MSEPs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
-% parameters.loop_list.things_to_save.fig_MSEPs_response.filename= {'PLSR_MSEPs_response.fig'};
-% parameters.loop_list.things_to_save.fig_MSEPs_response.variable= {'fig_MSEPs_response'}; 
-% parameters.loop_list.things_to_save.fig_MSEPs_response.level = 'mouse';
-% 
-% parameters.loop_list.things_to_save.fig_BICs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
-% parameters.loop_list.things_to_save.fig_BICs_explanatory.filename= {'PLSR_BICs_explanatory.fig'};
-% parameters.loop_list.things_to_save.fig_BICs_explanatory.variable= {'fig_BICs_explanatory'}; 
-% parameters.loop_list.things_to_save.fig_BICs_explanatory.level = 'mouse';
-% 
-% parameters.loop_list.things_to_save.fig_BICs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
-% parameters.loop_list.things_to_save.fig_BICs_response.filename= {'PLSR_BICs_response.fig'};
-% parameters.loop_list.things_to_save.fig_BICs_response.variable= {'fig_BICs_response'}; 
-% parameters.loop_list.things_to_save.fig_BICs_response.level = 'mouse';
-% 
-% % parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
-% % parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
-% % parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
-% % parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'mouse';
-% % 
-% % parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
-% % parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
-% % parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
-% % parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
-% 
-% RunAnalysis({@CheckComponents}, parameters);
-% 
-% close all;
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
+
+RunAnalysis({@CheckComponents}, parameters);
+
+close all;
 
 %% Level 1 categorical -- find average best number of components per comparison.
 % % Always clear loop list first. 
