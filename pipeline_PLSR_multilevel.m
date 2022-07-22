@@ -1114,7 +1114,7 @@ clear i j true_false_vector;
 %% Level 1 continuous -- run random permutations.
 % With best number of components.
 % Always clear loop list first. 
-do = false; 
+do = true; 
 if do 
     if isfield(parameters, 'loop_list')
     parameters = rmfield(parameters,'loop_list');
@@ -1127,7 +1127,8 @@ if do
     
     % Do you want permutations?
     parameters.permutationGeneration = true;
-    parameters.n_permutations = 5000;
+    parameters.useBootstrapping = false;
+    parameters.n_permutations = 1000;
     parameters.stratify = false;
     parameters.comparison_type = 'continuous';
     
@@ -1168,6 +1169,7 @@ parameters.loop_list.iterators = {
 
 % Do you want permutations?
 parameters.useBootstrapping = true;
+parameters.permutationGeneration = false;
 parameters.n_bootstraps = 10000;
 parameters.stratify = false;
 parameters.comparison_type = 'continuous';
@@ -1208,6 +1210,7 @@ parameters.loop_list.iterators = {
 
 % Do you want permutations?
 parameters.useBootstrapping = true;
+parameters.permutationGeneration = false;
 parameters.n_bootstraps = 10000;
 parameters.stratify = true;
 parameters.comparison_type = 'categorical';
@@ -1235,7 +1238,7 @@ RunAnalysis({@PLSR_forRunAnalysis}, parameters);
 parameters.useBootstrapping = false;
 
 %% Level 1 categorical -- run random permutations.
-do = false;
+do = true;
 if do 
     % Always clear loop list first. 
     if isfield(parameters, 'loop_list')
@@ -1249,7 +1252,8 @@ if do
     
     % Do you want permutations?
     parameters.permutationGeneration = true;
-    parameters.n_permutations = 5000;
+    parameters.useBootstrapping = false;
+    parameters.n_permutations = 1000;
     parameters.stratify = true;
     parameters.comparison_type = 'categorical';
     
