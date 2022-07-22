@@ -156,32 +156,32 @@ if ~isfile([parameters.dir_exper 'PLSR\comparisons_level1_categorical.mat'])
 end
 
 %% Remove correlations for periods you don't want to use. 
-% % From saved indices from creation of response variables .
-% if isfield(parameters, 'loop_list')
-% parameters = rmfield(parameters,'loop_list');
-% end
-% 
-% % Iterators
-% parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
-% 
-% % Evaluation instructions.
-% parameters.evaluation_instructions = {{
-%           'data_evaluated = parameters.data;'...
-%           'data_evaluated(parameters.indices_to_remove) = [];'}};
-% % Input 
-% % The reshaped correlations per mouse from fluorescence analysis pipeline.
-% parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'fluorescence analysis\correlations\Fisher transformed\'], 'mouse', '\instances reshaped\'};
-% parameters.loop_list.things_to_load.data.filename= {'values.mat'};
-% parameters.loop_list.things_to_load.data.variable= {'values'}; 
-% parameters.loop_list.things_to_load.data.level = 'mouse';
-% 
-% % Output
-% parameters.loop_list.things_to_save.data_evaluated.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
-% parameters.loop_list.things_to_save.data_evaluated.filename= {'values.mat'};
-% parameters.loop_list.things_to_save.data_evaluated.variable= {'values'}; 
-% parameters.loop_list.things_to_save.data_evaluated.level = 'mouse';
-% 
-% RunAnalysis({@EvaluateOnData}, parameters); 
+% From saved indices from creation of response variables .
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
+
+% Evaluation instructions.
+parameters.evaluation_instructions = {{
+          'data_evaluated = parameters.data;'...
+          'data_evaluated(parameters.indices_to_remove) = [];'}};
+% Input 
+% The reshaped correlations per mouse from fluorescence analysis pipeline.
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'fluorescence analysis\correlations\Fisher transformed\'], 'mouse', '\instances reshaped\'};
+parameters.loop_list.things_to_load.data.filename= {'values_IpsaContra.mat'};
+parameters.loop_list.things_to_load.data.variable= {'values'}; 
+parameters.loop_list.things_to_load.data.level = 'mouse';
+
+% Output
+parameters.loop_list.things_to_save.data_evaluated.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.data_evaluated.filename= {'values.mat'};
+parameters.loop_list.things_to_save.data_evaluated.variable= {'values'}; 
+parameters.loop_list.things_to_save.data_evaluated.level = 'mouse';
+
+RunAnalysis({@EvaluateOnData}, parameters); 
 
 %% Put in response variables, no vertical concatenation
 
