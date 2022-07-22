@@ -476,87 +476,6 @@ parameters.loop_list.things_to_save.fig_BICs_response.level = 'mouse';
 RunAnalysis({@CheckComponents}, parameters);
 close all;
 
-%% Level 1 continuous -- run random permutations.
-% With best number of components.
-% Always clear loop list first. 
-do = true; 
-if do 
-    if isfield(parameters, 'loop_list')
-    parameters = rmfield(parameters,'loop_list');
-    end
-    
-    % Iterators
-    parameters.loop_list.iterators = {
-                   'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-                   'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-    
-    % Do you want permutations?
-    parameters.permutationGeneration = true;
-    parameters.n_permutations = 5000;
-    parameters.stratify = false;
-    parameters.comparison_type = 'continuous';
-    
-    % Input 
-    % dataset
-    parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-    parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
-    parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
-    parameters.loop_list.things_to_load.dataset.level = 'comparison';
-    % optimized number of components to use.
-    parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\', 'mouse', '\'};
-    parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
-    parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
-    parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
-
-    % Output
-    parameters.loop_list.things_to_save.betas_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-    parameters.loop_list.things_to_save.betas_randomPermutations.filename= {'PLSR_betas_randomPermutations.mat'};
-    parameters.loop_list.things_to_save.betas_randomPermutations.variable= {'betas_randomPermutations'}; 
-    parameters.loop_list.things_to_save.betas_randomPermutations.level = 'comparison';
-    
-    RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
-    
-    parameters.permutationGeneration = false;
-end 
-%% Level 1 continuous -- run bootstrapping.
-% With best number of components.
-% Always clear loop list first.
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {
-               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator';
-               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-
-% Do you want permutations?
-parameters.useBootstrapping = true;
-parameters.n_bootstraps = 10000;
-parameters.stratify = false;
-parameters.comparison_type = 'continuous';
-
-% Input
-% dataset
-parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
-parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'};
-parameters.loop_list.things_to_load.dataset.level = 'comparison';
-% optimized number of components to use.
-parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison','\', 'mouse', '\'};
-parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'};
-parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
-
-% Output
-parameters.loop_list.things_to_save.betas_bootstrap.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_save.betas_bootstrap.filename= {'PLSR_betas_bootstrap.mat'};
-parameters.loop_list.things_to_save.betas_bootstrap.variable= {'betas_bootstrap'};
-parameters.loop_list.things_to_save.betas_bootstrap.level = 'comparison';
-
-RunAnalysis({@PLSR_forRunAnalysis}, parameters);
-
-parameters.useBootstrapping = false;
 
 % %% Plot Betas from continuous level 1 
 % if isfield(parameters, 'loop_list')
@@ -1493,6 +1412,92 @@ for i = 2 %1:numel(true_false_vector)
 end 
 %close all;
 clear i j true_false_vector;
+
+%% Level 1 continuous -- run random permutations.
+% With best number of components.
+% Always clear loop list first. 
+do = true; 
+if do 
+    if isfield(parameters, 'loop_list')
+    parameters = rmfield(parameters,'loop_list');
+    end
+    
+    % Iterators
+    parameters.loop_list.iterators = {
+                   'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+                   'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+    
+    % Do you want permutations?
+    parameters.permutationGeneration = true;
+    parameters.n_permutations = 5000;
+    parameters.stratify = false;
+    parameters.comparison_type = 'continuous';
+    
+    % Input 
+    % dataset
+    parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+    parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+    parameters.loop_list.things_to_load.dataset.level = 'comparison';
+    % optimized number of components to use.
+    parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\', 'mouse', '\'};
+    parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
+    parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
+    parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
+
+    % Output
+    parameters.loop_list.things_to_save.betas_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_save.betas_randomPermutations.filename= {'PLSR_betas_randomPermutations.mat'};
+    parameters.loop_list.things_to_save.betas_randomPermutations.variable= {'betas_randomPermutations'}; 
+    parameters.loop_list.things_to_save.betas_randomPermutations.level = 'comparison';
+    
+    RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+    
+    parameters.permutationGeneration = false;
+end 
+
+%% SIGNIFICANCE STUFF 
+
+%% Level 1 continuous -- run bootstrapping.
+% With best number of components.
+% Always clear loop list first.
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator';
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+
+% Do you want permutations?
+parameters.useBootstrapping = true;
+parameters.n_bootstraps = 10000;
+parameters.stratify = false;
+parameters.comparison_type = 'continuous';
+
+% Input
+% dataset
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'};
+parameters.loop_list.things_to_load.dataset.level = 'comparison';
+% optimized number of components to use.
+parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison','\', 'mouse', '\'};
+parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'};
+parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
+
+% Output
+parameters.loop_list.things_to_save.betas_bootstrap.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.betas_bootstrap.filename= {'PLSR_betas_bootstrap.mat'};
+parameters.loop_list.things_to_save.betas_bootstrap.variable= {'betas_bootstrap'};
+parameters.loop_list.things_to_save.betas_bootstrap.level = 'comparison';
+
+RunAnalysis({@PLSR_forRunAnalysis}, parameters);
+
+parameters.useBootstrapping = false;
+
 
 %% Plot betas individually, for making pretty figures. 
 comparison_types = {'categorical', 'continuous'};
