@@ -257,7 +257,7 @@ parameters.imputeMissing = true;
 % Number of PLSR components that should be used for imputing missing data.
 % Using just 85% instead of 90% usually cuts number of components needed by
 % half.
-parameters.imputation_components_variance_explained = 75; % in percents
+parameters.imputation_components_variance_explained = 85; % in percents
 parameters.imputation_max_components = 10; 
 
 % Input 
