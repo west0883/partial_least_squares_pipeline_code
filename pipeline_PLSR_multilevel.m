@@ -835,84 +835,6 @@ parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrepSecondLevel}, parameters);
 
-%% Level 2 categorical -- prep shuffled datasets for PLSR on shuffles.
-%Always clear loop list first. 
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {
-               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
-               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
-
-% If the first level was categorical:
-parameters.firstLevelCategorical = true; 
-
-% Remove outliers & average
-parameters.averaging_across_mice = true;
-parameters.removeOutliers = false; 
-
-parameters.this_comparison_set = parameters.comparisons_categorical;
-parameters.max_mice = size(parameters.mice_all, 2);
-parameters.concatenation_level = 'mouse';
-
-% Input 
-parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_betas_bootstrap.mat'};
-parameters.loop_list.things_to_load.response.variable= {'betas_bootstrap'}; 
-parameters.loop_list.things_to_load.response.level = 'mouse';
-
-% Output
-parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_bootstrap.mat'};
-parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
-parameters.loop_list.things_to_save.dataset.level = 'comparison';
-
-RunAnalysis({@DatasetPrepSecondLevel}, parameters);
-
-%% Level 2 categorical -- check significance
-% Always clear loop list first. 
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {
-               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
-
-parameters.shufflesDim = 2;
-parameters.find_significance = true;
-
-% The statistical alpha value
-parameters.alphaValue = 0.05/150;  %/(numel(parameters.comparisons_categorical) - 4;
-
-% Use the Bootstrapping method. 
-parameters.useBootstrapping = true;
-
-% If you want to fit a normal distribution before t-test (default = true)
-parameters.useNormalDistribution = true; 
-
-% Inputs:
-% Test values
-parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info.mat'};
-parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
-parameters.loop_list.things_to_load.test_values.level = 'comparison';
-% Null distribution
-parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_bootstrap.mat'};
-parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
-parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
-
-% Outputs
-parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_bootstrap_test.mat'};
-parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
-parameters.loop_list.things_to_save.significance.level = 'comparison';
-
-RunAnalysis({@SignificanceCalculation}, parameters);
-
 %% Level 2 categorical -- concatenate & average sigmas
 % For each comparison. For adjusting betas in plots below. 
 % Always clear loop list first. 
@@ -960,7 +882,7 @@ for i = 2 %1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
-    for j = 2 %1:numel(true_false_vector)
+    for j = 1 %1:numel(true_false_vector)
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
@@ -1427,6 +1349,84 @@ if do
     
     parameters.permutationGeneration = false;
 end
+
+%% Level 2 categorical -- prep shuffled datasets for PLSR on shuffles.
+%Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
+
+% If the first level was categorical:
+parameters.firstLevelCategorical = true; 
+
+% Remove outliers & average
+parameters.averaging_across_mice = true;
+parameters.removeOutliers = false; 
+
+parameters.this_comparison_set = parameters.comparisons_categorical;
+parameters.max_mice = size(parameters.mice_all, 2);
+parameters.concatenation_level = 'mouse';
+
+% Input 
+parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.response.filename= {'PLSR_betas_bootstrap.mat'};
+parameters.loop_list.things_to_load.response.variable= {'betas_bootstrap'}; 
+parameters.loop_list.things_to_load.response.level = 'mouse';
+
+% Output
+parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_bootstrap.mat'};
+parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_save.dataset.level = 'comparison';
+
+RunAnalysis({@DatasetPrepSecondLevel}, parameters);
+
+%% Level 2 categorical -- check significance
+% Always clear loop list first. 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
+
+parameters.shufflesDim = 2;
+parameters.find_significance = true;
+
+% The statistical alpha value
+parameters.alphaValue = 0.05/150;  %/(numel(parameters.comparisons_categorical) - 4;
+
+% Use the Bootstrapping method. 
+parameters.useBootstrapping = true;
+
+% If you want to fit a normal distribution before t-test (default = true)
+parameters.useNormalDistribution = true; 
+
+% Inputs:
+% Test values
+parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
+parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
+parameters.loop_list.things_to_load.test_values.level = 'comparison';
+% Null distribution
+parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
+parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_bootstrap.mat'};
+parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
+parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
+
+% Outputs
+parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
+parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_bootstrap_test.mat'};
+parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
+parameters.loop_list.things_to_save.significance.level = 'comparison';
+
+RunAnalysis({@SignificanceCalculation}, parameters);
 
 
 %% Plot betas individually, for making pretty figures. 
