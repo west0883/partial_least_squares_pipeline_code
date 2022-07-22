@@ -421,7 +421,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
        % If stratifying,
        if parameters.stratify
            % For each response variable,
-           parfor variablei = 1:size(responseVariables, 2)
+           for variablei = 1:size(responseVariables, 2)
 
                 % Get out variable indices
     
@@ -432,7 +432,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                 variable_indices = find(responseVariables(:,variablei) == cat_value);
                 
                 [~,bootsam] = bootstrp(parameters.n_bootstraps, [], responseVariables(variable_indices));
-                bootstrap_indices_holder{variablei} = bootsam; 
+                bootstrap_indices_holder{variablei} = variable_indices(bootsam); 
                
            end
 
@@ -451,12 +451,11 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         
        % Now run bootstraps
       parfor repi = 1:size(bootstrap_indices,2) 
-
-            explanatoryVariables_bootstrap = explanatoryVariables(bootstrap_indices(:, repi), :);
-            responseVariables_bootstrap = responseVariables(bootstrap_indices(:,repi), :);
+           
+            indices = bootstrap_indices(:,repi);
 
             % Run the plsregress_fullcode on the mixed/permuted data.
-            [~, ~, ~, ~, BETA] = plsregress_fullcode(explanatoryVariables_bootstrap, responseVariables_bootstrap, ncomponents);
+            [~, ~, ~, ~, BETA] = plsregress_fullcode(explanatoryVariables(indices, :), responseVariables(indices,:), ncomponents);
             
             % Put into holding matrix.
             betas_bootstrap(:, :, repi) = BETA; 
