@@ -558,5 +558,36 @@ comparisons(counter).indices = find(indices_motorized & indices_type);
 
 counter = counter + 1;
 
+%% Stop vs finished stop
+% motorized
+comparisons(counter).name = 'motorized_stopvsfstop_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'stop') | strcmp(period_types, 'finished_stop');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1;
+
+% Spontaneous
+comparisons(counter).name = 'spontaneous_stopvsfstop_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'stop') | strcmp(period_types, 'finished_stop');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_spontaneous & indices_type);
+
+counter = counter + 1;
+
 %% Save 
 save(filename_out, 'comparisons');
