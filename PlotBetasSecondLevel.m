@@ -132,8 +132,12 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     
             % Plot.
             subplot(subplot_rows, subplot_columns, comparison_iterator); imagesc(holder); 
-            colormap(cmap); colorbar; caxis(color_range);
-        
+             % Don't use the color range if both values are 0.
+            if any(color_range)
+                caxis(color_range);
+            end
+            colormap(cmap); colorbar; 
+           
             % Make subplot title.
             title_string = erase(comparison, parameters.comparison_type); 
             title(strrep(title_string, '_', ' ')); axis square;
@@ -377,7 +381,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
             % Move colorbar label to the right.
             positions = Colorbar_handle.Label.Position;
-            Colorbar_handle.Label.Position = [positions(1) + 4, positions(2), positions(3)];
+            Colorbar_handle.Label.Position = [positions(1) + 1, positions(2), positions(3)];
 
             % Make diagonals black. 
             hold on; 
@@ -567,7 +571,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     
                 % Move colorbar label to the right.
                 positions = Colorbar_handle.Label.Position;
-                Colorbar_handle.Label.Position = [positions(1) + 4, positions(2), positions(3)];
+                Colorbar_handle.Label.Position = [positions(1) + 3, positions(2), positions(3)];
 
                 % Make diagonals black. 
                 hold on; 
