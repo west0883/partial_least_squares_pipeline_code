@@ -795,7 +795,7 @@ RunAnalysis({@PlotBetas}, parameters);
 
 close all;
 
-%% RUN AVERAGES WITH OUTLIERS REMOVED INSTEAD
+%% RUN AVERAGES FOR LEVEL 2
 
 %% Level 2 categorical -- Prep betas & mouse variables
 % For any spontaneous, don't include mouse 1100
@@ -1427,6 +1427,8 @@ if do
     
     parameters.permutationGeneration = false;
 end
+
+
 %% Plot betas individually, for making pretty figures. 
 comparison_types = {'categorical', 'continuous'};
 
