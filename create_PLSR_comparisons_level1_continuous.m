@@ -131,7 +131,7 @@ comparisons(counter).indices = find(indices_spontaneous & indices_type);
 
 counter = counter + 1; 
 
-%% Continuous variables, walk with speed
+%% Motorized walk.
 % Motorized
 comparisons(counter).name = 'motorized_walk_continuousVars';
 comparisons(counter).variablesToUse = {'speed_vector','pupil_diameter_vector' };
@@ -147,9 +147,10 @@ comparisons(counter).indices = find(indices_motorized & indices_type);
 
 counter = counter + 1; 
 
-% Spontaneous
+%% Spontaneous walk.
+% Include accel as well.
 comparisons(counter).name = 'spontaneous_walk_continuousVars';
-comparisons(counter).variablesToUse = {'speed_vector', 'pupil_diameter_vector'};
+comparisons(counter).variablesToUse = {'speed_vector', 'accel_vector', 'pupil_diameter_vector'};
 comparisons(counter).type = 'walk';
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).figure_type = 'continued';
