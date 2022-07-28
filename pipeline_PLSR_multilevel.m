@@ -1975,19 +1975,19 @@ parameters.averageDim = 2;
 
 % Input
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_randomPermutations.mat'};
+parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_bootstrap.mat'};
 parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
 parameters.loop_list.things_to_load.data.level = 'comparison';
 
 % Output 
 % each mouse, as a matrix
 parameters.loop_list.things_to_save.node_averages.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_randomPermutations.mat'};
+parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_bootstrap.mat'};
 parameters.loop_list.things_to_save.node_averages.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.node_averages.level = 'comparison';
 % Across mice.
 parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_randomPermutations.mat'};
+parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_bootstrap.mat'};
 parameters.loop_list.things_to_save.average.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.average.level = 'comparison';
 
@@ -1997,51 +1997,66 @@ RunAnalysis({@AverageByNode, @AverageData}, parameters);
 
 
 %% Calculate significance of mean change of nodes with all other
-if isfield(parameters, 'loop_list')
-    parameters = rmfield(parameters,'loop_list');
-end
-        
-% Iterators
-parameters.loop_list.iterators = {
-               'comparison_type', {'loop_variables.comparison_types'}, 'comparison_type_iterator';
-               'comparison', {'loop_variables.comparisons_', 'comparison_type', '(:).name'}, 'comparison_iterator' };
 
 comparison_types = {'categorical', 'continuous'};
-parameters.loop_variables.comparison_types = {'categorical', 'continuous'}; 
 
-parameters.find_significance = true;
+for typei = 1:numel(comparison_types)
 
-% The statistical alpha value
-parameters.alphaValue = 0.001/32; %/numel(parameters.comparisons_continuous);
+    comparison_type = comparison_types{typei};
+    parameters.comparison_type = comparison_type;
+    parameters.this_comparison_set = parameters.(['comparisons_' comparison_type]);
 
-% Say that you do want to use bootstrapping.
-parameters.useBootstrapping = false;
+    if isfield(parameters, 'loop_list')
+        parameters = rmfield(parameters,'loop_list');
+    end
 
-% If you want to fit a normal distribution before t-test (default = true)
-parameters.useNormalDistribution = true; 
+    % Iterators
+    parameters.loop_list.iterators = {
+                   'comparison', {'loop_variables.comparisons_', comparison_type, '(:).name'}, 'comparison_iterator' };
+    
+    parameters.find_significance = true;
+    
+    % Say that you do want to use bootstrapping.
+    parameters.useBootstrapping = true;
+    
+    % If you want to fit a normal distribution before t-test (default = true)
+    parameters.useNormalDistribution = true; 
 
+    if strcmp(comparison_type, 'categorical')
 
-% Inputs:
-%Test values (will grab only the intercepts with EvaluateOnData)
-parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_load.test_values.filename= {'average_by_nodes_allmice.mat'};
-parameters.loop_list.things_to_load.test_values.variable= {'average_by_nodes'}; 
-parameters.loop_list.things_to_load.test_values.level = 'comparison';
+        parameters.shufflesDim = 2;
+        
+        % The statistical alpha value
+        parameters.alphaValue = 0.05/150;
+    
+    else
+        parameters.shufflesDim = 2;
 
-% Null distribution
-parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'average_by_nodes_allmice_randomPermutations.mat'};
-parameters.loop_list.things_to_load.null_distribution.variable= {'average_by_nodes'}; 
-parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
+        % The statistical alpha value
+        parameters.alphaValue = 0.05/45;
+    end
 
-% Output
-parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 '] , 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'average_by_nodes_significance_randomPermutations.mat'};
-parameters.loop_list.things_to_save.significance.variable= {'significance'}; 
-parameters.loop_list.things_to_save.significance.level = 'comparison';
-
-RunAnalysis({@SignificanceCalculation}, parameters);
-
+    % Inputs:
+    %Test values (will grab only the intercepts with EvaluateOnData)
+    parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], comparison_type, '\Ipsa Contra\', 'comparison', '\'};
+    parameters.loop_list.things_to_load.test_values.filename= {'average_by_nodes_allmice.mat'};
+    parameters.loop_list.things_to_load.test_values.variable= {'average_by_nodes'}; 
+    parameters.loop_list.things_to_load.test_values.level = 'comparison';
+    
+    % Null distribution
+    parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], comparison_type, '\Ipsa Contra\', 'comparison', '\'};
+    parameters.loop_list.things_to_load.null_distribution.filename= {'average_by_nodes_allmice_bootstrap.mat'};
+    parameters.loop_list.things_to_load.null_distribution.variable= {'average_by_nodes'}; 
+    parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
+    
+    % Output
+    parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 '] , comparison_type, '\Ipsa Contra\', 'comparison', '\'};
+    parameters.loop_list.things_to_save.significance.filename= {'average_by_nodes_significance_bootstrap.mat'};
+    parameters.loop_list.things_to_save.significance.variable= {'significance'}; 
+    parameters.loop_list.things_to_save.significance.level = 'comparison';
+    
+    RunAnalysis({@SignificanceCalculation}, parameters);
+end
 %% Calculate *sum* of change of nodes with all other nodes
 % using only the significant changes. 
 if isfield(parameters, 'loop_list')
@@ -2058,8 +2073,9 @@ parameters.loop_variables.comparison_types = {'categorical', 'continuous'};
 
 % Parameters for AverageByNode code.
 parameters.isVector = true;
+parameters.fromPLSR= true;
 parameters.corrsDim = 2;
-parameters.significantOnly = true;
+parameters.significantOnly = false;
 parameters.significanceDim = 1; % Dimension of significance matrix corresponding to different correlation values
 
 % Dimension to average across AFTER data has gone through AverageByNode
@@ -2072,20 +2088,22 @@ parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info.mat'};
 parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
 parameters.loop_list.things_to_load.data.level = 'comparison';
 
+if parameters.significantOnly
 parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
 parameters.loop_list.things_to_load.significance.filename = {'PLSR_significance_bootstrap_test.mat'};
 parameters.loop_list.things_to_load.significance.variable = {'PLSR_significance.all'};
 parameters.loop_list.things_to_load.significance.level = 'comparison';
+end
 
 % Output 
 % each mouse, as a matrix
 parameters.loop_list.things_to_save.node_sums.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_save.node_sums.filename = {'sum_by_nodes.mat'};
+parameters.loop_list.things_to_save.node_sums.filename = {'sum_by_nodes_nosignificance.mat'};
 parameters.loop_list.things_to_save.node_sums.variable = {'sum_by_nodes'};
 parameters.loop_list.things_to_save.node_sums.level = 'comparison';
 % Across mice.
 parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_save.average.filename = {'sum_by_nodes_allmice.mat'};
+parameters.loop_list.things_to_save.average.filename = {'sum_by_nodes_allmice_nosignificance.mat'};
 parameters.loop_list.things_to_save.average.variable = {'sum_by_nodes'};
 parameters.loop_list.things_to_save.average.level = 'comparison';
 
