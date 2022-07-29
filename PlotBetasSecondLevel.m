@@ -250,20 +250,36 @@ function [parameters] = PlotBetasSecondLevel(parameters)
        % If using region demarcations,
        if isfield(parameters, 'useRegionDemarcations') && parameters.useRegionDemarcations
             
-           % Put major grid lines at the end of every region demarcation
-           % (will have to shift tick labels into exact position later). 
-           grid_locations_major = NaN(1, size(parameters.region_nodes, 2));
+           % Put minor grid lines at the end of every region demarcation
+           % (not major because I want numbering labels , and that can't be
+           % done with minor grids).
+           grid_locations_minor = NaN(1, size(parameters.region_nodes, 2));
 
            for regioni = 1:size(parameters.region_nodes, 2)
-               grid_locations_major(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
+               grid_locations_minor(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
            end
+           
+           % Label as regions. (no labels for minor ticks)
+           %minor_tick_labels = {parameters.region_nodes(:).name};
 
-           % Label as regions.
-           major_tick_labels = {parameters.region_nodes(:).name};
+           % Major ticks everywhere else.
+           grid_locations_major = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_minor);
+           %grid_locations_major = 0.5:1:parameters.number_of_sources + 0.5;
+           
+           % Major grid ticks every 2 
+           ticks_holder = setdiff(1:2:parameters.number_of_sources, grid_locations_minor - 0.5);
+           ticks_holder = [zeros(size(ticks_holder)); ticks_holder];
+           ticks_holder = reshape(ticks_holder, 1, []);
+           [~, index, ~] = intersect(ticks_holder, grid_locations_minor + 0.5);
+           ticks_holder(index - 1) = []; 
 
-           % Minor ticks everywhere else.
-           grid_locations_minor = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_major);
-       
+           ticks_holder = arrayfun(@num2str, ticks_holder, 'UniformOutput', false);
+
+           % Make the zeros into emptys
+           ticks_holder(strcmp(ticks_holder, '0')) = {''};
+           
+           major_tick_labels = ticks_holder;
+
        % Else if not using region demarcations, 
        else
   
@@ -271,6 +287,8 @@ function [parameters] = PlotBetasSecondLevel(parameters)
            grid_locations_major = 0.5:5:parameters.number_of_sources + 0.5;
            grid_locations_minor = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_major);
 
+           major_tick_labels = {'', '5', '10', '15', '20', '25', '30'};
+               
        end
 
         % If categorical, 
@@ -333,23 +351,40 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             
             % Put in grid lines.
 
+            grid on;
+            ax.Layer = 'top';
+            ax.XTick = grid_locations_major;
+            ax.YTick = grid_locations_major; 
+
             % Minor grid lines. 
             ax.XAxis.MinorTick = 'on';
             ax.YAxis.MinorTick = 'on';
             ax.XAxis.MinorTickValues = grid_locations_minor;
             ax.YAxis.MinorTickValues = grid_locations_minor;
             ax.MinorGridLineStyle = '-'; % Make solid lines.
-            ax.MinorGridColor = [0.75 0.75 0.75];
+            
             ax.MinorGridAlpha = 1;
             ax.XMinorGrid = 'on';
             ax.YMinorGrid = 'on';
-            ax.Layer = 'top';
+            
 
             % Major grid lines. (adjust style/width so you can see them)
-            grid on;
-            ax.XTick = grid_locations_major;
-            ax.YTick = grid_locations_major; 
-            ax.GridColor = [0, 0, 0]; % Make darker than minor grid.
+            
+
+            if isfield(parameters, 'useRegionDemarcations') && parameters.useRegionDemarcations
+               
+                % In this case, we want the minor grid to be the region
+                % demarcations, and thus the minor should be darker than
+                % the major grid.
+                ax.MinorGridColor = [0, 0, 0]; 
+                ax.GridColor = [0.75 0.75 0.75];
+
+            else
+                ax.MinorGridColor = [0.75 0.75 0.75];
+                ax.GridColor = [0, 0, 0]; % Make darker than minor grid.
+            end
+            
+            
             ax.GridAlpha = 1; % Make more opaque.
             ax.Layer = 'top';
           
@@ -357,16 +392,12 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             set(gca, 'TickLength',[0 0]);
     
             % Redo tick labels 
-            if isfield(parameters, 'useRegionDemarcations') && parameters.useRegionDemarcations
-
-                ax.XTickLabel = major_tick_labels;
-                ax.YTickLabel = major_tick_labels;
-
-            else
-                ax.XTickLabel = {'', '5', '10', '15', '20', '25', '30'};
-                ax.YTickLabel = {'', '5', '10', '15', '20', '25', '30'};
-            end 
+            ax.XTickLabel = major_tick_labels;
+            ax.YTickLabel = major_tick_labels;
             set(ax, 'yticklabel');
+
+            % Prevent rotation of x axis tick labels.
+            ax.XTickLabelRotation = 0;
     
             % Remove background color.
             ax.Color = 'none';
@@ -383,7 +414,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
             % Make tick labels larger. (Don't make bold because they
             % weren't bold in the spontaneous paper).
-            ax.FontSize = 16;
+            ax.FontSize = 10;
 
             % Add x and y axis labels. 
             ax.XLabel.String = 'node';
@@ -578,7 +609,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     
                 % Make tick labels larger. (Don't make bold because they
                 % weren't bold in the spontaneous paper).
-                ax.FontSize = 16;
+                ax.FontSize = 10;
     
                 % Add x and y axis labels. 
                 ax.XLabel.String = 'node';
