@@ -252,10 +252,17 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             
            % Put major grid lines at the end of every region demarcation
            % (will have to shift tick labels into exact position later). 
-           
-           grid_locations_major = NaN(1, numel(fieldnames(parameters.region_nodes)));
-           
+           grid_locations_major = NaN(1, size(parameters.region_nodes, 2));
+
+           for regioni = 1:size(parameters.region_nodes, 2)
+               grid_locations_major(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
+           end
+
+           % Label as regions.
            major_tick_labels = {parameters.region_nodes(:).name};
+
+           % Minor ticks everywhere else.
+           grid_locations_minor = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_major);
        
        % Else if not using region demarcations, 
        else
@@ -346,13 +353,19 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             ax.GridAlpha = 1; % Make more opaque.
             ax.Layer = 'top';
           
-    
             % Make ticks themselves invisible.
             set(gca, 'TickLength',[0 0]);
     
             % Redo tick labels 
-            ax.XTickLabel = {'', '5', '10', '15', '20', '25', '30'};
-            ax.YTickLabel = {'', '5', '10', '15', '20', '25', '30'};
+            if isfield(parameters, 'useRegionDemarcations') && parameters.useRegionDemarcations
+
+                ax.XTickLabel = major_tick_labels;
+                ax.YTickLabel = major_tick_labels;
+
+            else
+                ax.XTickLabel = {'', '5', '10', '15', '20', '25', '30'};
+                ax.YTickLabel = {'', '5', '10', '15', '20', '25', '30'};
+            end 
             set(ax, 'yticklabel');
     
             % Remove background color.
@@ -370,7 +383,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
             % Make tick labels larger. (Don't make bold because they
             % weren't bold in the spontaneous paper).
-            ax.FontSize = 18;
+            ax.FontSize = 16;
 
             % Add x and y axis labels. 
             ax.XLabel.String = 'node';
@@ -565,7 +578,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     
                 % Make tick labels larger. (Don't make bold because they
                 % weren't bold in the spontaneous paper).
-                ax.FontSize = 18;
+                ax.FontSize = 16;
     
                 % Add x and y axis labels. 
                 ax.XLabel.String = 'node';
