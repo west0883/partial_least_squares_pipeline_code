@@ -247,9 +247,24 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     % Plot individually
     else
 
-        % Make grid lines at specific places. Minor & major grid lines.
-        grid_locations_major = 0.5:5:parameters.number_of_sources + 0.5;
-        grid_locations_minor = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_major);
+       % If using region demarcations,
+       if isfield(parameters, 'useRegionDemarcations') && parameters.useRegionDemarcations
+            
+           % Put major grid lines at the end of every region demarcation
+           % (will have to shift tick labels into exact position later). 
+           
+           grid_locations_major = NaN(1, numel(fieldnames(parameters.region_nodes)));
+           
+           major_tick_labels = {parameters.region_nodes(:).name};
+       
+       % Else if not using region demarcations, 
+       else
+  
+           % Make major grid lines at every 5 nodes. Minor & major grid lines.
+           grid_locations_major = 0.5:5:parameters.number_of_sources + 0.5;
+           grid_locations_minor = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_major);
+
+       end
 
         % If categorical, 
         if strcmp(parameters.comparison_type, 'categorical')
@@ -267,6 +282,11 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             % Make diagonal blank = 0
             for i = 1:parameters.number_of_sources
                 holder(i, i) = 0;
+            end
+
+            % If renumbering, rearrage by new node renumbering
+            if isfield(parameters, 'useRenumbering') && parameters.useRenumbering
+                holder = ArrangeNewNumbering(holder, parameters.node_renumbering, true, [1 2], 0);
             end
 
             % Make a figure
@@ -450,6 +470,11 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 % Make diagonal blank = 0
                 for i = 1:parameters.number_of_sources
                     holder(i, i) = 0;
+                end
+
+                % If renumbering, rearrage by new node renumbering
+                if isfield(parameters, 'useRenumbering') && parameters.useRenumbering
+                    holder = ArrangeNewNumbering(holder, parameters.node_renumbering, true, [1 2], 0);
                 end
 
                 % Make a figure for this variable.
