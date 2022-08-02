@@ -21,7 +21,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     else
         % If using 2nd-level PLSR
         % Pull out betas to use going forward (using just the intercepts).
-        betas = parameters.results.BETA(1, :);
+        betas = parameters.results.COV(1, :);
 
     end
    
