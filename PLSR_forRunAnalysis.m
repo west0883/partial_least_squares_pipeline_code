@@ -322,7 +322,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % regression.
     if ~isfield(parameters, 'onPermutations') || (isfield(parameters, 'onPermutations') && ~parameters.onPermutations)
    
-        [results.XL, results.YL, results.XS, results.YS, results.BETA, results.PCTVAR, results.MSEP, results.stats, results.MSEP_byVars] ...
+        [results.XL, results.YL, results.XS, results.YS, results.BETA, results.PCTVAR, results.MSEP, results.stats, results.MSEP_byVars,  results.Tnotnormal, results.pctVar_byVar] ...
           = plsregress_fullcode(explanatoryVariables, responseVariables, ncomponents); 
    
          % Calculate covariance matrix, divide by n - 1 observations to
