@@ -11,9 +11,9 @@ function [parameters] = PlotBetas(parameters)
     % Adjust Betas based on z-score sigma. % First row is constant estimate
     % If user says so
     if isfield(parameters, 'adjust_beta') && parameters.adjust_beta
-        betas_adjusted = parameters.results.Cov(2:end, :) ./ parameters.dataset_info.zscoring.brainData.sigma' .*  parameters.dataset_info.zscoring.responseVariables.sigma; 
+        betas_adjusted = parameters.results.Cov ./ parameters.dataset_info.zscoring.brainData.sigma' .*  parameters.dataset_info.zscoring.responseVariables.sigma; 
     else
-        betas_adjusted = parameters.results.Cov(2:end, :);
+        betas_adjusted = parameters.results.Cov;
     end
     
     fig = figure;
@@ -34,7 +34,7 @@ function [parameters] = PlotBetas(parameters)
         title(['Variable ' num2str(componenti)]); axis square;
 
     end
-    title_string = ['Betas ' strjoin(parameters.values(1:numel(parameters.values)/2), ', ')];
+    title_string = ['Covariances ' strjoin(parameters.values(1:numel(parameters.values)/2), ', ')];
     title_string = strrep(title_string, '_', ' ');
     sgtitle(title_string);
 
