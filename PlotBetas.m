@@ -6,14 +6,14 @@
 
 function [parameters] = PlotBetas(parameters)
 
-    [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(parameters.results.BETA, 2),4/5);
+    [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(parameters.results.Cov, 2),4/5);
 
     % Adjust Betas based on z-score sigma. % First row is constant estimate
     % If user says so
     if isfield(parameters, 'adjust_beta') && parameters.adjust_beta
-        betas_adjusted = parameters.results.BETA(2:end, :) ./ parameters.dataset_info.zscoring.brainData.sigma' .*  parameters.dataset_info.zscoring.responseVariables.sigma; 
+        betas_adjusted = parameters.results.Cov(2:end, :) ./ parameters.dataset_info.zscoring.brainData.sigma' .*  parameters.dataset_info.zscoring.responseVariables.sigma; 
     else
-        betas_adjusted = parameters.results.BETA(2:end, :);
+        betas_adjusted = parameters.results.Cov(2:end, :);
     end
     
     fig = figure;
