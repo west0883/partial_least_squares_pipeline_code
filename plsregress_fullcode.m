@@ -1,5 +1,5 @@
 function [Xloadings,Yloadings,Xscores,Yscores, ...
-                    beta,pctVar,mse,stats, mse_byvar] = plsregress_fullcode(X,Y,ncomp,varargin)
+                    beta,pctVar,mse,stats, mse_byvar, Tnotnormal] = plsregress_fullcode(X,Y,ncomp,varargin)
 %PLSREGRESS Partial least squares regression.
 %   [XLOADINGS,YLOADINGS] = PLSREGRESS(X,Y,NCOMP) computes a partial least
 %   squares regression of Y on X, using NCOMP PLS components or latent
@@ -186,7 +186,7 @@ elseif nargout <= 4
     
 else
     % Compute the regression coefs, including intercept(s)
-    [Xloadings,Yloadings,Xscores,Yscores,Weights] = simpls(X0,Y0,ncomp);
+    [Xloadings,Yloadings,Xscores,Yscores,Weights, Tnotnormal] = simpls(X0,Y0,ncomp);
     beta = Weights*Yloadings';
     beta = [meanY - meanX*beta; beta];
     
@@ -239,7 +239,7 @@ end
 
 %------------------------------------------------------------------------------
 %SIMPLS Basic SIMPLS.  Performs no error checking.
-function [Xloadings,Yloadings,Xscores,Yscores,Weights] = simpls(X0,Y0,ncomp)
+function [Xloadings,Yloadings,Xscores,Yscores,Weights, Tnotnormal] = simpls(X0,Y0,ncomp)
 
 [n,dx] = size(X0);
 dy = size(Y0,2);
@@ -250,6 +250,7 @@ Xloadings = zeros(dx,ncomp,outClass);
 Yloadings = zeros(dy,ncomp,outClass);
 if nargout > 2
     Xscores = zeros(n,ncomp,outClass);
+    Tnotnormal =  zeros(n,ncomp,outClass);
     Yscores = zeros(n,ncomp,outClass);
     if nargout > 4
         Weights = zeros(dx,ncomp,outClass);
@@ -265,9 +266,12 @@ Cov = X0'*Y0;
 for i = 1:ncomp
     % Find unit length ti=X0*ri and ui=Y0*ci whose covariance, ri'*X0'*Y0*ci, is
     % jointly maximized, subject to ti'*tj=0 for j=1:(i-1).
-    [ri,si,ci] = svd(Cov,'econ'); ri = ri(:,1); ci = ci(:,1); si = si(1);
+    [ri,si,ci] = svd(Cov,'econ'); 
+    ri = ri(:,1); ci = ci(:,1); si = si(1);
     ti = X0*ri;
-    normti = norm(ti); ti = ti ./ normti; % ti'*ti == 1
+    tnotnormal = ti; 
+    normti = norm(ti); 
+    ti = ti ./ normti; % ti'*ti == 1
     Xloadings(:,i) = X0'*ti;
     
     qi = si*ci/normti; % = Y0'*ti
@@ -275,6 +279,7 @@ for i = 1:ncomp
     
     if nargout > 2
         Xscores(:,i) = ti;
+        Tnotnormal(:,i) = tnotnormal;
         Yscores(:,i) = Y0*qi; % = Y0*(Y0'*ti), and proportional to Y0*ci
         if nargout > 4
             Weights(:,i) = ri ./ normti; % rescaled to make ri'*X0'*X0*ri == ti'*ti == 1
