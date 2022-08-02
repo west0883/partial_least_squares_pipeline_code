@@ -325,6 +325,11 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         [results.XL, results.YL, results.XS, results.YS, results.BETA, results.PCTVAR, results.MSEP, results.stats, results.MSEP_byVars] ...
           = plsregress_fullcode(explanatoryVariables, responseVariables, ncomponents); 
    
+         % Calculate covariance matrix, divide by n - 1 observations to
+         % make correlation matrix. (Covariance matrix was calculated on
+         % the normalized variables, so you can do this). 
+         results.Cov = (results.XL * results.YL')./ (size(explanatoryVariables,1) - 1); 
+
          % Put results into output structure.
          parameters.results = results; 
 
