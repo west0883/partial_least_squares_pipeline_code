@@ -61,9 +61,11 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     % Get comparison name for subplot title. 
     name_location = strcmp(parameters.keywords, {'comparison'});
     comparison = parameters.values{name_location};
+    parameters.comparison = comparison;
 
     % Get figure type for this comparison.
     figure_type = parameters.this_comparison_set(comparison_iterator).figure_type;
+    parameters.figure_type = figure_type;
 
     % Check if this comparison needs a special color range.
     color_indices = strcmp(parameters.color_range.specials(:,1), comparison);
@@ -83,6 +85,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
     % Make a colormap with cbrewer; 
     cmap= flipud(cbrewer('div', 'RdBu', 2000, 'linear'));
+    parameters.cmap = cmap;
 
     % Start plotting. 
 
@@ -247,50 +250,6 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     % Plot individually
     else
 
-       % If using region demarcations,
-       if isfield(parameters, 'useRegionDemarcations') && parameters.useRegionDemarcations
-            
-           % Put minor grid lines at the end of every region demarcation
-           % (not major because I want numbering labels , and that can't be
-           % done with minor grids).
-           grid_locations_minor = NaN(1, size(parameters.region_nodes, 2));
-
-           for regioni = 1:size(parameters.region_nodes, 2)
-               grid_locations_minor(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
-           end
-           
-           % Label as regions. (no labels for minor ticks)
-           %minor_tick_labels = {parameters.region_nodes(:).name};
-
-           % Major ticks everywhere else.
-           grid_locations_major = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_minor);
-           %grid_locations_major = 0.5:1:parameters.number_of_sources + 0.5;
-           
-           % Major grid ticks every 2 
-           ticks_holder = setdiff(1:2:parameters.number_of_sources, grid_locations_minor - 0.5);
-           ticks_holder = [zeros(size(ticks_holder)); ticks_holder];
-           ticks_holder = reshape(ticks_holder, 1, []);
-           [~, index, ~] = intersect(ticks_holder, grid_locations_minor + 0.5);
-           ticks_holder(index - 1) = []; 
-
-           ticks_holder = arrayfun(@num2str, ticks_holder, 'UniformOutput', false);
-
-           % Make the zeros into emptys
-           ticks_holder(strcmp(ticks_holder, '0')) = {''};
-           
-           major_tick_labels = ticks_holder;
-
-       % Else if not using region demarcations, 
-       else
-  
-           % Make major grid lines at every 5 nodes. Minor & major grid lines.
-           grid_locations_major = 0.5:5:parameters.number_of_sources + 0.5;
-           grid_locations_minor = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_major);
-
-           major_tick_labels = {'', '5', '10', '15', '20', '25', '30'};
-               
-       end
-
         % If categorical, 
         if strcmp(parameters.comparison_type, 'categorical')
 
@@ -298,166 +257,15 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
             holder(parameters.indices) = betas_adjusted;
             
-            % Duplicate betas across diagonal.
-            indices_upper = find(triu(ones(parameters.number_of_sources), 1));
-            betas_flipped = holder';
-            elements_upper = betas_flipped(indices_upper);
-            holder(indices_upper) = elements_upper;
+            % Colorbar string
+            colorbar_string = '\Delta{\it r}';
 
-            % Make diagonal blank = 0
-            for i = 1:parameters.number_of_sources
-                holder(i, i) = 0;
-            end
+            % Color range type
+            color_range_type = 'categorical';
 
-            % If renumbering, rearrage by new node renumbering
-            if isfield(parameters, 'useRenumbering') && parameters.useRenumbering
-                holder = ArrangeNewNumbering(holder, parameters.node_renumbering, true, [1 2], 0);
-            end
-
-            % Make a figure
-            fig = figure;
-
-            % If adjusted, use a standard color range for each plot.
-            if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'useColorRange') && parameters.useColorRange
-                color_range = parameters.color_range.(figure_type).categorical;
-            % If not adjusted, make a fitted color range for this plot.
-            else
-                extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
-                if extreme == 0
-                    color_range = parameters.color_range;
-                else
-                    color_range = [-extreme, extreme]; 
-                end
-               
-            end
-
-            % If the color range for this comparison was special,
-            if ~isempty(color_range_special)
-                % If it was, change color range to that.
-                color_range = color_range_special{2};
-            end
-
-            % Plot 
-            imagesc(holder); axis square;
-            Colorbar_handle = colorbar; caxis(color_range); colormap(cmap);
-            
-            % Get axis handle.
-            ax = gca;
-
-            title_string = comparison; 
-            ax.TitleFontSizeMultiplier = 0.5;
-            title_handle = title(strrep(title_string, '_', ' '));
-            set(title_handle,'position',get(title_handle,'position') - [0 2 0]);
-            
-            % Put in grid lines.
-
-            grid on;
-            ax.Layer = 'top';
-            ax.XTick = grid_locations_major;
-            ax.YTick = grid_locations_major; 
-
-            % Minor grid lines. 
-            ax.XAxis.MinorTick = 'on';
-            ax.YAxis.MinorTick = 'on';
-            ax.XAxis.MinorTickValues = grid_locations_minor;
-            ax.YAxis.MinorTickValues = grid_locations_minor;
-            ax.MinorGridLineStyle = '-'; % Make solid lines.
-            
-            ax.MinorGridAlpha = 1;
-            ax.XMinorGrid = 'on';
-            ax.YMinorGrid = 'on';
-            
-
-            % Major grid lines. (adjust style/width so you can see them)
-            
-
-            if isfield(parameters, 'useRegionDemarcations') && parameters.useRegionDemarcations
-               
-                % In this case, we want the minor grid to be the region
-                % demarcations, and thus the minor should be darker than
-                % the major grid.
-                ax.MinorGridColor = [0, 0, 0]; 
-                ax.GridColor = [0.75 0.75 0.75];
-
-            else
-                ax.MinorGridColor = [0.75 0.75 0.75];
-                ax.GridColor = [0, 0, 0]; % Make darker than minor grid.
-            end
-            
-            
-            ax.GridAlpha = 1; % Make more opaque.
-            ax.Layer = 'top';
-          
-            % Make ticks themselves invisible.
-            set(gca, 'TickLength',[0 0]);
-    
-            % Redo tick labels 
-            ax.XTickLabel = major_tick_labels;
-            ax.YTickLabel = major_tick_labels;
-            set(ax, 'yticklabel');
-
-            % Prevent rotation of x axis tick labels.
-            ax.XTickLabelRotation = 0;
-    
-            % Remove background color.
-            ax.Color = 'none';
-    
-            % Make outline of box thicker. (Controls width of all grid
-            % lines, too??)
-            ax.LineWidth = 0.4;
-
-            % Make figure background white.
-            fig.Color = 'w';
-
-            % Make colorbar outline thicker
-            Colorbar_handle.LineWidth = 0.4;
-
-            % Make tick labels larger. (Don't make bold because they
-            % weren't bold in the spontaneous paper).
-            ax.FontSize = 10;
-
-            % Add x and y axis labels. 
-            ax.XLabel.String = 'node';
-            ax.YLabel.String = 'node';
-            ax.XLabel.FontSize = 24;
-            ax.YLabel.FontSize = 24;
-
-            % Scoot y label slightly to left.
-            positions = ax.YLabel.Position;
-            ax.YLabel.Position = [positions(1) - 0.3, positions(2), positions(3)];
-
-            % For colorbar, keep only labels for 0 and extremes.
-            Colorbar_handle.Ticks = [color_range(1), 0, color_range(2)];
-
-            % Make colorbar ticks certain length
-            Colorbar_handle.TickLength = .015;
-
-            % Make colorbar tick labels certain size.
-            Colorbar_handle.FontSize = 18;
-
-            % Make colorbar label. (Don't make bold because they
-            % weren't bold in the spontaneous paper).
-            Colorbar_handle.Label.String = { '\Delta{\it r}'}; % Change in r (delta symbol, italisized r)
-            
-                                    %{'sig. change in';'correlation coeff'};
-            Colorbar_handle.Label.FontSize = 24;
-            Colorbar_handle.Label.Rotation = -90;
-
-            % Move colorbar label to the right.
-            positions = Colorbar_handle.Label.Position;
-            Colorbar_handle.Label.Position = [positions(1) + 1, positions(2), positions(3)];
-
-            % Make diagonals black. 
-            hold on; 
-            a3 = ones(32,32); for i = 1:32; a3(i,i) = 0; end % Make a matrix showing where the diagnal is
-            a3 = repmat(a3, 1,1,3);
-            a = zeros(32,32); for i = 1:32; a(i,i) = 1; end % Make a matrix of alpha values
-            im = image(a3, 'CDataMapping','direct'); % Make an image (use image NOT imagsc).
-            alpha(im, a); % Aplly alpha values. 
-
-            % Put figure into parameters output structure.
-            parameters.fig = fig;
-    
+            % Run through plotting function.
+            [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_string, color_range_type, color_range_special);
+           
         % If continuous, 
         else
 
@@ -467,6 +275,19 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
             % For saving, 
             parameters.dont_save = repmat({true}, numel(parameters.continuous_variable_names), 1);
+
+            % Make empty outputs for the variables that aren't used, so
+            % RunAnalysis doesn't get mad.
+            all_variables = cellfun(@(x) [x '_vector'], parameters.continuous_variable_names, 'UniformOutput', false);
+            variablesNotToUse = setdiff(all_variables, variablesToUse);
+            for variablei = 1:numel(variablesNotToUse)
+    
+                % Get the variable name
+                variable = erase(variablesNotToUse{variablei}, '_vector');
+    
+                % Put in empty variable
+                parameters.([variable '_fig']) = [];
+            end
 
             % Separate out each beta matrix per variable
             for variablei = 1:numel(variablesToUse)
@@ -492,6 +313,8 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                         units = 'per % max diameter';
                 end
 
+                colorbar_string = ['\Delta{\it r} ' units];
+
                 % For saving, see if this variable is in the list of continuous
                 % variables. 
                 parameters.dont_save{strcmp(parameters.continuous_variable_names, variable)} = false;
@@ -504,156 +327,229 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
                 % Rename back to holder to keep things easier
                 holder = betas_separated;
- 
-                % Duplicate betas across diagonal
-                indices_upper = find(triu(ones(parameters.number_of_sources), 1));
-                betas_flipped = holder';
-                elements_upper = betas_flipped(indices_upper);
-                holder(indices_upper) = elements_upper;
 
-                % Make diagonal blank = 0
-                for i = 1:parameters.number_of_sources
-                    holder(i, i) = 0;
-                end
+                % 
+                color_range_type = variable;
 
-                % If renumbering, rearrage by new node renumbering
-                if isfield(parameters, 'useRenumbering') && parameters.useRenumbering
-                    holder = ArrangeNewNumbering(holder, parameters.node_renumbering, true, [1 2], 0);
-                end
-
-                % Make a figure for this variable.
-                fig = figure;
-                
-                % If adjusted, use a standard color range for each plot.
-                if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'useColorRange') && parameters.useColorRange
-                    color_range = parameters.color_range.(figure_type).(variable);
-                % If not adjusted, make a fitted color range for this plot.
-                else
-                    extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
-                    
-                    if extreme == 0
-                        color_range = parameters.color_range;
-                    else
-                        color_range = [-extreme, extreme]; 
-                    end
-                end
-
-                % See if color range for this comparison was special.
-                if ~isempty(color_range_special)
-                    % If it was, see if the "special" applies to this variable
-                    if strcmp(color_range_special{1}, variable)
-    
-                        % If it does, change color range to that.
-                        color_range = color_range_special{2};
-                    end
-                end
-
-                % Plot 
-                imagesc(holder); axis square;
-                Colorbar_handle = colorbar; caxis(color_range); colormap(cmap);
-
-                % Get axis handle
-                ax = gca;
-
-                % Make a title
-                title_string = [variable ', ' comparison]; 
-                ax.TitleFontSizeMultiplier = 0.5;
-                title_handle = title(strrep(title_string, '_', ' '));
-                set(title_handle,'position',get(title_handle,'position') - [0 2 0]);
-    
-                % Put in grid lines.
-                % Minor grid lines. 
-                ax.XAxis.MinorTick = 'on';
-                ax.YAxis.MinorTick = 'on';
-                ax.XAxis.MinorTickValues = grid_locations_minor;
-                ax.YAxis.MinorTickValues = grid_locations_minor;
-                ax.MinorGridLineStyle = '-'; % Make solid lines.
-                ax.MinorGridColor = [0.75 0.75 0.75];
-                ax.MinorGridAlpha = 1;
-                ax.XMinorGrid = 'on';
-                ax.YMinorGrid = 'on';
-                ax.Layer = 'top';
-    
-                % Major grid lines. (adjust style/width so you can see them)
-                grid on;
-                ax.XTick = grid_locations_major;
-                ax.YTick = grid_locations_major; 
-                ax.GridColor = [0, 0, 0]; % Make darker than minor grid.
-                ax.GridAlpha = 1; % Make more opaque.
-                ax.Layer = 'top';
-    
-                % Make ticks themselves invisible.
-                set(gca, 'TickLength',[0 0]);
-        
-                % Redo tick labels 
-                ax.XTickLabel = {'', '5', '10', '15', '20', '25', '30'};
-                ax.YTickLabel = {'', '5', '10', '15', '20', '25', '30'};
-                set(ax, 'yticklabel');
-        
-                % Remove background color.
-                ax.Color = 'none';
-        
-                % Make outline of box thicker. (Controls width of all grid
-                % lines, too??)
-                ax.LineWidth = 0.4;
-
-                 ax.Layer = 'top';
-
-               % box_handle = get(boxFrame);
-    
-                % Make figure background white.
-                fig.Color = 'w';
-    
-                % Make colorbar outline thicker
-                Colorbar_handle.LineWidth = 0.4;
-    
-                % Make tick labels larger. (Don't make bold because they
-                % weren't bold in the spontaneous paper).
-                ax.FontSize = 10;
-    
-                % Add x and y axis labels. 
-                ax.XLabel.String = 'node';
-                ax.YLabel.String = 'node';
-                ax.XLabel.FontSize = 24;
-                ax.YLabel.FontSize = 24;
-    
-                % Scoot y label slightly to left.
-                positions = ax.YLabel.Position;
-                ax.YLabel.Position = [positions(1) - 0.3, positions(2), positions(3)];
-    
-                % For colorbar, keep only labels for 0 and extremes.
-                Colorbar_handle.Ticks = [color_range(1), 0, color_range(2)];
-    
-                % Make colorbar ticks certain length
-                Colorbar_handle.TickLength = .015;
-    
-                % Make colorbar tick labels certain size.
-                Colorbar_handle.FontSize = 18;
-    
-                % Make colorbar label. (Don't make bold because they
-                % weren't bold in the spontaneous paper). Include units for
-                % continuous.
-                Colorbar_handle.Label.String =   {['\Delta{\it r} ' units]};
-                    %{'sig. change in'; 'correlation coeff'};
-                Colorbar_handle.Label.FontSize = 24;
-                Colorbar_handle.Label.Rotation = -90;
-    
-                % Move colorbar label to the right.
-                positions = Colorbar_handle.Label.Position;
-                Colorbar_handle.Label.Position = [positions(1) + 3, positions(2), positions(3)];
-
-                % Make diagonals black. 
-                hold on; 
-                a3 = ones(32,32); for i = 1:32; a3(i,i) = 0; end % Make a matrix showing where the diagnal is
-                a3 = repmat(a3, 1,1,3);
-                a = zeros(32,32); for i = 1:32; a(i,i) = 1; end % Make a matrix of alpha values
-                im = image(a3, 'CDataMapping','direct'); % Make an image (use image NOT imagsc).
-                alpha(im, a); % Aplly alpha values. 
+                % Run plotting function.
+                [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_string, color_range_type, color_range_special);
  
                 % Rename figure handle, put into parameters output structure.
-                parameters.([variable '_fig']) = fig;
+                parameters.([variable '_fig']) = parameters.fig;
 
             end
         end
     end
+end 
+
+function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_string, color_range_type, color_range_special)
+
+    cmap = parameters.cmap;
+
+   % If using region demarcations,
+   if isfield(parameters, 'useRegionDemarcations') && parameters.useRegionDemarcations
+        
+       % Put minor grid lines at the end of every region demarcation
+       % (not major because I want numbering labels , and that can't be
+       % done with minor grids).
+       grid_locations_minor = NaN(1, size(parameters.region_nodes, 2));
+
+       for regioni = 1:size(parameters.region_nodes, 2)
+           grid_locations_minor(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
+       end
+       
+       % Label as regions. (no labels for minor ticks)
+       %minor_tick_labels = {parameters.region_nodes(:).name};
+
+       % Major ticks everywhere else.
+       grid_locations_major = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_minor);
+       %grid_locations_major = 0.5:1:parameters.number_of_sources + 0.5;
+       
+       % Major grid ticks every 2 
+       ticks_holder = setdiff(1:2:parameters.number_of_sources, grid_locations_minor - 0.5);
+       ticks_holder = [zeros(size(ticks_holder)); ticks_holder];
+       ticks_holder = reshape(ticks_holder, 1, []);
+       [~, index, ~] = intersect(ticks_holder, grid_locations_minor + 0.5);
+       ticks_holder(index - 1) = []; 
+
+       ticks_holder = arrayfun(@num2str, ticks_holder, 'UniformOutput', false);
+
+       % Make the zeros into emptys
+       ticks_holder(strcmp(ticks_holder, '0')) = {''};
+       
+       major_tick_labels = ticks_holder;
+
+   % Else if not using region demarcations, 
+   else
+
+       % Make major grid lines at every 5 nodes. Minor & major grid lines.
+       grid_locations_major = 0.5:5:parameters.number_of_sources + 0.5;
+       grid_locations_minor = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_major);
+
+       major_tick_labels = {'', '5', '10', '15', '20', '25', '30'};
+           
+   end
+
+    % Duplicate betas across diagonal.
+    indices_upper = find(triu(ones(parameters.number_of_sources), 1));
+    betas_flipped = holder';
+    elements_upper = betas_flipped(indices_upper);
+    holder(indices_upper) = elements_upper;
+
+    % Make diagonal blank = 0
+    for i = 1:parameters.number_of_sources
+        holder(i, i) = 0;
+    end
+
+    % If renumbering, rearrage by new node renumbering
+    if isfield(parameters, 'useRenumbering') && parameters.useRenumbering
+        holder = ArrangeNewNumbering(holder, parameters.node_renumbering, true, [1 2], 0);
+    end
+
+    % Make a figure
+    fig = figure;
+
+    % If adjusted, use a standard color range for each plot.
+    if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'useColorRange') && parameters.useColorRange
+        color_range = parameters.color_range.(parameters.figure_type).(color_range_type);
+
+    % If not adjusted, make a fitted color range for this plot.
+    else
+        extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
+        if extreme == 0
+            color_range = parameters.color_range;
+        else
+            color_range = [-extreme, extreme]; 
+        end
+       
+    end
+
+    % If the color range for this comparison was special,
+    if ~isempty(color_range_special)
+        % If it was, change color range to that.
+        color_range = color_range_special{2};
+    end
+
+    % Plot 
+    imagesc(holder); axis square;
+    try
+    Colorbar_handle = colorbar; caxis(color_range); colormap(cmap);
+    catch
+    end
+    
+    % Get axis handle.
+    ax = gca;
+
+    comparison = parameters.comparison;
+   
+    title_string = comparison; 
+    ax.TitleFontSizeMultiplier = 0.5;
+    title_handle = title(strrep(title_string, '_', ' '));
+    set(title_handle,'position',get(title_handle,'position') - [0 2 0]);
+    
+    % Put in grid lines.
+
+    grid on;
+    ax.Layer = 'top';
+    ax.XTick = grid_locations_major;
+    ax.YTick = grid_locations_major; 
+
+    % Minor grid lines. 
+    ax.XAxis.MinorTick = 'on';
+    ax.YAxis.MinorTick = 'on';
+    ax.XAxis.MinorTickValues = grid_locations_minor;
+    ax.YAxis.MinorTickValues = grid_locations_minor;
+    ax.MinorGridLineStyle = '-'; % Make solid lines.
+    
+    ax.MinorGridAlpha = 1;
+    ax.XMinorGrid = 'on';
+    ax.YMinorGrid = 'on';
+    
+    % Major grid lines. (adjust style/width so you can see them)
+    if isfield(parameters, 'useRegionDemarcations') && parameters.useRegionDemarcations
+       
+        % In this case, we want the minor grid to be the region
+        % demarcations, and thus the minor should be darker than
+        % the major grid.
+        ax.MinorGridColor = [0, 0, 0]; 
+        ax.GridColor = [0.75 0.75 0.75];
+
+    else
+        ax.MinorGridColor = [0.75 0.75 0.75];
+        ax.GridColor = [0, 0, 0]; % Make darker than minor grid.
+    end
+    
+    ax.GridAlpha = 1; % Make more opaque.
+    ax.Layer = 'top';
+  
+    % Make ticks themselves invisible.
+    set(gca, 'TickLength',[0 0]);
+
+    % Redo tick labels 
+    ax.XTickLabel = major_tick_labels;
+    ax.YTickLabel = major_tick_labels;
+    set(ax, 'yticklabel');
+
+    % Prevent rotation of x axis tick labels.
+    ax.XTickLabelRotation = 0;
+
+    % Remove background color.
+    ax.Color = 'none';
+
+    % Make outline of box thicker. (Controls width of all grid
+    % lines, too??)
+    ax.LineWidth = 0.5;
+
+    % Make figure background white.
+    fig.Color = 'w';
+
+    % Make colorbar outline thicker
+    Colorbar_handle.LineWidth = 0.4;
+
+    % Make tick labels larger. (Don't make bold because they
+    % weren't bold in the spontaneous paper).
+    ax.FontSize = 10;
+
+    % Add x and y axis labels. 
+    ax.XLabel.String = 'node';
+    ax.YLabel.String = 'node';
+    ax.XLabel.FontSize = 24;
+    ax.YLabel.FontSize = 24;
+
+    % Scoot y label slightly to left.
+    positions = ax.YLabel.Position;
+    ax.YLabel.Position = [positions(1) - 0.3, positions(2), positions(3)];
+
+    % For colorbar, keep only labels for 0 and extremes.
+    Colorbar_handle.Ticks = [color_range(1), 0, color_range(2)];
+
+    % Make colorbar ticks certain length
+    Colorbar_handle.TickLength = .015;
+
+    % Make colorbar tick labels certain size.
+    Colorbar_handle.FontSize = 18;
+
+    % Make colorbar label. (Don't make bold because they
+    % weren't bold in the spontaneous paper).
+    Colorbar_handle.Label.String = {colorbar_string}; % Change in r (delta symbol, italisized r)
+    
+                            %{'sig. change in';'correlation coeff'};
+    Colorbar_handle.Label.FontSize = 24;
+    Colorbar_handle.Label.Rotation = -90;
+
+    % Move colorbar label to the right.
+    positions = Colorbar_handle.Label.Position;
+    Colorbar_handle.Label.Position = [positions(1) + 1, positions(2), positions(3)];
+
+    % Make diagonals black. 
+    hold on; 
+    a3 = ones(32,32); for i = 1:32; a3(i,i) = 0; end % Make a matrix showing where the diagnal is
+    a3 = repmat(a3, 1,1,3);
+    a = zeros(32,32); for i = 1:32; a(i,i) = 1; end % Make a matrix of alpha values
+    im = image(a3, 'CDataMapping','direct'); % Make an image (use image NOT imagsc).
+    alpha(im, a); % Aplly alpha values. 
+
+    % Put figure into parameters output structure.
+    parameters.fig = fig;
+
 end 
