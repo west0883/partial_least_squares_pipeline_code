@@ -824,12 +824,12 @@ parameters.concatenation_level = 'mouse';
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.response.filename= {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.response.variable= {'PLSR_results.BETA'}; 
+parameters.loop_list.things_to_load.response.variable= {'PLSR_results.Cov'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_Cov.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -905,7 +905,7 @@ for i = 2 %1:numel(true_false_vector)
         parameters.comparison_type = 'categorical';
         parameters.this_comparison_set = parameters.comparisons_categorical;
         
-        title = 'PLSR_betas_all_comparisons';
+        title = 'PLSR_Covs_all_comparisons';
         if parameters.adjustBetas
             title = [title '_Adjusted'];
         end
@@ -916,13 +916,13 @@ for i = 2 %1:numel(true_false_vector)
         
         % Input
         parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info.mat'};
+        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info_Cov.mat'};
         parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
         parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap.mat'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
@@ -972,12 +972,12 @@ parameters.concatenation_level = 'mouse';
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.response.filename= {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.response.variable= {'PLSR_results.BETA'}; 
+parameters.loop_list.things_to_load.response.variable= {'PLSR_results.Cov'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_Cov.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -1003,7 +1003,7 @@ parameters.concatenation_level = 'mouse';
 
 % Input 
 parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\Ipsa Contra\'], 'comparison','\', 'mouse', '\'};
-parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info_Cov.mat'};
 parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_load.dataset.level = 'mouse';
 
@@ -1053,7 +1053,7 @@ for i = 2 %1:numel(true_false_vector)
         parameters.comparison_type = 'continuous';
         parameters.this_comparison_set = parameters.comparisons_continuous;
         
-        title = 'PLSR_betas_all_comparisons';
+        title = 'PLSR_Covs_all_comparisons';
         if parameters.adjustBetas
             title = [title '_Adjusted'];
         end
@@ -1064,13 +1064,13 @@ for i = 2 %1:numel(true_false_vector)
         
         % Input
         parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info.mat'};
+        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info_Cov.mat'};
         parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
         parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap.mat'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
@@ -1145,10 +1145,10 @@ if do
     parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
 
     % Output
-    parameters.loop_list.things_to_save.betas_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-    parameters.loop_list.things_to_save.betas_randomPermutations.filename= {'PLSR_betas_randomPermutations.mat'};
-    parameters.loop_list.things_to_save.betas_randomPermutations.variable= {'betas_randomPermutations'}; 
-    parameters.loop_list.things_to_save.betas_randomPermutations.level = 'comparison';
+    parameters.loop_list.things_to_save.Covs_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_save.Covs_randomPermutations.filename= {'PLSR_Covs_randomPermutations.mat'};
+    parameters.loop_list.things_to_save.Covs_randomPermutations.variable= {'Covs_randomPermutations'}; 
+    parameters.loop_list.things_to_save.Covs_randomPermutations.level = 'comparison';
     
     RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
     
@@ -1187,10 +1187,10 @@ parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.nco
 parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.betas_bootstrap.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_save.betas_bootstrap.filename= {'PLSR_betas_bootstrap.mat'};
-parameters.loop_list.things_to_save.betas_bootstrap.variable= {'betas_bootstrap'};
-parameters.loop_list.things_to_save.betas_bootstrap.level = 'comparison';
+parameters.loop_list.things_to_save.Covs_bootstrap.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.Covs_bootstrap.filename= {'PLSR_Covs_bootstrap.mat'};
+parameters.loop_list.things_to_save.Covs_bootstrap.variable= {'Covs_bootstrap'};
+parameters.loop_list.things_to_save.Covs_bootstrap.level = 'comparison';
 
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);
 
@@ -1228,10 +1228,10 @@ parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.nco
 parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
 
 % Output
-parameters.loop_list.things_to_save.betas_bootstrap.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_save.betas_bootstrap.filename= {'PLSR_betas_bootstrap.mat'};
-parameters.loop_list.things_to_save.betas_bootstrap.variable= {'betas_bootstrap'};
-parameters.loop_list.things_to_save.betas_bootstrap.level = 'comparison';
+parameters.loop_list.things_to_save.Covs_bootstrap.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.Covs_bootstrap.filename= {'PLSR_Covs_bootstrap.mat'};
+parameters.loop_list.things_to_save.Covs_bootstrap.variable= {'Covs_bootstrap'};
+parameters.loop_list.things_to_save.Covs_bootstrap.level = 'comparison';
 
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);
 
@@ -1269,10 +1269,10 @@ if do
     parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
     
     % Output
-    parameters.loop_list.things_to_save.betas_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-    parameters.loop_list.things_to_save.betas_randomPermutations.filename= {'PLSR_betas_randomPermutations.mat'};
-    parameters.loop_list.things_to_save.betas_randomPermutations.variable= {'betas_randomPermutations'}; 
-    parameters.loop_list.things_to_save.betas_randomPermutations.level = 'comparison';
+    parameters.loop_list.things_to_save.Covs_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_save.Covs_randomPermutations.filename= {'PLSR_Covs_randomPermutations.mat'};
+    parameters.loop_list.things_to_save.Covs_randomPermutations.variable= {'Covs_randomPermutations'}; 
+    parameters.loop_list.things_to_save.Covs_randomPermutations.level = 'comparison';
     
     RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
     
@@ -1303,13 +1303,13 @@ parameters.concatenation_level = 'mouse';
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_betas_bootstrap.mat'};
-parameters.loop_list.things_to_load.response.variable= {'betas_bootstrap'}; 
+parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_bootstrap.mat'};
+parameters.loop_list.things_to_load.response.variable= {'Covs_bootstrap'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_bootstrap.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_bootstrap_Cov.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -1340,18 +1340,18 @@ parameters.useNormalDistribution = true;
 % Inputs:
 % Test values
 parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_Cov.mat'};
 parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.test_values.level = 'comparison';
 % Null distribution
 parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_bootstrap.mat'};
+parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_bootstrap_Cov.mat'};
 parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
 
 % Outputs
 parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_bootstrap.mat'};
+parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
 parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
 parameters.loop_list.things_to_save.significance.level = 'comparison';
 
@@ -1379,13 +1379,13 @@ parameters.removeOutliers = false;
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_betas_bootstrap.mat'};
-parameters.loop_list.things_to_load.response.variable= {'betas_bootstrap'}; 
+parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_bootstrap.mat'};
+parameters.loop_list.things_to_load.response.variable= {'Covs_bootstrap'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_bootstrap.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_bootstrap_Cov.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -1420,13 +1420,13 @@ parameters.useNormalDistribution = true;
 % parameters.loop_list.things_to_load.test_values.level = 'comparison';
 % Null distribution
 parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_bootstrap.mat'};
+parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_bootstrap_Cov.mat'};
 parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
 
 % Outputs
 parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_bootstrap.mat'};
+parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
 parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
 parameters.loop_list.things_to_save.significance.level = 'comparison';
 
@@ -1464,7 +1464,7 @@ for i = 2 %1:numel(true_false_vector)
         parameters.comparison_type = 'categorical';
         parameters.this_comparison_set = parameters.comparisons_categorical;
         
-        title = 'PLSR_betas_all_comparisons';
+        title = 'PLSR_Covs_all_comparisons';
         if parameters.adjustBetas
             title = [title '_Adjusted'];
         end
@@ -1475,13 +1475,13 @@ for i = 2 %1:numel(true_false_vector)
         
         % Input
         parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info.mat'};
+        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info_Cov.mat'};
         parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
         parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap.mat'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
@@ -1496,7 +1496,7 @@ for i = 2 %1:numel(true_false_vector)
         % Output
         parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\Ipsa Contra\']};
         parameters.loop_list.things_to_save.fig.filename = {title};
-        parameters.loop_list.things_to_save.fig.variable = {'PLSR_betas'};
+        parameters.loop_list.things_to_save.fig.variable = {'PLSR_Covs'};
         parameters.loop_list.things_to_save.fig.level = 'end';
         
         RunAnalysis({@PlotBetasSecondLevel}, parameters);
@@ -1537,7 +1537,7 @@ for i = 2 %1:numel(true_false_vector)
         parameters.comparison_type = 'continuous';
         parameters.this_comparison_set = parameters.comparisons_continuous;
         
-        title = 'PLSR_betas_all_comparisons';
+        title = 'PLSR_Covs_all_comparisons';
         if parameters.adjustBetas
             title = [title '_Adjusted'];
         end
@@ -1548,13 +1548,13 @@ for i = 2 %1:numel(true_false_vector)
         
         % Input
         parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info.mat'};
+        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info_Cov.mat'};
         parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
         parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap.mat'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
@@ -1615,13 +1615,13 @@ parameters.removeOutliers = false;
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_betas_randomPermutations.mat'};
-parameters.loop_list.things_to_load.response.variable= {'betas_randomPermutations'}; 
+parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_randomPermutations.mat'};
+parameters.loop_list.things_to_load.response.variable= {'Covs_randomPermutations'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations_Cov.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -1651,13 +1651,13 @@ parameters.concatenation_level = 'mouse';
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_betas_randomPermutations.mat'};
+parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_randomPermutations.mat'};
 parameters.loop_list.things_to_load.response.variable= {'betas_randomPermutations'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations_Covs.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -1687,18 +1687,18 @@ parameters.useNormalDistribution = true;
 % Inputs:
 %Test values (will grab only the intercepts with EvaluateOnData)
 parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_Cov.mat'};
 parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.test_values.level = 'comparison';
 % Null distribution
 parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations.mat'};
+parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations_Cov.mat'};
 parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
 
 % Outputs
 parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_001.mat'};
+parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_Cov.mat'};
 parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
 parameters.loop_list.things_to_save.significance.level = 'comparison';
 
@@ -1729,18 +1729,18 @@ parameters.useNormalDistribution = true;
 % Inputs:
 % Test values
 parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_Cov.mat'};
 parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.test_values.level = 'comparison';
 % Null distribution
 parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations.mat'};
+parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations_Cov.mat'};
 parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
 
 % Outputs
 parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_001.mat'};
+parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_Cov.mat'};
 parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
 parameters.loop_list.things_to_save.significance.level = 'comparison';
 
@@ -1778,7 +1778,7 @@ for i = 2 %1:numel(true_false_vector)
         parameters.comparison_type = 'continuous';
         parameters.this_comparison_set = parameters.comparisons_continuous;
         
-        title = 'PLSR_betas_all_comparisons';
+        title = 'PLSR_Covs_all_comparisons';
         if parameters.adjustBetas
             title = [title '_Adjusted'];
         end
@@ -1789,13 +1789,13 @@ for i = 2 %1:numel(true_false_vector)
         
         % Input
         parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info.mat'};
+        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info_Cov.mat'};
         parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
         parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_randomPermutations_001.mat'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_randomPermutations_Cov.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
@@ -1866,24 +1866,24 @@ for i = 2 %1:numel(true_false_vector)
         parameters.comparison_type = 'categorical';
         parameters.this_comparison_set = parameters.comparisons_categorical;
         
-        title = 'PLSR_betas_all_comparisons';
+        title = 'PLSR_Covs_all_comparisons';
         if parameters.adjustBetas
             title = [title '_Adjusted'];
         end
         if parameters.useSignificance 
-            title = [title '_withSignificance_randomPermutation_001'];
+            title = [title '_withSignificance_randomPermutation_Cov'];
         end
         title = [title '.fig'];
         
         % Input
         parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info.mat'};
+        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info_Cov.mat'};
         parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
         parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_randomPermutations_001.mat'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_randomPermutations_Cov.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
@@ -1898,7 +1898,7 @@ for i = 2 %1:numel(true_false_vector)
         % Output
         parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\Ipsa Contra\']};
         parameters.loop_list.things_to_save.fig.filename = {title};
-        parameters.loop_list.things_to_save.fig.variable = {'PLSR_betas'};
+        parameters.loop_list.things_to_save.fig.variable = {'PLSR_Covs'};
         parameters.loop_list.things_to_save.fig.level = 'end';
         
         RunAnalysis({@PlotBetasSecondLevel}, parameters);
@@ -1931,19 +1931,19 @@ parameters.averageDim = 2;
 
 % Input
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_Cov.mat'};
 parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
 parameters.loop_list.things_to_load.data.level = 'comparison';
 
 % Output 
 % each mouse, as a matrix
 parameters.loop_list.things_to_save.node_averages.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes.mat'};
+parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_Cov.mat'};
 parameters.loop_list.things_to_save.node_averages.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.node_averages.level = 'comparison';
 % Across mice.
 parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice.mat'};
+parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_Cov.mat'};
 parameters.loop_list.things_to_save.average.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.average.level = 'comparison';
 
@@ -1975,19 +1975,19 @@ parameters.averageDim = 2;
 
 % Input
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_bootstrap.mat'};
+parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_bootstrap_Cov.mat'};
 parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
 parameters.loop_list.things_to_load.data.level = 'comparison';
 
 % Output 
 % each mouse, as a matrix
 parameters.loop_list.things_to_save.node_averages.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_bootstrap.mat'};
+parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_bootstrap_Cov.mat'};
 parameters.loop_list.things_to_save.node_averages.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.node_averages.level = 'comparison';
 % Across mice.
 parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_bootstrap.mat'};
+parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_bootstrap_Cov.mat'};
 parameters.loop_list.things_to_save.average.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.average.level = 'comparison';
 
@@ -2039,19 +2039,19 @@ for typei = 1:numel(comparison_types)
     % Inputs:
     %Test values (will grab only the intercepts with EvaluateOnData)
     parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], comparison_type, '\Ipsa Contra\', 'comparison', '\'};
-    parameters.loop_list.things_to_load.test_values.filename= {'average_by_nodes_allmice.mat'};
+    parameters.loop_list.things_to_load.test_values.filename= {'average_by_nodes_allmice_Cov.mat'};
     parameters.loop_list.things_to_load.test_values.variable= {'average_by_nodes'}; 
     parameters.loop_list.things_to_load.test_values.level = 'comparison';
     
     % Null distribution
     parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], comparison_type, '\Ipsa Contra\', 'comparison', '\'};
-    parameters.loop_list.things_to_load.null_distribution.filename= {'average_by_nodes_allmice_bootstrap.mat'};
+    parameters.loop_list.things_to_load.null_distribution.filename= {'average_by_nodes_allmice_bootstrap_Cov.mat'};
     parameters.loop_list.things_to_load.null_distribution.variable= {'average_by_nodes'}; 
     parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
     
     % Output
     parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 '] , comparison_type, '\Ipsa Contra\', 'comparison', '\'};
-    parameters.loop_list.things_to_save.significance.filename= {'average_by_nodes_significance_bootstrap.mat'};
+    parameters.loop_list.things_to_save.significance.filename= {'average_by_nodes_significance_bootstrap_Cov.mat'};
     parameters.loop_list.things_to_save.significance.variable= {'significance'}; 
     parameters.loop_list.things_to_save.significance.level = 'comparison';
     
@@ -2084,13 +2084,13 @@ parameters.averageDim = 2;
 
 % Input
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_Cov.mat'};
 parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
 parameters.loop_list.things_to_load.data.level = 'comparison';
 
 if parameters.significantOnly
 parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_load.significance.filename = {'PLSR_significance_bootstrap_test.mat'};
+parameters.loop_list.things_to_load.significance.filename = {'PLSR_significance_bootstrap_Cov.mat'};
 parameters.loop_list.things_to_load.significance.variable = {'PLSR_significance.all'};
 parameters.loop_list.things_to_load.significance.level = 'comparison';
 end
@@ -2098,12 +2098,12 @@ end
 % Output 
 % each mouse, as a matrix
 parameters.loop_list.things_to_save.node_sums.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_save.node_sums.filename = {'sum_by_nodes_nosignificance.mat'};
+parameters.loop_list.things_to_save.node_sums.filename = {'sum_by_nodes_nosignificance_Cov.mat'};
 parameters.loop_list.things_to_save.node_sums.variable = {'sum_by_nodes'};
 parameters.loop_list.things_to_save.node_sums.level = 'comparison';
 % Across mice.
 parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_save.average.filename = {'sum_by_nodes_allmice_nosignificance.mat'};
+parameters.loop_list.things_to_save.average.filename = {'sum_by_nodes_allmice_nosignificance_Cov.mat'};
 parameters.loop_list.things_to_save.average.variable = {'sum_by_nodes'};
 parameters.loop_list.things_to_save.average.level = 'comparison';
 
