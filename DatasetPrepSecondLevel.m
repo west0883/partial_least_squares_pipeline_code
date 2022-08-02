@@ -48,17 +48,16 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
     % Do differently if it's on a regular first-level set vs if it's on a
     % random permutation set. 
 
-    % Pull out of parameters structure for easier/safer use. Don't include 
-    % the first row, which were interceps.
+    % Pull out of parameters structure for easier/safer use.
     % If the first-level comparison was categorical, use only the first
     % variable's betas
     if isfield(parameters, 'firstLevelCategorical') && parameters.firstLevelCategorical
         
          % Have ":" in 3rd dimension in case there are shuffles.
-         responseVariables = parameters.response(2:end, 1, :); 
+         responseVariables = parameters.response(:, 1, :); 
     else
          % Have ":" in 3rd dimension in case there are shuffles.
-         responseVariables = parameters.response(2:end, :, :); 
+         responseVariables = parameters.response; 
     end
 
     % If there was more than one response variable at level 1 (will have
