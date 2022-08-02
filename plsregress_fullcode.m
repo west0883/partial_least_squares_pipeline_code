@@ -1,5 +1,5 @@
 function [Xloadings,Yloadings,Xscores,Yscores, ...
-                    beta,pctVar,mse,stats, mse_byvar, Tnotnormal] = plsregress_fullcode(X,Y,ncomp,varargin)
+                    beta,pctVar,mse,stats, mse_byvar, Tnotnormal, pctVar_byVar] = plsregress_fullcode(X,Y,ncomp,varargin)
 %PLSREGRESS Partial least squares regression.
 %   [XLOADINGS,YLOADINGS] = PLSREGRESS(X,Y,NCOMP) computes a partial least
 %   squares regression of Y on X, using NCOMP PLS components or latent
@@ -194,6 +194,10 @@ else
     if nargout > 5
         pctVar = [sum(abs(Xloadings).^2,1) ./ sum(sum(abs(X0).^2,1));
                   sum(abs(Yloadings).^2,1) ./ sum(sum(abs(Y0).^2,1))];
+
+        pctVar_byVar.X = sum(abs(Xloadings).^2,2) ./ sum(sum(abs(X0).^2,2)) .* size(X0, 2);
+        pctVar_byVar.Y = sum(abs(Yloadings).^2,2) ./ sum(sum(abs(Y0).^2,2)) .* size(Y0, 2);
+        
     end
     
     if nargout > 6
