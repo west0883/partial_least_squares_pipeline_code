@@ -49,6 +49,10 @@ function [parameters] = ncomponents_std_correlate(parameters)
 
            parameters = rmfield(parameters, 'sigmas_concatenated');
            parameters = rmfield(parameters, 'ncomponents_concatenated');
+           else
+               parameters.correlation = [];
            end
+       else
+           parameters.correlation = [];
        end 
 end
