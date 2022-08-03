@@ -328,7 +328,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
          % Calculate covariance matrix, divide by n - 1 observations to
          % make correlation matrix. (Covariance matrix was calculated on
          % the normalized variables, so you can do this). 
-         results.Cov = (results.XL * results.YL')./ (size(explanatoryVariables,1) - 1); 
+         results.Cov = (results.XL * results.YL')./ (size(explanatoryVariables, 1) - 1); 
 
          % Put results into output structure.
          parameters.results = results; 
@@ -350,7 +350,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             [XL, YL,] = plsregress_fullcode(explanatoryVariables, responseVariables(:,:, repi), ncomponents);
 
             % Calculate normalize covariance matrix
-            Cov = XL * YL' ./ (size(explanatoryVariables) - 1);
+            Cov = XL * YL' ./ (size(explanatoryVariables, 1) - 1);
 
             % Put into holder.
             Covs_randomPermutations_2ndlevel(:, :, repi) = Cov;
@@ -404,15 +404,15 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             [XL,  YL] = plsregress_fullcode(explanatoryVariables, responseVariables_mixed, ncomponents);
             
             % Calculate normalized covariance matrix 
-            Cov = XL * YL' ./ (size(explanatoryVariables) - 1);
+            Cov = XL * YL' ./ (size(explanatoryVariables,1) - 1);
 
             % Put into holding matrix.
             Covs_permutations(:, :, repi) = Cov; 
             
         end 
 
-        % Put Covs_permutations into output structure
-        parameters.Covs_randomPermutations = Covs_permutations;
+        % Put Covs_permutations into output structure, as single precision.
+        parameters.Covs_randomPermutations = single(Covs_permutations);
 
     end 
 
@@ -458,10 +458,10 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
        end 
 
        % Make a holding matrix for Cov permutations.
-       Covs_bootstrap = NaN(size(results.BETA,1), numel(columns_to_use), size(bootstrap_indices,2));  %size(results.BETA, 2)
+       Covs_bootstrap = NaN(size(results.Cov,1), numel(columns_to_use), size(bootstrap_indices,2));  %size(results.BETA, 2)
         
        % Now run bootstraps
-      parfor repi = 1:size(bootstrap_indices,2) 
+       parfor repi = 1:size(bootstrap_indices,2) 
            
             indices = bootstrap_indices(:,repi);
 
@@ -469,7 +469,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             [XL, YL] = plsregress_fullcode(explanatoryVariables(indices, :), responseVariables(indices,:), ncomponents);
             
             % Calculate normalized covariance matrix.
-            Cov = XL * YL' ./ (size(explanatoryVariables) - 1);
+            Cov = XL * YL' ./ (size(explanatoryVariables, 1) - 1);
 
             % Put into holding matrix.
             Covs_bootstrap(:, :, repi) = Cov; 
