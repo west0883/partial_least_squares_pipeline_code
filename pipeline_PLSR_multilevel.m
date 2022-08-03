@@ -101,12 +101,9 @@ parameters.color_range.specials =  {'motorized_transitions_continuousVars_start'
                                     'motorized_finished_start_continuousVars', 'speed', [-0.1 0.1]; % Match it with the finished accel/decel 
                                     'motorized_startvsaccel_categorical', 'categorical', [- 0.6 0.6]; % Match with start/stop categoricals.
                                     'motorized_stopvsdecel_categorical', 'categorical', [- 0.6 0.6]; % Match with start/stop categoricals.
-                                    'spontaneous_walk_continuousVars', 'speed',[-1 1]};
-%                                     'motorized_finished_accel_continuousVars', 'speed', [-0.0015 0.0015];
-%                                    
-%                                     'spontaneous_startvsstop_categorical', 'categorical', [-0.025 0.025];
-%                                     'motorized_faccelvsfdecel_categorical', 'categorical', [-0.03 0.03];
-%                                      };
+                                    'spontaneous_walk_continuousVars', 'speed',[-1 1];
+                                    'walk_motorizedvsspon_categorical', 'categorical', [-0.3 0.3]};
+                                    
 % Names of all continuous variables.
 parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter'};
 
@@ -1331,7 +1328,7 @@ parameters.shufflesDim = 2;
 parameters.find_significance = true;
 
 % The statistical alpha value
-parameters.alphaValue = 0.001; %0.05/150;  %/(numel(parameters.comparisons_categorical) - 4;
+parameters.alphaValue =  0.05/496; %0.001; %0.05/150;  %/(numel(parameters.comparisons_categorical) - 4;
 
 % Use the Bootstrapping method. 
 parameters.useBootstrapping = true;
@@ -1406,7 +1403,7 @@ parameters.shufflesDim = 2; % After the EvaluateOnData reduction
 parameters.find_significance = true;
 
 % The statistical alpha value
-parameters.alphaValue = 0.001; %0.05/45; %/numel(parameters.comparisons_continuous);
+parameters.alphaValue = 0.05/ 496; %0.001; %0.05/45; %/numel(parameters.comparisons_continuous);
 
 % Say that you do want to use bootstrapping.
 parameters.useBootstrapping = true;
@@ -1678,7 +1675,7 @@ parameters.shufflesDim = 2; % After the EvaluateOnData reduction
 parameters.find_significance = true;
 
 % The statistical alpha value
-parameters.alphaValue = 0.001; %/numel(parameters.comparisons_continuous);
+parameters.alphaValue = 0.05/496; %0.001; %/numel(parameters.comparisons_continuous);
 
 % Say that you do want to use bootstrapping.
 parameters.useBootstrapping = false;
@@ -1720,7 +1717,7 @@ parameters.shufflesDim = 2;
 parameters.find_significance = true;
 
 % The statistical alpha value
-parameters.alphaValue = 0.001; %/150;  %/(numel(parameters.comparisons_categorical) - 4;
+parameters.alphaValue = 0.05/496; %/150;  %/(numel(parameters.comparisons_categorical) - 4;
 
 % Use the Bootstrapping method. 
 parameters.useBootstrapping = false;
@@ -2073,13 +2070,13 @@ for typei = 1:numel(comparison_types)
         parameters.shufflesDim = 2;
         
         % The statistical alpha value
-        parameters.alphaValue = 0.001; %0.05/150;
+        parameters.alphaValue = 0.05/496; %0.05/150;
     
     else
         parameters.shufflesDim = 2;
 
         % The statistical alpha value
-        parameters.alphaValue = 0.001; %0.05/45;
+        parameters.alphaValue = 0.05/496; %0.05/45;
     end
 
     % Inputs:
@@ -2135,13 +2132,13 @@ for typei = 1:numel(comparison_types)
         parameters.shufflesDim = 2;
         
         % The statistical alpha value
-        parameters.alphaValue = 0.001; %0.05/150;
+        parameters.alphaValue = 0.05/496; %0.05/150;
     
     else
         parameters.shufflesDim = 2;
 
         % The statistical alpha value
-        parameters.alphaValue = 0.001; %0.05/45;
+        parameters.alphaValue = 0.05/496; %0.05/45;
     end
 
     % Inputs:
