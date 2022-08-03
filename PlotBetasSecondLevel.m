@@ -120,7 +120,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             holder(parameters.indices) = betas_adjusted;
             
             % If adjusted, use a standard color range for each plot.
-            if isfield(parameters, 'adjustBetas') && parameters.adjustBetas
+            if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && parameters.useColorRange
                 color_range = parameters.color_range.(figure_type).categorical;
             % If not adjusted, make a fitted color range for this plot.
             else
