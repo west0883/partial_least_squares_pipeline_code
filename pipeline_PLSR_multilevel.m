@@ -78,33 +78,35 @@ if isfile([parameters.dir_exper 'PLSR\variablesToSubtract_level1_categorical.mat
 end
 
 % Make color ranges for each type of comparison, for final figures.
-parameters.color_range.continued.categorical = [-0.02 0.02];
-parameters.color_range.continued.speed = [-0.05 0.05];
-parameters.color_range.continued.accel = [];
+parameters.color_range.continued.categorical = [-0.6 0.6];
+parameters.color_range.continued.speed = [-0.6 0.6];
+parameters.color_range.continued.accel = [-0.06 0.06]; % Make it match with other accels.
 parameters.color_range.continued.duration = [];
-parameters.color_range.continued.pupil_diameter = [-0.002 0.002 ];
+parameters.color_range.continued.pupil_diameter = [-0.02 0.02 ];
 
-parameters.color_range.startstop.categorical = [-0.02 0.02];
-parameters.color_range.startstop.speed = [-0.02 0.02];
-parameters.color_range.startstop.accel = [-0.002 0.002];
-parameters.color_range.startstop.duration = [-0.01 0.01];
-parameters.color_range.startstop.pupil_diameter = [-0.0005 0.0005];
+parameters.color_range.startstop.categorical = [-0.6 0.6];
+parameters.color_range.startstop.speed = [-0.6 0.6];
+parameters.color_range.startstop.accel = [-0.06 0.06];
+parameters.color_range.startstop.duration = [-0.3 0.3];
+parameters.color_range.startstop.pupil_diameter = [-0.02 0.02];
 
-parameters.color_range.acceldecel.categorical = [-0.02 0.02];
-parameters.color_range.acceldecel.speed = [-0.0008 0.0008];
-parameters.color_range.acceldecel.accel = [-0.0002 0.0002];
-parameters.color_range.acceldecel.duration = [-0.001 0.001];
-parameters.color_range.acceldecel.pupil_diameter = [-0.0002 0.0002 ];
+parameters.color_range.acceldecel.categorical = [-0.1 0.1];
+parameters.color_range.acceldecel.speed = [-0.1 0.1];
+parameters.color_range.acceldecel.accel = [-0.06 0.06];
+parameters.color_range.acceldecel.duration = [-0.3 0.3];
+parameters.color_range.acceldecel.pupil_diameter = [-0.02 0.02 ];
 
 % special figures that get their own color ranges
-parameters.color_range.specials = {'motorized_transitions_continuousVars_start', 'duration', [- 0.04 0.04];
-                                   'motorized_transitions_continuousVars_stop', 'duration', [- 0.01 0.01];
-                                    'motorized_walk_continuousVars', 'speed',[-0.01 0.01]
-                                    'motorized_finished_accel_continuousVars', 'speed', [-0.0015 0.0015];
-                                    'motorized_finished_start_continuousVars', 'speed', [-0.004 0.004];
-                                    'spontaneous_startvsstop_categorical', 'categorical', [-0.025 0.025];
-                                    'motorized_faccelvsfdecel_categorical', 'categorical', [-0.03 0.03];
-                                     };
+parameters.color_range.specials =  {'motorized_transitions_continuousVars_start', 'duration', [-1 1];
+                                    'motorized_finished_start_continuousVars', 'speed', [-0.1 0.1]; % Match it with the finished accel/decel 
+                                    'motorized_startvsaccel_categorical', 'categorical', [- 0.6 0.6]; % Match with start/stop categoricals.
+                                    'motorized_stopvsdecel_categorical', 'categorical', [- 0.6 0.6]; % Match with start/stop categoricals.
+                                    'spontaneous_walk_continuousVars', 'speed',[-1 1]};
+%                                     'motorized_finished_accel_continuousVars', 'speed', [-0.0015 0.0015];
+%                                    
+%                                     'spontaneous_startvsstop_categorical', 'categorical', [-0.025 0.025];
+%                                     'motorized_faccelvsfdecel_categorical', 'categorical', [-0.03 0.03];
+%                                      };
 % Names of all continuous variables.
 parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter'};
 
@@ -1432,7 +1434,7 @@ parameters.loop_list.things_to_save.significance.level = 'comparison';
 
 RunAnalysis({@SignificanceCalculation}, parameters);
 
-%% Level 2 categorical -- plot betas with significance
+%% Level 2 categorical -- plot betas with significance, bootstrap
 % Plot all the beta intercepts in a single plot 
 parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
@@ -1458,7 +1460,7 @@ for i = 2 %1:numel(true_false_vector)
         parameters.removeOutliers = false;
 
         % Color range for all plots (if betas are adjusted).
-        parameters.useColorRange = false;
+        parameters.useColorRange = true;
         
         % Comparison type (categorical or continuous)
         parameters.comparison_type = 'categorical';
@@ -1505,7 +1507,7 @@ end
 %close all;
 clear i j true_false_vector;
 
-%% Level 2 continuous -- plot betas with significance
+%% Level 2 continuous -- plot betas with significance, bootstrap
 % Plot all the beta intercepts in a single plot 
 parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
@@ -1531,7 +1533,7 @@ for i = 2 %1:numel(true_false_vector)
         parameters.removeOutliers = false;
 
         % Color range for all plots (if betas are adjusted).
-        parameters.useColorRange = false;
+        parameters.useColorRange = true;
 
         % Comparison type (continuous or continuous)
         parameters.comparison_type = 'continuous';
@@ -1772,7 +1774,7 @@ for i = 2 %1:numel(true_false_vector)
         parameters.removeOutliers = false;
 
         % Color range for all plots (if betas are adjusted).
-        parameters.useColorRange = false;
+        parameters.useColorRange = true;
 
         % Comparison type (continuous or continuous)
         parameters.comparison_type = 'continuous';
@@ -1860,7 +1862,7 @@ for i = 2 %1:numel(true_false_vector)
         parameters.removeOutliers = false;
 
         % Color range for all plots (if betas are adjusted).
-        parameters.useColorRange = false;
+        parameters.useColorRange = true;
         
         % Comparison type (categorical or continuous)
         parameters.comparison_type = 'categorical';
