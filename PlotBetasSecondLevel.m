@@ -443,7 +443,7 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     comparison = parameters.comparison;
    
     title_string = comparison; 
-    ax.TitleFontSizeMultiplier = 0.5;
+    ax.TitleFontSizeMultiplier = 1;
     title_handle = title(strrep(title_string, '_', ' '));
     set(title_handle,'position',get(title_handle,'position') - [0 2 0]);
     
