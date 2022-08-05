@@ -247,90 +247,19 @@ periods.number_of_rolls = number_of_rolls;
 duration_vector = cellfun(@(x) ([1:x] + 1) * (window_step_size/fps) , number_of_rolls, 'UniformOutput', false);
 periods.duration_vector = duration_vector;
 
-%% For motorized transitions, calculate "instantaneous" speed 
-% For certain periods, based on speed, previous speed, accel. (or duration,
-% roll number, speed, accel)/ Leave spontaneous blank for now. 
- speed_vector = cell(size(periods,1),1);
-
-% The current speeds are where the motor is GOING to. 
-for i = 1:size(periods,1)
-    if strcmp(periods{i, 'type'}{1}, 'm_start') || strcmp(periods{i, 'type'}{1}, 'm_accel') || strcmp(periods{i, 'type'}{1}, 'm_p_nowarn_start') || strcmp(periods{i, 'type'}{1}, 'm_p_nowarn_accel') 
-
-        % The time is the center of the roll window
-        duration_vector = periods{i, "duration_vector"}{1};
-        speed_vector{i} = fliplr(periods{i, 'speed'}{1} - duration_vector * periods{i, 'accel'}{1});
-
-    elseif strcmp(periods{i, 'type'}{1}, 'm_stop') || strcmp(periods{i, 'type'}{1}, 'm_decel') || strcmp(periods{i, 'type'}{1}, 'm_p_nowarn_stop') || strcmp(periods{i, 'type'}{1}, 'm_p_nowarn_decel')
-        % The time is the center of the roll window
-        duration_vector = periods{i, "duration_vector"}{1};
-        speed_vector{i} = fliplr(periods{i, 'speed'}{1} + duration_vector * periods{i, 'accel'}{1});
-
-    else
-        % If not one of those special transitions, replicate by
-        % roll_number.
-        speed_vector(i) = {repmat(periods{i, 'speed'}{1}, 1, periods{i,'number_of_rolls'}{1})};
-        
-    end
-end 
-periods.speed_vector = speed_vector;
-
-%% Replicate accels & pupil diameter by roll number.
+%% Replicate speed, accels, & pupil diameter by roll number.
+speed_vector =  cell(size(periods,1),1);
 accel_vector = cell(size(periods,1),1);
 pupil_diameter_vector = cell(size(periods,1),1);
 for i = 1:size(periods,1)
+    speed_vector(i) = {repmat(periods{i, 'speed'}{1}, 1, periods{i,'number_of_rolls'}{1})};
     accel_vector(i) = {repmat(periods{i, 'accel'}{1}, 1, periods{i,'number_of_rolls'}{1})};
     pupil_diameter_vector(i) = {repmat(periods{i, 'pupil_diameter'}{1}, 1, periods{i,'number_of_rolls'}{1})};
 end 
+periods.speed_vector = accel_vector;
 periods.accel_vector = accel_vector;
 periods.pupil_diameter_vector = pupil_diameter_vector;
 
-
-%% Create dummy variables for categoricals -- maintain, warning, transition, not_warned
-motorized_vs_spon_dummyvars = cell(size(periods,1),1);
-type_dummyvars = cell(size(periods,1),1);
-transition_or_not_dummyvars = cell(size(periods,1),1);
-
-for i = 1:size(periods,1)
-
-    % Motorized vs spon
-    motorized_vs_spon =  strcmp(repmat(periods{i, 'motorized_vs_spon'}, size(categories.motorized_vs_spon)), categories.motorized_vs_spon);
-    motorized_vs_spon_dummyvars{i} = double(motorized_vs_spon)';
-
-    % Type 
-    type = strcmp(repmat(periods{i, 'type'}, size(categories.type)), categories.type);
-    type_dummyvars{i} = double(type)';
-
-    % Transition or not. 
-    if periods{i, 'transition_or_not'}{1}
-        transition_or_not_dummyvars{i} = [1; 0];
-    else
-       transition_or_not_dummyvars{i} = [0; 1];
-    end
-
-end 
-periods.motorized_vs_spon_dummyvars = motorized_vs_spon_dummyvars;
-periods.type_dummyvars = type_dummyvars;
-periods.transition_or_not_dummyvars = transition_or_not_dummyvars;
-
-%% Replicate dummy vars by roll number. 
-motorized_vs_spon_dummyvars_vector = cell(size(periods,1),1);
-type_dummyvars_vector = cell(size(periods,1),1);
-transition_or_not_dummyvars_vector = cell(size(periods,1),1);
-for i = 1:size(periods,1)
-
-    % Motorized vs spon
-    motorized_vs_spon_dummyvars_vector{i} =  repmat(periods{i, 'motorized_vs_spon_dummyvars'}{1}, [1 number_of_rolls{i}]);
-
-    % Type 
-    type_dummyvars_vector{i} = repmat(periods{i, 'type_dummyvars'}{1}, [1 number_of_rolls{i}]);
-
-    % Transition or not 
-    transition_or_not_dummyvars_vector{i} = repmat(periods{i, 'transition_or_not_dummyvars'}{1}, [1 number_of_rolls{i}]);
-
-end 
-periods.motorized_vs_spon_dummyvars_vector = motorized_vs_spon_dummyvars_vector;
-periods.type_dummyvars_vector = type_dummyvars_vector;
-periods.transition_or_not_dummyvars_vector = transition_or_not_dummyvars_vector;
 
 %% Save 
 save([parameters.dir_exper 'PLSR\periods_nametable_forPLSR_warningPeriods.mat'], 'periods', '-v7.3');
