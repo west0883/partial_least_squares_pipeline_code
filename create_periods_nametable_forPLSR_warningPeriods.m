@@ -50,10 +50,10 @@ end
 % What to put the creation of this here in this script to keep it with the
 % other organizing period_nametable code.
 % No prep for now.
-categories.motorized_vs_spon = {'motorized', 'spontaneous'};
-categories.type = {'rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished', 'finished_stop'}; % 'prep'
-
-save([parameters.dir_exper 'PLSR\response_categories.mat'], 'categories');
+% categories.motorized_vs_spon = {'motorized', 'spontaneous'};
+% categories.type = {'rest', 'walk', 'start', 'stop', 'accel', 'decel', 'finished', 'finished_stop'}; % 'prep'
+% 
+% save([parameters.dir_exper 'PLSR\response_categories.mat'], 'categories');
 
 %% Make values for speed, accel into numerics. 
 speeds = periods{:,'speed'};
@@ -103,9 +103,8 @@ clear motorized_vs_spon;
 % DON'T re-number the index field--> that would make it very hard to find
 % the corresponding velocities and accels later. 
 
-% Remove finished periods, continued walk & rest, all spontaneous periods
-conditions_to_remove = {'m_f', 'c_rest', 'rest', 'c_walk', 'walk', ...
-    'prewalk', 'startwalk', 'stopwalk', 'postwalk', 'full_onset', 'full_offset'};
+% Remove finished periods, probes, most spontaneous periods.
+conditions_to_remove = {'m_f', 'w_p_',' m_p','startwalk', 'stopwalk', 'postwalk', 'full_onset', 'full_offset'};
 
 % Also include some of the meaningless ones.
 indices_to_remove = [71; 76; 80; 81; 82; 134; 139; 143;144; 145; [149:153]'; 175]; 
@@ -118,7 +117,7 @@ for i = 1:size(periods,1)
 end 
 
 periods(indices_to_remove, :) = [];
-save([parameters.dir_exper 'PLSR\indices_to_remove.mat'], 'indices_to_remove');
+save([parameters.dir_exper 'PLSR\indices_to_remove_warningPeriods.mat'], 'indices_to_remove');
 
 %% Label by "super-type"
 % start, stop, accel, decel, maintaining, warnings for each type, warning
