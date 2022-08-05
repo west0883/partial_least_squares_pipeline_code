@@ -111,8 +111,13 @@ indices_to_remove = [71; 76; 80; 81; 82; 134; 139; 143;144; 145; [149:153]'; 175
 
 for i = 1:size(periods,1)
 
-    if contains(cell2mat(periods{i, 'condition'}), conditions_to_remove)
-        indices_to_remove = [indices_to_remove; i];
+    if i ~= 191 % Is throwing out prewalk for some reason?
+        
+    
+
+        if contains(cell2mat(periods{i, 'condition'}), conditions_to_remove)
+            indices_to_remove = [indices_to_remove; i];
+        end
     end
 end 
 
