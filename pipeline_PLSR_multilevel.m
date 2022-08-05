@@ -114,6 +114,7 @@ parameters.loop_variables.conditions = {'motorized'; 'spontaneous'};
 parameters.loop_variables.conditions_stack_locations = {'stacks'; 'spontaneous'};
 parameters.loop_variables.variable_type = {'response variables', 'correlations'};
 parameters.loop_variables.categories.type = parameters.categories.type;
+parameters.loop_variables.comparison_types = {'categorical', 'continuous'};
 
 %% Create periods_nametable_forPLSR.mat
 % If hasn't been created already. 
@@ -2163,127 +2164,7 @@ for typei = 1:numel(comparison_types)
     RunAnalysis({@SignificanceCalculation}, parameters);
 end
 
- %% Calculate *sum* of change of nodes with all other nodes
-% % using only the significant changes. 
-% if isfield(parameters, 'loop_list')
-%     parameters = rmfield(parameters,'loop_list');
-% end
-%         
-% % Iterators
-% parameters.loop_list.iterators = {
-%                'comparison_type', {'loop_variables.comparison_types'}, 'comparison_type_iterator';
-%                'comparison', {'loop_variables.comparisons_', 'comparison_type', '(:).name'}, 'comparison_iterator' };
-% 
-% comparison_types = {'categorical', 'continuous'};
-% parameters.loop_variables.comparison_types = {'categorical', 'continuous'}; 
-% 
-% % Parameters for AverageByNode code.
-% parameters.isVector = true;
-% parameters.fromPLSR= true;
-% parameters.corrsDim = 2;
-% parameters.significantOnly = false;
-% parameters.significanceDim = 1; % Dimension of significance matrix corresponding to different correlation values
-% 
-% % Dimension to average across AFTER data has gone through AverageByNode
-% % code.
-% parameters.averageDim = 2; 
-% 
-% % Input
-% parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-% parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_Cov.mat'};
-% parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
-% parameters.loop_list.things_to_load.data.level = 'comparison';
-% 
-% if parameters.significantOnly
-% parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-% parameters.loop_list.things_to_load.significance.filename = {'PLSR_significance_bootstrap_Cov.mat'};
-% parameters.loop_list.things_to_load.significance.variable = {'PLSR_significance.all'};
-% parameters.loop_list.things_to_load.significance.level = 'comparison';
-% end
-% 
-% % Output 
-% % each mouse, as a matrix
-% parameters.loop_list.things_to_save.node_sums.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-% parameters.loop_list.things_to_save.node_sums.filename = {'sum_by_nodes_nosignificance_Cov.mat'};
-% parameters.loop_list.things_to_save.node_sums.variable = {'sum_by_nodes'};
-% parameters.loop_list.things_to_save.node_sums.level = 'comparison';
-% % Across mice.
-% parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-% parameters.loop_list.things_to_save.average.filename = {'sum_by_nodes_allmice_nosignificance_Cov.mat'};
-% parameters.loop_list.things_to_save.average.variable = {'sum_by_nodes'};
-% parameters.loop_list.things_to_save.average.level = 'comparison';
-% 
-% parameters.loop_list.things_to_rename = {{'node_sums', 'data'}}; 
-% 
-% RunAnalysis({@AverageByNode, @AverageData}, parameters);
 
-
-%% Make histograms of betas per mouse for each comparison.
-% comparison_types = {'categorical', 'continuous'};
-% 
-% for typei = 1 %:numel(comparison_types)
-% 
-%     parameters.comparison_type = comparison_types{typei};
-%     parameters.this_comparison_set = parameters.(['comparisons_' parameters.comparison_type]);
-% 
-%     if isfield(parameters, 'loop_list')
-%     parameters = rmfield(parameters,'loop_list');
-%     end
-% 
-%     % Iterators
-%     parameters.loop_list.iterators = {
-%                    'comparison', {['loop_variables.comparisons_'  parameters.comparison_type '(:).name']}, 'comparison_iterator'};
-%     
-%     % Input
-%     parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 ' parameters.comparison_type '\Ipsa Contra\'], 'comparison', '\'};
-%     parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info.mat'};
-%     parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
-%     parameters.loop_list.things_to_load.data.level = 'comparison';
-% 
-%     % sigmas
-% 
-%     
-%     % Output
-%     % Categorical
-%     if strcmp(parameters.comparison_type, 'categorical')
-%         parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\Ipsa Contra\histogram plots\']};
-%         parameters.loop_list.things_to_save.fig.filename = {'comparison'};
-%         parameters.loop_list.things_to_save.fig.variable = {'fig'};
-%         parameters.loop_list.things_to_save.fig.level = 'comparison';
-%         %parameters.loop_list.things_to_save.fig.saveas_type = 'svg';
-% 
-%     else
-%         % Continuous
-%         parameters.loop_list.things_to_save.speed_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\Ipsa Contra\histogram plots\']};
-%         parameters.loop_list.things_to_save.speed_fig.filename = {'speed_', 'comparison'};
-%         parameters.loop_list.things_to_save.speed_fig.variable = {'speed_fig'};
-%         parameters.loop_list.things_to_save.speed_fig.level = 'comparison';
-%         %parameters.loop_list.things_to_save.speed_fig.saveas_type = 'svg';
-% 
-%         parameters.loop_list.things_to_save.accel_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\Ipsa Contra\individual plots\']};
-%         parameters.loop_list.things_to_save.accel_fig.filename = {'accel_ ',  'comparison'};
-%         parameters.loop_list.things_to_save.accel_fig.variable = {'accel_fig'};
-%         parameters.loop_list.things_to_save.accel_fig.level = 'comparison';
-%         %parameters.loop_list.things_to_save.accel_fig.saveas_type = 'svg';
-%     
-%         parameters.loop_list.things_to_save.duration_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\Ipsa Contra\individual plots\']};
-%         parameters.loop_list.things_to_save.duration_fig.filename = {'duration_ ',  'comparison'};
-%         parameters.loop_list.things_to_save.duration_fig.variable = {'duration_fig'};
-%         parameters.loop_list.things_to_save.duration_fig.level = 'comparison';
-%         %parameters.loop_list.things_to_save.duration_fig.saveas_type = 'svg';
-%     
-%         parameters.loop_list.things_to_save.pupil_diameter_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 ' parameters.comparison_type '\Ipsa Contra\individual plots\']};
-%         parameters.loop_list.things_to_save.pupil_diameter_fig.filename = {'pupil_diameter_ ',  'comparison'};
-%         parameters.loop_list.things_to_save.pupil_diameter_fig.variable = {'pupil_diameter_fig'};
-%         parameters.loop_list.things_to_save.pupil_diameter_fig.level = 'comparison';
-%         %parameters.loop_list.things_to_save.pupil_diameter_fig.saveas_type = 'svg';
-%     end
-% 
-%     RunAnalysis({@HistogramsOfBetas}, parameters);
-% 
-%     %close all;
-% end
-% 
 %% Calculate correlation between number of components used and standard deviation of all betas
 % (the betas plotted in histograms above).
 % (Covs)
@@ -2320,3 +2201,188 @@ for typei = 1 %:numel(comparison_types)
     
     RunAnalysis({@ncomponents_std_correlate}, parameters);
 end
+
+%% Calculate percent variance of correlations explained by each Y varible.
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'comparison_type',  {'loop_variables.comparison_types'}, 'comparison_type_iterator';
+               'comparison', {'loop_variables.comparisons_'  , 'comparison_type',  '(:).name'}, 'comparison_iterator';
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
+
+% Inputs
+parameters.loop_list.things_to_load.XL.dir = {[parameters.dir_exper 'PLSR\results\level 1 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.XL.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.XL.variable= {'PLSR_results.XL'}; 
+parameters.loop_list.things_to_load.XL.level = 'mouse';
+
+parameters.loop_list.things_to_load.YL.dir = {[parameters.dir_exper 'PLSR\results\level 1 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.YL.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.YL.variable= {'PLSR_results.YL'}; 
+parameters.loop_list.things_to_load.YL.level = 'mouse';
+
+parameters.loop_list.things_to_load.X0.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.X0.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.X0.variable= {'dataset_info.explanatoryVariables'}; 
+parameters.loop_list.things_to_load.X0.level = 'mouse';
+
+% Outputs
+parameters.loop_list.things_to_save.variance_perVar.dir = {[parameters.dir_exper 'PLSR\results\level 1 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.variance_perVar.filename= {'variance_perVar.mat'};
+parameters.loop_list.things_to_save.variance_perVar.variable= {'variance_perVar'}; 
+parameters.loop_list.things_to_save.variance_perVar.level = 'mouse';
+
+parameters.loop_list.things_to_save.variance_allVars.dir = {[parameters.dir_exper 'PLSR\results\level 1 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.variance_allVars.filename= {'variance_allVars.mat'};
+parameters.loop_list.things_to_save.variance_allVars.variable= {'variance_allVars'}; 
+parameters.loop_list.things_to_save.variance_allVars.level = 'mouse';
+
+RunAnalysis({@PercentVarPerVariable}, parameters);
+
+%% Average percent var per variable across mice/by comparison
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'comparison_type',  {'loop_variables.comparison_types'}, 'comparison_type_iterator';
+               'comparison', {'loop_variables.comparisons_'  , 'comparison_type',  '(:).name'}, 'comparison_iterator';
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
+
+parameters.concatDim = 1;
+parameters.concatenation_level = 'mouse';
+parameters.averageDim = 1;
+
+parameters.average_and_std_together = true;
+
+% Inputs 
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\results\level 1 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'variance_perVar.mat'};
+parameters.loop_list.things_to_load.data.variable= {'variance_perVar'}; 
+parameters.loop_list.things_to_load.data.level = 'mouse';
+
+% Outputs
+parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
+parameters.loop_list.things_to_save.average.filename= {'variance_perVar_average.mat'};
+parameters.loop_list.things_to_save.average.variable= {'variance_perVar_average'}; 
+parameters.loop_list.things_to_save.average.level = 'comparison';
+
+parameters.loop_list.things_to_rename = {{'concatenated_data', 'data'}};
+
+RunAnalysis({@ConcatenateData, @AverageData}, parameters);
+
+%% Average percent var per variable across comparison types
+% (do across comparisons within mice first,
+% then across comparisons?)
+% have to treat continuous variables special
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator';
+               'comparison_type',  {'loop_variables.comparison_types'}, 'comparison_type_iterator';
+               'comparison', {'loop_variables.comparisons_'  , 'comparison_type',  '(:).name'}, 'comparison_iterator';
+               };
+
+parameters.concatDim = 1;
+parameters.concatenation_level = 'comparison';
+parameters.averageDim = 1;
+parameters.padDim = 2;
+
+parameters.average_and_std_together = true;
+
+% Inputs 
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\results\level 1 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'variance_perVar.mat'};
+parameters.loop_list.things_to_load.data.variable= {'variance_perVar'}; 
+parameters.loop_list.things_to_load.data.level = 'comparison';
+
+% Outputs
+parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\results\average percent variance\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.average.filename= {'variance_perVar_average_', 'comparison_type', '.mat'};
+parameters.loop_list.things_to_save.average.variable= {'variance_perVar_average'}; 
+parameters.loop_list.things_to_save.average.level = 'comparison_type';
+
+parameters.loop_list.things_to_rename = { {'data_padded', 'data'};
+                                          {'concatenated_data', 'data'}};
+
+RunAnalysis({@PadContinuousData, @ConcatenateData, @AverageData}, parameters);
+
+%% Average percent var per variable across comparison types, across mice 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'comparison_type',  {'loop_variables.comparison_types'}, 'comparison_type_iterator';
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator';
+               };
+
+parameters.concatDim = 1;
+parameters.concatenation_level = 'mouse';
+parameters.averageDim = 1;
+
+% Only take the averages, not the stds.
+parameters.evaluation_instructions = {'data_evaluated = parameters.data(1:(end/2));'};
+parameters.average_and_std_together = true;
+
+% Inputs 
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\results\average percent variance\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'variance_perVar_average_', 'comparison_type', '.mat'};
+parameters.loop_list.things_to_load.data.variable= {'variance_perVar_average'}; 
+parameters.loop_list.things_to_load.data.level = 'mouse';
+
+% Outputs
+parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\results\average percent variance\across mice\']};
+parameters.loop_list.things_to_save.average.filename= {'variance_perVar_average_', 'comparison_type', '.mat'};
+parameters.loop_list.things_to_save.average.variable= {'variance_perVar_average'}; 
+parameters.loop_list.things_to_save.average.level = 'comparison_type';
+
+parameters.loop_list.things_to_rename = {{'data_evaluated', 'data'};
+                                         {'concatenated_data', 'data'}};
+
+RunAnalysis({@EvaluateOnData, @ConcatenateData, @AverageData}, parameters);
+
+%% Now across comparisons, not across mice
+
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'comparison_type',  {'loop_variables.comparison_types'}, 'comparison_type_iterator';
+               'comparison', {'loop_variables.comparisons_'  , 'comparison_type',  '(:).name'}, 'comparison_iterator';
+               };
+
+parameters.concatDim = 1;
+parameters.concatenation_level = 'comparison';
+parameters.averageDim = 1;
+parameters.padDim = 2;
+parameters.evaluation_instructions = {'data_evaluated = parameters.data(1:(end/2));'};
+parameters.average_and_std_together = true;
+
+% Inputs 
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
+parameters.loop_list.things_to_load.data.filename= {'variance_perVar_average.mat'};
+parameters.loop_list.things_to_load.data.variable= {'variance_perVar_average'}; 
+parameters.loop_list.things_to_load.data.level = 'comparison';
+
+% Outputs
+parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\results\average percent variance\across mice\']};
+parameters.loop_list.things_to_save.average.filename= {'variance_perVar_average_', 'comparison_type', '_acrosscomparison.mat'};
+parameters.loop_list.things_to_save.average.variable= {'variance_perVar_average'}; 
+parameters.loop_list.things_to_save.average.level = 'comparison_type';
+
+parameters.loop_list.things_to_rename = { {'data_evaluated', 'data'}; 
+                                          {'data_padded', 'data'};
+                                          {'concatenated_data', 'data'}};
+
+RunAnalysis({@EvaluateOnData, @PadContinuousData, @ConcatenateData, @AverageData}, parameters);
