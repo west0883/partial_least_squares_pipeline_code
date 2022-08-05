@@ -101,7 +101,8 @@ function [parameters] = PopulateResponseVariables(parameters)
                 variable = variables{variablei};
                 
                 % Replicate by number of instancs in 3rd dimension.
-                response_variables_structure.(variable) = repmat(parameters.periods{periodi, variable{1}, 1, 1, instances);
+                response_variables_structure.(variable) = repmat(parameters.periods{periodi, variable}{1}, 1, 1, instances);
+                                                          
             end 
         end
 
