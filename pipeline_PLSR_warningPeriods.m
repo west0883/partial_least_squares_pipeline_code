@@ -46,7 +46,7 @@ if isfile([parameters.dir_exper 'PLSR Warning Periods\periods_nametable_forPLSR_
 
     % And indices to shorten.
     load([parameters.dir_exper 'PLSR Warning Periods\indices_to_shorten.mat']);
-    parameters.indices_to_shorten = [indices_to_shorten; indices_to_shorten_original_index];
+    parameters.indices_to_shorten = [indices_to_shorten indices_to_shorten_original_index];
 
     clear indices_to_remove indices_to_shorten indices_to_shorten_original_index;
 
@@ -104,7 +104,6 @@ parameters.loop_variables.periods = parameters.periods.condition;
 parameters.loop_variables.conditions = {'motorized'; 'spontaneous'};
 parameters.loop_variables.conditions_stack_locations = {'stacks'; 'spontaneous'};
 parameters.loop_variables.variable_type = {'response variables', 'correlations'};
-parameters.loop_variables.categories.type = parameters.categories.type;
 parameters.loop_variables.comparison_types = {'categorical', 'continuous'};
 
 %% Create periods_nametable_forPLSR.mat
@@ -120,7 +119,7 @@ if ~isfile([parameters.dir_exper 'PLSR Warning Periods\periods_nametable_forPLSR
 
      % And indices to shorten.
     load([parameters.dir_exper 'PLSR Warning Periods\indices_to_shorten.mat']);
-    parameters.indices_to_shorten = [indices_to_shorten; indices_to_shorten_original_index];
+    parameters.indices_to_shorten = [indices_to_shorten indices_to_shorten_original_index];
 
     clear indices_to_remove indices_to_shorten indices_to_shorten_original_index;
  
@@ -142,7 +141,7 @@ if ~isfile([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriod
     clear comparisons;
 end
 
-%% Remove correlations for periods you don't want to use. 
+%% Remove correlations for periods you don't want to use, trim warning periods.
 % From saved indices from creation of response variables .
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -153,8 +152,15 @@ parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 
 
 % Evaluation instructions.
 parameters.evaluation_instructions = {{
-          'data_evaluated = parameters.data;'...
-          'data_evaluated(parameters.indices_to_remove) = [];'}};
+          'data = parameters.data;'...
+          'data(parameters.indices_to_remove) = [];'... 
+          'for i = 1:numel(parameters.indices_to_shorten(:,1));'...
+               'index = parameters.indices_to_shorten(i,1);'...
+               'data_sub = data{index};'...
+               'data{index} = data_sub(:, 9:17,:);'...
+          'end;'...
+          'data_evaluated = data;'
+          }};
 % Input 
 % The reshaped correlations per mouse from fluorescence analysis pipeline.
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'fluorescence analysis\correlations\Fisher transformed\'], 'mouse', '\instances reshaped\'};
@@ -170,6 +176,8 @@ parameters.loop_list.things_to_save.data_evaluated.level = 'mouse';
 
 RunAnalysis({@EvaluateOnData}, parameters); 
 
+%% Trim periods.
+ 
 %% Put in response variables, no vertical concatenation
 
 if isfield(parameters, 'loop_list')
