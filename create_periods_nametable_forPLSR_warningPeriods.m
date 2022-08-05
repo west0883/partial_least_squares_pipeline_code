@@ -42,8 +42,8 @@ window_size = 20;
 window_step_size = 5; 
 
 % Make a partial least squares regression folder. 
-if ~isdir([parameters.dir_exper 'PLSR\'])
-    mkdir([parameters.dir_exper 'PLSR\']);
+if ~isdir([parameters.dir_exper 'PLSR Warning Periods\'])
+    mkdir([parameters.dir_exper 'PLSR Warning Periods\']);
 end
 
 %% Make a list of dummy variable categories for using later. 
@@ -104,25 +104,24 @@ clear columns_to_remove;
 % the corresponding velocities and accels later. 
 
 % Remove finished periods, probes, transitions, most spontaneous periods.
-conditions_to_remove = {'m_f', 'w_p_', 'm_p_', 'm_maint' 'm_start', 'm_stop', 'm_accel', 'm_decel','walk', 'startwalk', 'stopwalk', 'postwalk', 'full_onset', 'full_offset'};
+conditions_to_remove = {'m_f', 'w_p_', 'm_p_', 'm_maint' 'm_start', 'm_stop', 'm_accel', 'm_decel', 'startwalk', 'stopwalk', 'postwalk', 'full_onset', 'full_offset'};
 
 % Also include some of the meaningless ones.
 indices_to_remove = [71; 76; 80; 81; 82; 134; 139; 143;144; 145; [149:153]'; 175]; 
 
 for i = 1:size(periods,1)
-
-    if i ~= 191 % Is throwing out prewalk for some reason?
         
-    
-
-        if contains(cell2mat(periods{i, 'condition'}), conditions_to_remove)
-            indices_to_remove = [indices_to_remove; i];
-        end
+    if contains(cell2mat(periods{i, 'condition'}), conditions_to_remove)
+        indices_to_remove = [indices_to_remove; i];
     end
+ 
 end 
 
+% Specifically throw out spontaneous walk.
+indices_to_remove = [indices_to_remove; 190];
+
 periods(indices_to_remove, :) = [];
-save([parameters.dir_exper 'PLSR\indices_to_remove_warningPeriods.mat'], 'indices_to_remove');
+save([parameters.dir_exper 'PLSR Warning Periods\indices_to_remove_warningPeriods.mat'], 'indices_to_remove');
 
 %% Separate maintaining at rest vs at walk, add "type"
 
@@ -167,7 +166,7 @@ for i = 1:size(periods, 1)
              types{i} = 'wstop';
 
         case 7
-             types{i} = 'wsaccel';
+             types{i} = 'waccel';
 
         case 8
              types{i} = 'wdecel';
@@ -231,7 +230,7 @@ for i = 1:size(periods,1)
     end
 
 end
-save([parameters.dir_exper 'PLSR\indices_to_shorten.mat'], 'indices_to_shorten', 'indices_to_shorten_original_index');
+save([parameters.dir_exper 'PLSR Warning Periods\indices_to_shorten.mat'], 'indices_to_shorten', 'indices_to_shorten_original_index');
 
 %% Calculate new "roll numbers" for periods & duration you have left. 
 % Figure out how many rolls you can get out of it (should be a whole number). 
@@ -260,8 +259,35 @@ periods.speed_vector = accel_vector;
 periods.accel_vector = accel_vector;
 periods.pupil_diameter_vector = pupil_diameter_vector;
 
+%% Create dummy variables for categoricals -- motorized_vs_spon, type, & transition or not
+
+categories.type = {'waccel', 'wdecel', 'wstop', 'walk_wmaint', 'motorized_walk' 'wstart', 'prewalk', 'rest_wmaint', 'motorized_rest', 'spontaneous_rest'};
+type_dummyvars = cell(size(periods,1),1);
+
+for i = 1:size(periods,1)
+
+    % Type 
+    type = strcmp(repmat(periods{i, 'type'}, size(categories.type)), categories.type);
+    type_dummyvars{i} = double(type)';
+  
+end 
+
+periods.type_dummyvars = type_dummyvars;
+
+%% Replicate dummy vars by roll number. 
+
+type_dummyvars_vector = cell(size(periods,1),1);
+
+for i = 1:size(periods,1)
+
+    % Type 
+    type_dummyvars_vector{i} = repmat(periods{i, 'type_dummyvars'}{1}, [1 number_of_rolls{i}]);
+
+end 
+
+periods.type_dummyvars_vector = type_dummyvars_vector;
 
 %% Save 
-save([parameters.dir_exper 'PLSR\periods_nametable_forPLSR_warningPeriods.mat'], 'periods', '-v7.3');
+save([parameters.dir_exper 'PLSR Warning Periods\periods_nametable_forPLSR_warningPeriods.mat'], 'periods', '-v7.3');
 
 %clear all;
