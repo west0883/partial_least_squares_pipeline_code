@@ -87,14 +87,14 @@ end
 clear columns_to_remove; 
 
 %% Create labels for "spontaneous" vs "motorized"
-% Do this before removing periods you don't need so you can use size of
-% periods_motorized and periods_spontaneous.
-motorized_vs_spon = cell(size(periods,1),1);
-motorized_vs_spon([1:size(periods_motorized,1)]) = repmat({'motorized'}, size(periods_motorized,1) , 1);
-motorized_vs_spon([size(periods_motorized,1) + 1:end]) = repmat({'spontaneous'}, size(periods_spontaneous,1) , 1);
-
-periods.motorized_vs_spon = motorized_vs_spon;
-clear motorized_vs_spon;
+% % Do this before removing periods you don't need so you can use size of
+% % periods_motorized and periods_spontaneous.
+% motorized_vs_spon = cell(size(periods,1),1);
+% motorized_vs_spon([1:size(periods_motorized,1)]) = repmat({'motorized'}, size(periods_motorized,1) , 1);
+% motorized_vs_spon([size(periods_motorized,1) + 1:end]) = repmat({'spontaneous'}, size(periods_spontaneous,1) , 1);
+% 
+% periods.motorized_vs_spon = motorized_vs_spon;
+% clear motorized_vs_spon;
 
 %% Keep only the set of periods you want to use for PLS regression 
 % For first-pass of PLSR, don't use probe trials, maintaining, or full onset/offset. 
@@ -103,8 +103,8 @@ clear motorized_vs_spon;
 % DON'T re-number the index field--> that would make it very hard to find
 % the corresponding velocities and accels later. 
 
-% Remove finished periods, probes, most spontaneous periods.
-conditions_to_remove = {'m_f', 'w_p_',' m_p','startwalk', 'stopwalk', 'postwalk', 'full_onset', 'full_offset'};
+% Remove finished periods, probes, transitions, most spontaneous periods.
+conditions_to_remove = {'m_f', 'w_p_', 'm_p_', 'm_maint' 'm_start', 'm_stop', 'm_accel', 'm_decel','walk', 'startwalk', 'stopwalk', 'postwalk', 'full_onset', 'full_offset'};
 
 % Also include some of the meaningless ones.
 indices_to_remove = [71; 76; 80; 81; 82; 134; 139; 143;144; 145; [149:153]'; 175]; 
@@ -119,60 +119,60 @@ end
 periods(indices_to_remove, :) = [];
 save([parameters.dir_exper 'PLSR\indices_to_remove_warningPeriods.mat'], 'indices_to_remove');
 
-%% Label by "super-type"
-% start, stop, accel, decel, maintaining, warnings for each type, warning
-% probes for each type, motor probes for each type.
+%% Separate maintaining at rest vs at walk, add "type"
 
-% Separate maintaining & probes at rest vs at walk
+look_for = {'c_rest', 'rest', 'c_walk', 'w_maint', ...
+            'w_start','w_stop', 'w_accel', 'w_decel', 'prewalk'};
 
-% Use periods table to get out the names
-names_all = unique(periods_motorized.condition(:));
-look_for = names_all([3,4, 9:end]);
-
-% List of types that need to be separated between rest & walking 
-% maintainings & warnings, w_p_nowarn, m_p_nochange.
-look_for_split_indices = [3, 7, 14, 17, 20, 4];
-look_for_split = look_for(look_for_split_indices);
-
-% Holder for types.
+% Holder for types.        
 types = cell(size(periods,1), 1);
 
 for i = 1:size(periods, 1)
    
-    type1 = strcmp(look_for, periods{i, 'condition'});
+    this_condition = periods{i, 'condition'}{1};
+    type = find(strcmp(look_for, this_condition));
 
-    % If any of the types that need to be split
-    if any(find(type1) == look_for_split_indices)
+    switch type
 
-        % split into rest or walk versions, based on speed.
-        % Rest version
-        if periods.speed{i} == 0
-            types{i} = [look_for{type1} '_rest'];
-        % Walk versions.
-        else
-            types{i} = [look_for{type1} '_walk'];
-        end
+        case 1   % motorized rest
+            types{i} = 'motorized_rest';
 
-    % If not any of the maintainings, can just put straight in.
-    else
-        types{i} = look_for{type1}; 
+
+        case 2 % spontaneous rest
+            types{i} = 'spontaneous_rest';
+    
+        case 3 % motorized walk
+            types{i} = 'motorized_walk';
+
+        case 4 % maintaining
+
+             % split into rest or walk versions, based on speed.
+            % Rest version
+            if periods.speed{i} == 0
+              types{i} = 'rest_wmaint';
+            % Walk versions.
+            else
+              types{i} = 'walk_wmaint';
+            end
+
+        case 5
+             types{i} = 'wstart';
+
+        case 6
+             types{i} = 'wstop';
+
+        case 7
+             types{i} = 'wsaccel';
+
+        case 8
+             types{i} = 'wdecel';
+
+        case 9
+             types{i} = 'prewalk';
     end
 end
 periods.type = types; 
-clear i types type1;
-
-% Update look_for to include periods that had to be split by rest or walk.
-
-% For each split index, add the split versions for the end
-for spliti  = 1:numel(look_for_split_indices)
-
-    look_for = [look_for; {[look_for{look_for_split_indices(spliti)} '_rest']}; ...
-        {[look_for{look_for_split_indices(spliti)} '_walk']}]; 
-
-end
-
-% Remove original split indices.
-look_for(look_for_split_indices) = [];
+clear types type type1 type2 look_for_pattern look_for this_condition;
 
 %% Make column for pupil diameter 
 % All periods. Are all NaN for now, will be put in at "populate response
@@ -182,22 +182,21 @@ periods.pupil_diameter = pupil_diameter;
 
 clear pupil_diameter;
 
-%% Put in accel = 0 for warning, maintaining, probe no changes, probe no warnings
-% Use the look_for matrix.
-look_for_noAccel = look_for([9:end]);
+%% Put in accel = 0 for all.
+accels = repmat({0}, size(periods,1), 1);
+periods.accel = accels;
+% for i = 1:size(periods,1)
+% 
+%     type1 = strcmp(look_for_noAccel, periods{i, 'type'});
+% 
+%     % If this type is any of the no accelration types,
+%     if any(type1)
+%         % Make acceleration 0.
+%        periods{i, 'accel'} = {0};      
+%     end
+% end
 
-for i = 1:size(periods,1)
-
-    type1 = strcmp(look_for_noAccel, periods{i, 'type'});
-
-    % If this type is any of the no accelration types,
-    if any(type1)
-        % Make acceleration 0.
-       periods{i, 'accel'} = {0};      
-    end
-end
-
-clear i;
+clear accels;
 %% Make speed = 0 for any speeds that are still NaNs.
 for i = 1:size(periods,1)
     
