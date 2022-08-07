@@ -158,10 +158,7 @@ parameters.loop_list.things_to_save.data_evaluated.level = 'mouse';
 
 RunAnalysis({@EvaluateOnData}, parameters); 
 
-%% Trim periods.
- 
-%% Put in response variables, no vertical concatenation
-
+%% Put in response variables, no vertical concatenation. Also trim pupil diameter.
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
 end
@@ -179,10 +176,20 @@ parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 
 
 parameters.concatenate_vertically = false;
 
+% Evaluation instructions.
+parameters.evaluation_instructions = {{
+          'data = parameters.diameter_vector;'...
+          'for i = 1:numel(parameters.indices_to_shorten(:,2));'...
+               'index = parameters.indices_to_shorten(i,2);'...
+               'data_sub = data{index};'...
+               'data{index} = data_sub(9:17,:);'...
+          'end;'...
+          'data_evaluated = data;'
+          }};
 % Input
 % Correlations (for instances count)
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\correlations\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.data.filename= {'values_relevent_periods.mat'};
+parameters.loop_list.things_to_load.data.filename= {'values.mat'};
 parameters.loop_list.things_to_load.data.variable= {'values'}; 
 parameters.loop_list.things_to_load.data.level = 'mouse';
 
@@ -210,7 +217,9 @@ parameters.loop_list.things_to_save.response_variables.filename= {'response_vari
 parameters.loop_list.things_to_save.response_variables.variable= {'response_variables'}; 
 parameters.loop_list.things_to_save.response_variables.level = 'mouse';
 
-RunAnalysis({@PopulateResponseVariables}, parameters);
+parameters.loop_list.things_to_rename = {{'data_evaluated', 'diameter_vector'}};
+
+RunAnalysis({@EvaluateOnData, @PopulateResponseVariables}, parameters);
 
 %% Prepare datasets per continuous comparison. 
 if isfield(parameters, 'loop_list')
