@@ -255,37 +255,70 @@ for i = 1:size(periods,1)
     accel_vector(i) = {repmat(periods{i, 'accel'}{1}, 1, periods{i,'number_of_rolls'}{1})};
     pupil_diameter_vector(i) = {repmat(periods{i, 'pupil_diameter'}{1}, 1, periods{i,'number_of_rolls'}{1})};
 end 
-periods.speed_vector = accel_vector;
+periods.speed_vector = speed_vector;
 periods.accel_vector = accel_vector;
 periods.pupil_diameter_vector = pupil_diameter_vector;
 
-%% Create dummy variables for categoricals -- motorized_vs_spon, type, & transition or not
+%% Make a column that says if this period is one of the walk "active" warnings 
+% Is for later when you want to compare all transitions to other things. 
+walk_active_warning = cell(size(periods, 1), 1); 
+for i = 1:size(periods,1)
 
-categories.type = {'waccel', 'wdecel', 'wstop', 'walk_wmaint', 'motorized_walk' 'wstart', 'prewalk', 'rest_wmaint', 'motorized_rest', 'spontaneous_rest'};
+    if strcmp(periods{i, 'type'}{1}, 'wstop') || strcmp(periods{i, 'type'}{1}, 'waccel') || strcmp(periods{i, 'type'}{1}, 'wdecel')
+        walk_active_warning{i} = 'walk_active_warning';
+    else 
+        walk_active_warning{i} = 'not_walk_active_warning';
+    end
+    
+end
+periods.walk_active_warning = walk_active_warning; 
+
+
+%% Create dummy variables for categoricals --  type & walk active warnings or not
+
+categories.type = {'waccel', 'wdecel', 'wstop', 'walk_wmaint', 'motorized_walk', 'wstart', 'prewalk', 'rest_wmaint', 'motorized_rest', 'spontaneous_rest'};
 type_dummyvars = cell(size(periods,1),1);
+walk_active_warning_dummyvars = cell(size(periods,1),1);
 
 for i = 1:size(periods,1)
 
     % Type 
     type = strcmp(repmat(periods{i, 'type'}, size(categories.type)), categories.type);
     type_dummyvars{i} = double(type)';
-  
+
+    % Walk active warnings.
+    if strcmp(periods{i, 'walk_active_warning'}{1}, 'walk_active_warning')
+
+        walk_active_warning_dummyvars{i} = [1; 0];
+
+    else
+
+        walk_active_warning_dummyvars{i} = [0; 1];
+
+    end
+
 end 
 
 periods.type_dummyvars = type_dummyvars;
+periods.walk_active_warning_dummyvars = walk_active_warning_dummyvars;
 
 %% Replicate dummy vars by roll number. 
 
 type_dummyvars_vector = cell(size(periods,1),1);
+walk_active_warning_dummyvars_vector = cell(size(periods,1),1);
 
 for i = 1:size(periods,1)
 
     % Type 
     type_dummyvars_vector{i} = repmat(periods{i, 'type_dummyvars'}{1}, [1 number_of_rolls{i}]);
 
+    % Walk active warnings
+    walk_active_warning_dummyvars_vector{i} = repmat(periods{i, 'walk_active_warning_dummyvars'}{1}, [1 number_of_rolls{i}]);
+
 end 
 
 periods.type_dummyvars_vector = type_dummyvars_vector;
+periods.walk_active_warning_dummyvars_vector = walk_active_warning_dummyvars_vector;
 
 %% Save 
 save([parameters.dir_exper 'PLSR Warning Periods\periods_nametable_forPLSR_warningPeriods.mat'], 'periods', '-v7.3');
