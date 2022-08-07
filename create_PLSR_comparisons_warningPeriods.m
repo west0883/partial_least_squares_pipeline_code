@@ -254,6 +254,41 @@ comparisons(counter).indices = find(indices_type);
 
 counter = counter + 1; 
 
+%% All walk active warnings 
+
+% vs walk warning maintaining 
+comparisons(counter).name = 'allwalkwarningsvswmaint';
+comparisons(counter).variablesToUse = {'walk_active_warning_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'warningPeriods';
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'walk_wmaint') | strcmp(period_types, 'wstop') | strcmp(period_types, 'waccel') | strcmp(period_types, 'wdecel');
+comparisons(counter).indices = find(indices_type);
+
+counter = counter + 1; 
+
+% vs continued walk
+comparisons(counter).name = 'allwalkwarningsvswalk';
+comparisons(counter).variablesToUse = {'walk_active_warning_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'warningPeriods';
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'motorized_walk') | strcmp(period_types, 'wstop') | strcmp(period_types, 'waccel') | strcmp(period_types, 'wdecel');
+comparisons(counter).indices = find(indices_type);
+
+counter = counter + 1; 
+
+
+%% Different (walk) transition warnings
+% See if there's any clear indication the mouse can tell the difference.
+% stop vs accel
+% stop vs decel
+% accel vs decel
+
 %% Save 
 save([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriods_categorical.mat'], 'comparisons');
 
@@ -268,11 +303,6 @@ save([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriods_cate
 % Rest maintaining vs rest m_p no change
 % maint vs start
 
-% Different (walk) transition warnings
-% See if there's any clear indication the mouse can tell the difference.
-% stop vs accel
-% stop vs decel
-% accel vs decel
 
 % Warned transitions vs not-warned transitions.
 % start 
