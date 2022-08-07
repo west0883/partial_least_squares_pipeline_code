@@ -167,8 +167,8 @@ end
 parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
 
 % Variables to replicate
-parameters.response_variable_names = {'type_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector'};
-parameters.variables_static = {'type_dummyvars_vector', 'duration_vector'};
+parameters.response_variable_names = {'type_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'walk_active_warning_dummyvars_vector'};
+parameters.variables_static = {'type_dummyvars_vector', 'duration_vector', 'walk_active_warning_dummyvars_vector'};
 % parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
 
 % Original order of spontaneous (for velocity & accel indexing)
