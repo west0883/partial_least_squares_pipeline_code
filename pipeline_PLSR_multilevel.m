@@ -116,6 +116,7 @@ parameters.loop_variables.variable_type = {'response variables', 'correlations'}
 parameters.loop_variables.categories.type = parameters.categories.type;
 parameters.loop_variables.comparison_types = {'categorical', 'continuous'};
 
+parameters.average_and_std_together = false;
 %% Create periods_nametable_forPLSR.mat
 % If hasn't been created already. 
 if ~isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'])
