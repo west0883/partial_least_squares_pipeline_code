@@ -285,9 +285,100 @@ counter = counter + 1;
 
 %% Different (walk) transition warnings
 % See if there's any clear indication the mouse can tell the difference.
-% stop vs accel
-% stop vs decel
-% accel vs decel
+
+% waccel vs wstop
+comparisons(counter).name = 'waccelvswstop';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'warningPeriods';
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'waccel') | strcmp(period_types, 'wstop');
+comparisons(counter).indices = find(indices_type);
+
+counter = counter + 1; 
+
+% wdecel vs wstop
+comparisons(counter).name = 'wdecelvswstop';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'warningPeriods';
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'wdecel') | strcmp(period_types, 'wstop');
+comparisons(counter).indices = find(indices_type);
+
+counter = counter + 1; 
+
+
+% wdecel vs waccel
+comparisons(counter).name = 'wdecelvswaccel';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'warningPeriods';
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'wdecel') | strcmp(period_types, 'waccel');
+comparisons(counter).indices = find(indices_type);
+
+counter = counter + 1; 
+
+%% Each active warning against continued walk
+
+% wstop vs walk_wmaint
+comparisons(counter).name = 'wstopvswalk';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'warningPeriods';
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'motorized_walk') | strcmp(period_types, 'wstop');
+comparisons(counter).indices = find(indices_type);
+
+counter = counter + 1; 
+
+% waccel vs motorized_walk
+comparisons(counter).name = 'waccelvswalk';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'warningPeriods';
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'motorized_walk') | strcmp(period_types, 'waccel');
+comparisons(counter).indices = find(indices_type);
+
+counter = counter + 1; 
+
+% wdecel vs motorized_walk
+comparisons(counter).name = 'wdecelvswalk';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'warningPeriods';
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'motorized_walk') | strcmp(period_types, 'wdecel');
+comparisons(counter).indices = find(indices_type);
+
+counter = counter + 1; 
+
+%% wstart vs rest directly
+comparisons(counter).name = 'wstartvsrest';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = 1;
+comparisons(counter).figure_type = 'warningPeriods';
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'motorized_rest') | strcmp(period_types, 'wstart');
+comparisons(counter).indices = find(indices_type);
+
+counter = counter + 1; 
 
 %% Save 
 save([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriods_categorical.mat'], 'comparisons');
