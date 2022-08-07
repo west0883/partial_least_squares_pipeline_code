@@ -69,31 +69,13 @@ if isfile([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriods
 end
 
 % Make color ranges for each type of comparison, for final figures.
-parameters.color_range.continued.categorical = [-0.6 0.6];
-parameters.color_range.continued.speed = [-0.6 0.6];
-parameters.color_range.continued.accel = [-0.06 0.06]; % Make it match with other accels.
-parameters.color_range.continued.duration = [];
-parameters.color_range.continued.pupil_diameter = [-0.02 0.02 ];
+parameters.color_range.warningPeriods.categorical = [-0.2 0.2];
+parameters.color_range.warningPeriods.speed = [-0.1 0.1];
+parameters.color_range.warningPeriods.accel = [-0.06 0.06];
+parameters.color_range.warningPeriods.duration = [-0.2 0.2];
+parameters.color_range.warningPeriods.pupil_diameter = [-0.02 0.02 ];
 
-parameters.color_range.startstop.categorical = [-0.6 0.6];
-parameters.color_range.startstop.speed = [-0.6 0.6];
-parameters.color_range.startstop.accel = [-0.06 0.06];
-parameters.color_range.startstop.duration = [-0.3 0.3];
-parameters.color_range.startstop.pupil_diameter = [-0.02 0.02];
-
-parameters.color_range.acceldecel.categorical = [-0.1 0.1];
-parameters.color_range.acceldecel.speed = [-0.1 0.1];
-parameters.color_range.acceldecel.accel = [-0.06 0.06];
-parameters.color_range.acceldecel.duration = [-0.3 0.3];
-parameters.color_range.acceldecel.pupil_diameter = [-0.02 0.02 ];
-
-% special figures that get their own color ranges
-parameters.color_range.specials =  {'motorized_transitions_continuousVars_start', 'duration', [-1 1];
-                                    'motorized_finished_start_continuousVars', 'speed', [-0.1 0.1]; % Match it with the finished accel/decel 
-                                    'motorized_startvsaccel_categorical', 'categorical', [- 0.6 0.6]; % Match with start/stop categoricals.
-                                    'motorized_stopvsdecel_categorical', 'categorical', [- 0.6 0.6]; % Match with start/stop categoricals.
-                                    'spontaneous_walk_continuousVars', 'speed',[-1 1];
-                                    'walk_motorizedvsspon_categorical', 'categorical', [-0.3 0.3]};
+parameters.color_range.specials = {[], [], []};
                                     
 % Names of all continuous variables.
 parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter'};
