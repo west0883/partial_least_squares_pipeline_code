@@ -69,13 +69,16 @@ if isfile([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriods
 end
 
 % Make color ranges for each type of comparison, for final figures.
-parameters.color_range.warningPeriods.categorical = [-0.2 0.2];
+parameters.color_range.warningPeriods.categorical = [-0.1 0.1];
 parameters.color_range.warningPeriods.speed = [-0.1 0.1];
 parameters.color_range.warningPeriods.accel = [-0.06 0.06];
 parameters.color_range.warningPeriods.duration = [-0.2 0.2];
 parameters.color_range.warningPeriods.pupil_diameter = [-0.02 0.02 ];
 
-parameters.color_range.specials = {[], [], []};
+parameters.color_range.specials = {
+                                    'prewalkvsrest', 'categorical', [-0.2 0.2];
+                                    'wstartvsprewalk', 'categorical', [-0.2 0.2];
+                                    };
                                     
 % Names of all continuous variables.
 parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter'};
@@ -1663,13 +1666,16 @@ parameters.shufflesDim = 2; % After the EvaluateOnData reduction
 parameters.find_significance = true;
 
 % The statistical alpha value
-parameters.alphaValue = 0.05/496; %0.001; %/numel(parameters.comparisons_continuous);
+parameters.alphaValue = 0.05; %/496; %0.001; %/numel(parameters.comparisons_continuous);
 
 % Say that you do want to use bootstrapping.
 parameters.useBootstrapping = false;
 
 % If you want to fit a normal distribution before t-test (default = true)
 parameters.useNormalDistribution = true; 
+
+% Use false discovery rate correaction?
+parameters.useFDR = true;
 
 % Inputs:
 %Test values (will grab only the intercepts with EvaluateOnData)
@@ -1685,11 +1691,13 @@ parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
 
 % Outputs
 parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 continuous\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_Cov_FDR.mat'};
 parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
 parameters.loop_list.things_to_save.significance.level = 'comparison';
 
 RunAnalysis({@SignificanceCalculation}, parameters);
+
+parameters.useFDR = false;
 
 %% Level 2 categorical -- check significance with permutations
 % Always clear loop list first. 
@@ -1705,13 +1713,16 @@ parameters.shufflesDim = 2;
 parameters.find_significance = true;
 
 % The statistical alpha value
-parameters.alphaValue = 0.05/496; %/150;  %/(numel(parameters.comparisons_categorical) - 4;
+parameters.alphaValue = 0.05; %/496; %/150;  %/(numel(parameters.comparisons_categorical) - 4;
 
 % Use the Bootstrapping method. 
 parameters.useBootstrapping = false;
 
 % If you want to fit a normal distribution before t-test (default = true)
 parameters.useNormalDistribution = true; 
+
+% Use false discovery rate correaction?
+parameters.useFDR = true;
 
 % Inputs:
 % Test values
@@ -1727,11 +1738,13 @@ parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
 
 % Outputs
 parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_Cov_FDR.mat'};
 parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
 parameters.loop_list.things_to_save.significance.level = 'comparison';
 
 RunAnalysis({@SignificanceCalculation}, parameters);
+
+parameters.useFDR = false;
 
 %% Level 2 continuous -- plot betas with significance from permutations
 % Plot all the beta intercepts in a single plot 
@@ -1772,7 +1785,7 @@ for i = 2 %1:numel(true_false_vector)
         if parameters.useSignificance 
             title = [title '_withSignificance_randomPermutation'];
         end
-        title = [title '.fig'];
+        title = [title '_FDR.fig'];
         
         % Input
         parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
@@ -1782,7 +1795,7 @@ for i = 2 %1:numel(true_false_vector)
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 continuous\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_randomPermutations_Cov.mat'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_randomPermutations_Cov_FDR.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
@@ -1860,7 +1873,7 @@ for i = 2 %1:numel(true_false_vector)
         if parameters.useSignificance 
             title = [title '_withSignificance_randomPermutation_Cov'];
         end
-        title = [title '.fig'];
+        title = [title '_FDR.fig'];
         
         % Input
         parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
@@ -1870,7 +1883,7 @@ for i = 2 %1:numel(true_false_vector)
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 categorical\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_randomPermutations_Cov.mat'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_randomPermutations_Cov_FDR.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
@@ -1908,12 +1921,13 @@ parameters.loop_list.iterators = {
                'comparison_type', {'loop_variables.comparison_types'}, 'comparison_type_iterator';
                'comparison', {'loop_variables.comparisons_', 'comparison_type', '(:).name'}, 'comparison_iterator' };
 
-comparison_types = {'categorical', 'continuous'};
+% comparison_types = {'categorical', 'continuous'};
 parameters.loop_variables.comparison_types = {'categorical', 'continuous'}; 
 
 % Parameters for AverageByNode code.
 parameters.isVector = true;
 parameters.corrsDim = 2;
+parameters.fromPLSR = true;
 
 % Dimension to average across AFTER data has gone through AverageByNode
 % code.
@@ -2117,18 +2131,22 @@ for typei = 1:numel(comparison_types)
     % If you want to fit a normal distribution before t-test (default = true)
     parameters.useNormalDistribution = true; 
 
+    % Use false discovery rate correction?
+    parameters.useFDR = true;
+
+
     if strcmp(comparison_type, 'categorical')
 
         parameters.shufflesDim = 2;
         
         % The statistical alpha value
-        parameters.alphaValue = 0.05/496; %0.05/150;
+        parameters.alphaValue = 0.05; %0.05/496; %0.05/150;
     
     else
         parameters.shufflesDim = 2;
 
         % The statistical alpha value
-        parameters.alphaValue = 0.05/496; %0.05/45;
+        parameters.alphaValue = 0.05; %0.05/496; %0.05/45;
     end
 
     % Inputs:
@@ -2146,12 +2164,14 @@ for typei = 1:numel(comparison_types)
     
     % Output
     parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 '] , comparison_type, '\', 'comparison', '\'};
-    parameters.loop_list.things_to_save.significance.filename= {'average_by_nodes_significance_randomPermutations_Cov.mat'};
+    parameters.loop_list.things_to_save.significance.filename= {'average_by_nodes_significance_randomPermutations_Cov_FDR.mat'};
     parameters.loop_list.things_to_save.significance.variable= {'significance'}; 
     parameters.loop_list.things_to_save.significance.level = 'comparison';
     
     RunAnalysis({@SignificanceCalculation}, parameters);
 end
+
+parameters.useFDR = false;
 
 
 %% Calculate correlation between number of components used and standard deviation of all betas
