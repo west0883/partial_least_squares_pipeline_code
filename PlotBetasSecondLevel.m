@@ -397,21 +397,6 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
         grid_locations_minor = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_major);
 
       
-        % Major grid labels every 4
-%         ticks_holder = 1:4:parameters.number_of_sources;
-%         ticks_holder = [ ticks_holder; zeros(3, size(ticks_holder, 2));];
-%         ticks_holder = reshape(ticks_holder, 1, []);
-%         index = grid_locations_minor(1:end - 1) + 0.5;
-%        % [~, index, ~] = intersect(ticks_holder, grid_locations_minor + 0.5);
-%         ticks_holder(index + 1) = []; 
-%         ticks_holder = [ticks_holder 0];
-%         
-%         ticks_holder = arrayfun(@num2str, ticks_holder, 'UniformOutput', false);
-%         
-%         % Make the zeros into emptys
-%         ticks_holder(strcmp(ticks_holder, '0')) = {''};
-%         major_tick_labels = ticks_holder;
-%      
    % Else if not using region demarcations, 
    else
 
@@ -477,7 +462,42 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     title_handle = title(strrep(title_string, '_', ' '), 'FontWeight', 'normal');
     set(title_handle,'position',get(title_handle,'position') - [0 1 0]);
     
-    % Put in grid lines.
+    % Put in grid lines manually.
+
+    % Minor
+    grid_locations_minor = 0.5:1:parameters.number_of_sources + 0.5;
+    grid_color_minor = [0.75 0.75 0.75];
+    grid_width_minor = 0.5;
+
+    for linei = grid_locations_minor
+
+        % Horizontal
+        p = plot([0.5, parameters.number_of_sources + 0.5],[linei linei], grid_color_minor);
+        p.LineWidth = grid_width_minor;
+
+        % Vertical.
+        p = plot([linei linei], [0.5, parameters.number_of_sources + 0.5], grid_color_minor);
+        p.LineWidth = grid_width_minor;
+    end
+
+    % Major 
+    grid_locations_major = NaN(1, size(parameters.region_nodes, 2));
+    for regioni = 1:size(parameters.region_nodes, 2)
+        grid_locations_major(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
+    end
+    grid_color_major = [0 0 0];
+    grid_width_major = 1;
+
+    for linei = grid_locations_major
+
+        % Horizontal
+        p = plot([0.5, parameters.number_of_sources + 0.5],[linei linei], grid_color_major);
+        p.LineWidth = grid_width_major;
+
+        % Vertical.
+        p = plot([linei linei], [0.5, parameters.number_of_sources + 0.5], grid_color_major);
+        p.LineWidth = grid_width_major;
+    end
 
     grid on;
     ax.Layer = 'top';
