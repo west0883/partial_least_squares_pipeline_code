@@ -352,33 +352,66 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
        % Put minor grid lines at the end of every region demarcation
        % (not major because I want numbering labels , and that can't be
        % done with minor grids).
-       grid_locations_minor = NaN(1, size(parameters.region_nodes, 2));
-
-       for regioni = 1:size(parameters.region_nodes, 2)
-           grid_locations_minor(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
-       end
-       
+%        grid_locations_minor = NaN(1, size(parameters.region_nodes, 2));
+% 
+%        for regioni = 1:size(parameters.region_nodes, 2)
+%            grid_locations_minor(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
+%        end
+%        
        % Label as regions. (no labels for minor ticks)
        %minor_tick_labels = {parameters.region_nodes(:).name};
 
        % Major ticks everywhere else.
-       grid_locations_major = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_minor);
+       %grid_locations_major = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_minor);
        %grid_locations_major = 0.5:1:parameters.number_of_sources + 0.5;
        
-       % Major grid ticks every 2 
-       ticks_holder = setdiff(1:2:parameters.number_of_sources, grid_locations_minor - 0.5);
-       ticks_holder = [zeros(size(ticks_holder)); ticks_holder];
-       ticks_holder = reshape(ticks_holder, 1, []);
-       [~, index, ~] = intersect(ticks_holder, grid_locations_minor + 0.5);
-       ticks_holder(index - 1) = []; 
+       % Major grid labels every 2
+%        ticks_holder = 1:2:parameters.number_of_sources;
+%        ticks_holder = [zeros(size(ticks_holder)); ticks_holder];
+%        ticks_holder = reshape(ticks_holder, 1, []);
+%        [~, index, ~] = intersect(ticks_holder, grid_locations_minor + 0.5);
+%        ticks_holder(index - 1) = []; 
+%  
+% 
+%        ticks_holder = arrayfun(@num2str, ticks_holder, 'UniformOutput', false);
+% 
+%        % Make the zeros into emptys
+%        ticks_holder(strcmp(ticks_holder, '0')) = {''};
+%        
+%        major_tick_labels = ticks_holder;
 
-       ticks_holder = arrayfun(@num2str, ticks_holder, 'UniformOutput', false);
+        % Label the major grids (region demarcations) with first node of
+        % each. 
+        grid_locations_major = NaN(1, size(parameters.region_nodes, 2));
 
-       % Make the zeros into emptys
-       ticks_holder(strcmp(ticks_holder, '0')) = {''};
-       
-       major_tick_labels = ticks_holder;
+       for regioni = 1:size(parameters.region_nodes, 2)
+           grid_locations_major(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
+       end
+       grid_locations_major = [0.5 grid_locations_major(1:end-1)];
+      
+        ticks_holder = [grid_locations_major + 0.5];
+        ticks_holder = arrayfun(@num2str, ticks_holder, 'UniformOutput', false);
+        major_tick_labels = ticks_holder;
 
+        % Minor ticks everywhere else.
+        grid_locations_minor = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_major);
+
+      
+        % Major grid labels every 4
+%         ticks_holder = 1:4:parameters.number_of_sources;
+%         ticks_holder = [ ticks_holder; zeros(3, size(ticks_holder, 2));];
+%         ticks_holder = reshape(ticks_holder, 1, []);
+%         index = grid_locations_minor(1:end - 1) + 0.5;
+%        % [~, index, ~] = intersect(ticks_holder, grid_locations_minor + 0.5);
+%         ticks_holder(index + 1) = []; 
+%         ticks_holder = [ticks_holder 0];
+%         
+%         ticks_holder = arrayfun(@num2str, ticks_holder, 'UniformOutput', false);
+%         
+%         % Make the zeros into emptys
+%         ticks_holder(strcmp(ticks_holder, '0')) = {''};
+%         major_tick_labels = ticks_holder;
+%      
    % Else if not using region demarcations, 
    else
 
@@ -432,10 +465,7 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
 
     % Plot 
     imagesc(holder); axis square;
-    try
     Colorbar_handle = colorbar; caxis(color_range); colormap(cmap);
-    catch
-    end
     
     % Get axis handle.
     ax = gca;
@@ -444,8 +474,8 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
    
     title_string = comparison; 
     ax.TitleFontSizeMultiplier = 1;
-    title_handle = title(strrep(title_string, '_', ' '));
-    set(title_handle,'position',get(title_handle,'position') - [0 2 0]);
+    title_handle = title(strrep(title_string, '_', ' '), 'FontWeight', 'normal');
+    set(title_handle,'position',get(title_handle,'position') - [0 1 0]);
     
     % Put in grid lines.
 
@@ -468,11 +498,13 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     % Major grid lines. (adjust style/width so you can see them)
     if isfield(parameters, 'useRegionDemarcations') && parameters.useRegionDemarcations
        
-        % In this case, we want the minor grid to be the region
-        % demarcations, and thus the minor should be darker than
-        % the major grid.
-        ax.MinorGridColor = [0, 0, 0]; 
-        ax.GridColor = [0.75 0.75 0.75];
+%         % In this case, we want the minor grid to be the region
+%         % demarcations, and thus the minor should be darker than
+%         % the major grid.
+%         ax.MinorGridColor = [0, 0, 0]; 
+%         ax.GridColor = [0.75 0.75 0.75];
+           ax.MinorGridColor = [0.75 0.75 0.75];
+        ax.GridColor = [0, 0, 0]; % Make darker than minor grid.
 
     else
         ax.MinorGridColor = [0.75 0.75 0.75];
@@ -498,7 +530,7 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
 
     % Make outline of box thicker. (Controls width of all grid
     % lines, too??)
-    ax.LineWidth = 0.5;
+    ax.LineWidth = 0.75;
 
     % Make figure background white.
     fig.Color = 'w';
@@ -547,7 +579,7 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     a3 = repmat(a3, 1,1,3);
     a = zeros(32,32); for i = 1:32; a(i,i) = 1; end % Make a matrix of alpha values
     im = image(a3, 'CDataMapping','direct'); % Make an image (use image NOT imagsc).
-    alpha(im, a); % Aplly alpha values. 
+    alpha(im, a); % Apply alpha values. 
 
     % Put figure into parameters output structure.
     parameters.fig = fig;
