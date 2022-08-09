@@ -346,68 +346,6 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
 
     cmap = parameters.cmap;
 
-   % If using region demarcations,
-   if isfield(parameters, 'useRegionDemarcations') && parameters.useRegionDemarcations
-        
-       % Put minor grid lines at the end of every region demarcation
-       % (not major because I want numbering labels , and that can't be
-       % done with minor grids).
-%        grid_locations_minor = NaN(1, size(parameters.region_nodes, 2));
-% 
-%        for regioni = 1:size(parameters.region_nodes, 2)
-%            grid_locations_minor(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
-%        end
-%        
-       % Label as regions. (no labels for minor ticks)
-       %minor_tick_labels = {parameters.region_nodes(:).name};
-
-       % Major ticks everywhere else.
-       %grid_locations_major = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_minor);
-       %grid_locations_major = 0.5:1:parameters.number_of_sources + 0.5;
-       
-       % Major grid labels every 2
-%        ticks_holder = 1:2:parameters.number_of_sources;
-%        ticks_holder = [zeros(size(ticks_holder)); ticks_holder];
-%        ticks_holder = reshape(ticks_holder, 1, []);
-%        [~, index, ~] = intersect(ticks_holder, grid_locations_minor + 0.5);
-%        ticks_holder(index - 1) = []; 
-%  
-% 
-%        ticks_holder = arrayfun(@num2str, ticks_holder, 'UniformOutput', false);
-% 
-%        % Make the zeros into emptys
-%        ticks_holder(strcmp(ticks_holder, '0')) = {''};
-%        
-%        major_tick_labels = ticks_holder;
-
-        % Label the major grids (region demarcations) with first node of
-        % each. 
-        grid_locations_major = NaN(1, size(parameters.region_nodes, 2));
-
-       for regioni = 1:size(parameters.region_nodes, 2)
-           grid_locations_major(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
-       end
-       grid_locations_major = [0.5 grid_locations_major(1:end-1)];
-      
-        ticks_holder = [grid_locations_major + 0.5];
-        ticks_holder = arrayfun(@num2str, ticks_holder, 'UniformOutput', false);
-        major_tick_labels = ticks_holder;
-
-        % Minor ticks everywhere else.
-        grid_locations_minor = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_major);
-
-      
-   % Else if not using region demarcations, 
-   else
-
-       % Make major grid lines at every 5 nodes. Minor & major grid lines.
-       grid_locations_major = 0.5:5:parameters.number_of_sources + 0.5;
-       grid_locations_minor = setdiff(0.5:1:parameters.number_of_sources + 0.5, grid_locations_major);
-
-       major_tick_labels = {'', '5', '10', '15', '20', '25', '30'};
-           
-   end
-
     % Duplicate betas across diagonal.
     indices_upper = find(triu(ones(parameters.number_of_sources), 1));
     betas_flipped = holder';
@@ -499,58 +437,14 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
         p.LineWidth = grid_width_major;
     end
 
-    grid on;
-    ax.Layer = 'top';
-    ax.XTick = grid_locations_major;
-    ax.YTick = grid_locations_major; 
-
-    % Minor grid lines. 
-    ax.XAxis.MinorTick = 'on';
-    ax.YAxis.MinorTick = 'on';
-    ax.XAxis.MinorTickValues = grid_locations_minor;
-    ax.YAxis.MinorTickValues = grid_locations_minor;
-    ax.MinorGridLineStyle = '-'; % Make solid lines.
-    
-    ax.MinorGridAlpha = 1;
-    ax.XMinorGrid = 'on';
-    ax.YMinorGrid = 'on';
-    
-    % Major grid lines. (adjust style/width so you can see them)
-    if isfield(parameters, 'useRegionDemarcations') && parameters.useRegionDemarcations
-       
-%         % In this case, we want the minor grid to be the region
-%         % demarcations, and thus the minor should be darker than
-%         % the major grid.
-%         ax.MinorGridColor = [0, 0, 0]; 
-%         ax.GridColor = [0.75 0.75 0.75];
-           ax.MinorGridColor = [0.75 0.75 0.75];
-        ax.GridColor = [0, 0, 0]; % Make darker than minor grid.
-
-    else
-        ax.MinorGridColor = [0.75 0.75 0.75];
-        ax.GridColor = [0, 0, 0]; % Make darker than minor grid.
-    end
-    
-    ax.GridAlpha = 1; % Make more opaque.
-    ax.Layer = 'top';
-  
     % Make ticks themselves invisible.
     set(gca, 'TickLength',[0 0]);
-
-    % Redo tick labels 
-    ax.XTickLabel = major_tick_labels;
-    ax.YTickLabel = major_tick_labels;
-    set(ax, 'yticklabel');
-
-    % Prevent rotation of x axis tick labels.
-    ax.XTickLabelRotation = 0;
 
     % Remove background color.
     ax.Color = 'none';
 
-    % Make outline of box thicker. (Controls width of all grid
-    % lines, too??)
-    ax.LineWidth = 0.75;
+    % Make outline of box thicker. (
+    ax.LineWidth = 0.5;
 
     % Make figure background white.
     fig.Color = 'w';
