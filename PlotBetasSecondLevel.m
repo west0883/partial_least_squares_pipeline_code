@@ -395,66 +395,56 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
 
     comparison = parameters.comparison;
    
+    % Title
     title_string = comparison; 
-    ax.TitleFontSizeMultiplier = 1;
+    ax.TitleFontSizeMultiplier = 0.5;
     title_handle = title(strrep(title_string, '_', ' '), 'FontWeight', 'normal');
     set(title_handle,'position',get(title_handle,'position') - [0 1 0]);
-    
-    % Put in grid lines manually.
 
-    % Minor
-    grid_locations_minor = 0.5:1:parameters.number_of_sources + 0.5;
-    grid_color_minor = [0.75 0.75 0.75];
-    grid_width_minor = 0.5;
-
-    for linei = grid_locations_minor
-
-        % Horizontal
-        p = plot([0.5, parameters.number_of_sources + 0.5],[linei linei], grid_color_minor);
-        p.LineWidth = grid_width_minor;
-
-        % Vertical.
-        p = plot([linei linei], [0.5, parameters.number_of_sources + 0.5], grid_color_minor);
-        p.LineWidth = grid_width_minor;
+    % Axis ticks. 
+    tick_locations = NaN(1, size(parameters.region_nodes, 2)- 1);
+    for regioni = 1:size(parameters.region_nodes, 2) - 1
+        tick_locations(regioni) = parameters.region_nodes(regioni).nodes(end) + 1;
     end
+    tick_locations = [ 1 tick_locations];
+    tick_labels = arrayfun(@num2str, tick_locations, 'UniformOutput', false);
 
-    % Major 
-    grid_locations_major = NaN(1, size(parameters.region_nodes, 2));
-    for regioni = 1:size(parameters.region_nodes, 2)
-        grid_locations_major(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
-    end
-    grid_color_major = [0 0 0];
-    grid_width_major = 1;
+%     tick_locations_x = [3.5 8.5 13.5 18.5 24.5 30.5];%5:4:parameters.number_of_sources;
+%     tick_labels_x = {'1-6', '7-10', '11-16', '17-20', '21-28', '29-32'};
+%     tick_locations_y = 1:2:parameters.number_of_sources;
 
-    for linei = grid_locations_major
 
-        % Horizontal
-        p = plot([0.5, parameters.number_of_sources + 0.5],[linei linei], grid_color_major);
-        p.LineWidth = grid_width_major;
+%     tick_locations = [ 1 3.5 7 9.5 11 13.5 17 18.5 21 24.5 29 30.5];
+%     tick_labels ={'1', 'M2   ', '7', 'M1   ', '11', 'S1   ', '17', 'LP   ', '21', 'PP   ', '29', 'RsP   '};
 
-        % Vertical.
-        p = plot([linei linei], [0.5, parameters.number_of_sources + 0.5], grid_color_major);
-        p.LineWidth = grid_width_major;
-    end
+    ax.XTick = tick_locations;
+    ax.YTick = tick_locations;
+   
+    ax.XTickLabel = tick_labels;
+    ax.YTickLabel = tick_labels;
+    ax.XTickLabelRotation = 0;
+    ax.YTickLabelRotation = 0;
 
-    % Make ticks themselves invisible.
-    set(gca, 'TickLength',[0 0]);
+    % Make ticks themselves short/invisible.
+    ax.TickLength = [0.0125 0];
+    ax.TickDir = 'out';
+    ax.Box = 'off';
 
     % Remove background color.
     ax.Color = 'none';
 
-    % Make outline of box thicker. (
-    ax.LineWidth = 0.5;
+    % Make outline of box thicker. 
+    ax.LineWidth = 0.75;
 
     % Make figure background white.
     fig.Color = 'w';
 
-    % Make colorbar outline thicker
-    Colorbar_handle.LineWidth = 0.4;
+    % Make colorbar outline thicker (match main box)
+    Colorbar_handle.LineWidth = ax.LineWidth;
 
     % Make tick labels larger. (Don't make bold because they
     % weren't bold in the spontaneous paper).
-    ax.FontSize = 10;
+    ax.FontSize = 18;
 
     % Add x and y axis labels. 
     ax.XLabel.String = 'node';
@@ -487,6 +477,9 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     positions = Colorbar_handle.Label.Position;
     Colorbar_handle.Label.Position = [positions(1) + 1, positions(2), positions(3)];
 
+    % Start adding additional elements
+    hold on;
+
     % Make diagonals black. 
     hold on; 
     a3 = ones(32,32); for i = 1:32; a3(i,i) = 0; end % Make a matrix showing where the diagnal is
@@ -494,6 +487,52 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     a = zeros(32,32); for i = 1:32; a(i,i) = 1; end % Make a matrix of alpha values
     im = image(a3, 'CDataMapping','direct'); % Make an image (use image NOT imagsc).
     alpha(im, a); % Apply alpha values. 
+    % Minor
+    grid_locations_minor = 1.5:1:parameters.number_of_sources - 0.5;
+    grid_color_minor = [0.75 0.75 0.75];
+    grid_width_minor = 0.25;
+
+    % Put in grid lines manually.
+
+    for linei = grid_locations_minor
+
+        % Horizontal
+        p = plot([0.5, parameters.number_of_sources + 0.5],[linei linei], 'Color', grid_color_minor);
+        p.LineWidth = grid_width_minor;
+
+        % Vertical.
+        p = plot([linei linei], [0.5, parameters.number_of_sources + 0.5], 'Color', grid_color_minor);
+        p.LineWidth = grid_width_minor;
+    end
+
+    % Major 
+    grid_locations_major = NaN(1, size(parameters.region_nodes, 2));
+    for regioni = 1:size(parameters.region_nodes, 2) - 1
+        grid_locations_major(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
+    end
+    grid_color_major = [0 0 0];
+    grid_width_major = 2.7;
+
+    for linei = grid_locations_major
+
+        % Horizontal
+        p = plot([0.5, parameters.number_of_sources + 0.5],[linei linei], 'Color', grid_color_major);
+        p.LineWidth = grid_width_major;
+
+        % Vertical.
+        p = plot([linei linei], [0.5, parameters.number_of_sources + 0.5], 'Color', grid_color_major);
+        p.LineWidth = grid_width_major;
+    end
+
+    % Outside box lines (to my exact specifications).
+    range = [0.5, parameters.number_of_sources + 0.5];
+    top_span = [0.5 0.5];
+    bottom_span = [parameters.number_of_sources + 0.5 parameters.number_of_sources + 0.5];
+    p = plot(range, top_span, range, bottom_span, top_span, range, bottom_span, range);
+    for i = 1:size(p, 1)
+        p(i).Color = grid_color_major;
+        p(i).LineWidth = ax.LineWidth;
+    end
 
     % Put figure into parameters output structure.
     parameters.fig = fig;
