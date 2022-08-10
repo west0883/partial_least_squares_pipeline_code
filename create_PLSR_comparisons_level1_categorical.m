@@ -152,8 +152,8 @@ counter = counter + 1;
 comparisons(counter).name = 'motorized_startvsaccel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
-comparisons(counter).plotMultiplier = 1;
-comparisons(counter).figure_type = 'acceldecel';
+comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'start') | strcmp(period_types, 'accel');
@@ -168,8 +168,8 @@ counter = counter + 1;
 comparisons(counter).name = 'motorized_stopvsdecel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
-comparisons(counter).plotMultiplier = 1;
-comparisons(counter).figure_type = 'acceldecel';
+comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
 indices_type = strcmp(period_types, 'stop') | strcmp(period_types, 'decel');
