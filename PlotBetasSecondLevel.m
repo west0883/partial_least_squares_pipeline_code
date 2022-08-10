@@ -263,6 +263,13 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             % Color range type
             color_range_type = 'categorical';
 
+            if ~isempty(color_range_special) && strcmp(color_range_type, color_range_special{1})
+                color_range_special = color_range_special{2};
+            else
+                color_range_special = [];
+
+            end
+
             % Run through plotting function.
             [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_string, color_range_type, color_range_special);
            
@@ -331,8 +338,14 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 % 
                 color_range_type = variable;
 
+                if ~isempty(color_range_special) && strcmp(color_range_type, color_range_special{1})
+                    color_range_special_new = color_range_special{2};
+                else
+                    color_range_special_new = [];
+                end
+
                 % Run plotting function.
-                [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_string, color_range_type, color_range_special);
+                [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_string, color_range_type, color_range_special_new);
  
                 % Rename figure handle, put into parameters output structure.
                 parameters.([variable '_fig']) = parameters.fig;
@@ -382,8 +395,9 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
 
     % If the color range for this comparison was special,
     if ~isempty(color_range_special)
+        
         % If it was, change color range to that.
-        color_range = color_range_special{2};
+        color_range = color_range_special;
     end
 
     % Plot 
