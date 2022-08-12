@@ -402,7 +402,6 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
 
     % Plot 
     imagesc(holder); axis square;
-    Colorbar_handle = colorbar; caxis(color_range); colormap(cmap);
     
     % Get axis handle.
     ax = gca;
@@ -410,10 +409,10 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     comparison = parameters.comparison;
    
     % Title
-    title_string = comparison; 
-    ax.TitleFontSizeMultiplier = 0.5;
-    title_handle = title(strrep(title_string, '_', ' '), 'FontWeight', 'normal');
-    set(title_handle,'position',get(title_handle,'position') - [0 1 0]);
+%     title_string = comparison; 
+%     ax.TitleFontSizeMultiplier = 0.5;
+%     title_handle = title(strrep(title_string, '_', ' '), 'FontWeight', 'normal');
+%     set(title_handle,'position',get(title_handle,'position') - [0 1 0]);
 
     % Axis ticks. 
     tick_locations = NaN(1, size(parameters.region_nodes, 2)- 1);
@@ -422,14 +421,6 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     end
     tick_locations = [ 1 tick_locations];
     tick_labels = arrayfun(@num2str, tick_locations, 'UniformOutput', false);
-
-%     tick_locations_x = [3.5 8.5 13.5 18.5 24.5 30.5];%5:4:parameters.number_of_sources;
-%     tick_labels_x = {'1-6', '7-10', '11-16', '17-20', '21-28', '29-32'};
-%     tick_locations_y = 1:2:parameters.number_of_sources;
-
-
-%     tick_locations = [ 1 3.5 7 9.5 11 13.5 17 18.5 21 24.5 29 30.5];
-%     tick_labels ={'1', 'M2   ', '7', 'M1   ', '11', 'S1   ', '17', 'LP   ', '21', 'PP   ', '29', 'RsP   '};
 
     ax.XTick = tick_locations;
     ax.YTick = tick_locations;
@@ -444,6 +435,20 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     ax.TickDir = 'out';
     ax.Box = 'off';
 
+    % Put y-axis ticks on right side (node numbers on right)
+    ax.YAxisLocation = 'right';
+
+    % Using text function, add region labels.
+    region_labels = {'M2', 'M1', 'S1', 'LP', 'PP', 'Rs'};
+    region_label_locations_range = [3.5 9.5 13.5 18.5 24.5 30.5];
+    region_label_locations_outside = repmat(-4, size(region_label_locations_range));
+    region_label_fontsize = 18;
+
+    % y axis, left
+    text(region_label_locations_outside, region_label_locations_range, region_labels, 'FontSize', region_label_fontsize, 'HorizontalAlignment', 'left');
+    % x axis, top
+    text(region_label_locations_range, region_label_locations_outside + 2.5, region_labels, 'FontSize', region_label_fontsize, 'HorizontalAlignment','center');
+
     % Remove background color.
     ax.Color = 'none';
 
@@ -453,8 +458,7 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     % Make figure background white.
     fig.Color = 'w';
 
-    % Make colorbar outline thicker (match main box)
-    Colorbar_handle.LineWidth = ax.LineWidth;
+    
 
     % Make tick labels larger. (Don't make bold because they
     % weren't bold in the spontaneous paper).
@@ -466,12 +470,27 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     ax.XLabel.FontSize = 24;
     ax.YLabel.FontSize = 24;
 
+    % Assign axis label rotation.
+%     ax.XLabelRotation = 0;
+%     ax.YLabelRotation = 180;
+
     % Scoot y label slightly to left.
     positions = ax.YLabel.Position;
     ax.YLabel.Position = [positions(1) - 0.3, positions(2), positions(3)];
 
+    % *** Colorbar stuff***
+
+    % Make colorbar
+    Colorbar_handle = colorbar; caxis(color_range); colormap(cmap);
+
+    % Scoot colorbar to right.
+    Colorbar_handle.Position = Colorbar_handle.Position + [0.11 0 0 0];
+
     % For colorbar, keep only labels for 0 and extremes.
     Colorbar_handle.Ticks = [color_range(1), 0, color_range(2)];
+
+    % Make colorbar outline thicker (match main box)
+    Colorbar_handle.LineWidth = ax.LineWidth;
 
     % Make colorbar ticks certain length
     Colorbar_handle.TickLength = .015;
@@ -494,8 +513,7 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     % Start adding additional elements
     hold on;
 
-    % Make diagonals black. 
-    hold on; 
+    % Make diagonals black.
     a3 = ones(32,32); for i = 1:32; a3(i,i) = 0; end % Make a matrix showing where the diagnal is
     a3 = repmat(a3, 1,1,3);
     a = zeros(32,32); for i = 1:32; a(i,i) = 1; end % Make a matrix of alpha values
