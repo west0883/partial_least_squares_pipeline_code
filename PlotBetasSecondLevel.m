@@ -421,14 +421,13 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     % Make figure background white.
     fig.Color = 'w';
 
-
     comparison = parameters.comparison;
    
     % Title
-%     title_string = comparison; 
-%     ax.TitleFontSizeMultiplier = 0.5;
-%     title_handle = title(strrep(title_string, '_', ' '), 'FontWeight', 'normal');
-%     set(title_handle,'position',get(title_handle,'position') - [0 1 0]);
+    title_string = comparison; 
+    ax.TitleFontSizeMultiplier = 0.5;
+    title_handle = title(strrep(title_string, '_', ' '), 'FontWeight', 'normal');
+    set(title_handle,'position',get(title_handle,'position') - [0 3 0]);
 
     % Axis ticks. 
     tick_locations = NaN(1, size(parameters.region_nodes, 2)- 1);
@@ -440,12 +439,19 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
 
     ax.XTick = tick_locations;
     ax.YTick = tick_locations;
-   
-    ax.XTickLabel = tick_labels;
-    ax.YTickLabel = tick_labels;
-    ax.XTickLabelRotation = 0;
-    ax.YTickLabelRotation = 0;
+    ax.XTickLabel = {};
+    ax.YTickLabel = {};
 
+    % Make node tick labels using text function (instead of XTickLabel
+    % property) so you can control every part of the position of the labels.
+    tick_locations_outside = repmat(parameters.number_of_sources + 1.5, size(tick_locations));
+
+    % Vertical axis, right
+    text(tick_locations_outside + 0, tick_locations, tick_labels, 'FontSize', 18, 'HorizontalAlignment','left');
+
+    % Horizontal axis, bottom
+    text(tick_locations, tick_locations_outside + 0.75, tick_labels,'FontSize', 18, 'HorizontalAlignment','center');
+   
     % Make ticks themselves short/invisible.
     ax.TickLength = [0.0125 0];
     ax.TickDir = 'out';
@@ -456,14 +462,14 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
 
     % Using text function, add region labels.
     region_labels = {'M2', 'M1', 'S1', 'LP', 'PP', 'Rs'};
-    region_label_locations_range = [3.5 8.5 13.5 18.5 24.5 30.5];
+    region_label_locations_range = [3.5 8.5 13.5 18.5 24.5 30.5] ;
     region_label_locations_outside = repmat(-1, size(region_label_locations_range));
     region_label_fontsize = 18;
 
     % y axis, left
-    text(region_label_locations_outside + 1, region_label_locations_range , region_labels, 'FontSize', region_label_fontsize, 'HorizontalAlignment', 'right');
+    text(region_label_locations_outside + 0.75, region_label_locations_range - 0.25 , region_labels, 'FontSize', region_label_fontsize, 'HorizontalAlignment', 'right');
     % x axis, top
-    text(region_label_locations_range, region_label_locations_outside, region_labels, 'FontSize', region_label_fontsize, 'HorizontalAlignment','center');
+    text(region_label_locations_range, region_label_locations_outside - 0.25, region_labels, 'FontSize', region_label_fontsize, 'HorizontalAlignment','center');
 
     % Make tick labels larger. (Don't make bold because they
     % weren't bold in the spontaneous paper).
