@@ -378,6 +378,11 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     % Make a figure
     fig = figure;
 
+    % Make figure itself larger (so colorbar fits, don't change vertical
+    % height or else axes get parg
+    fig.Position = [251.4,495.4, 800, 405];
+
+
     % If adjusted, use a standard color range for each plot.
     if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'useColorRange') && parameters.useColorRange
         color_range = parameters.color_range.(parameters.figure_type).(color_range_type);
@@ -405,6 +410,17 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     
     % Get axis handle.
     ax = gca;
+
+    % Remove background color.
+    ax.Color = 'none';
+
+   
+    % Make outline of box thicker. 
+    ax.LineWidth = 0.75;
+
+    % Make figure background white.
+    fig.Color = 'w';
+
 
     comparison = parameters.comparison;
    
@@ -440,43 +456,18 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
 
     % Using text function, add region labels.
     region_labels = {'M2', 'M1', 'S1', 'LP', 'PP', 'Rs'};
-    region_label_locations_range = [3.5 9.5 13.5 18.5 24.5 30.5];
-    region_label_locations_outside = repmat(-4, size(region_label_locations_range));
+    region_label_locations_range = [3.5 8.5 13.5 18.5 24.5 30.5];
+    region_label_locations_outside = repmat(-1, size(region_label_locations_range));
     region_label_fontsize = 18;
 
     % y axis, left
-    text(region_label_locations_outside, region_label_locations_range, region_labels, 'FontSize', region_label_fontsize, 'HorizontalAlignment', 'left');
+    text(region_label_locations_outside + 1, region_label_locations_range , region_labels, 'FontSize', region_label_fontsize, 'HorizontalAlignment', 'right');
     % x axis, top
-    text(region_label_locations_range, region_label_locations_outside + 2.5, region_labels, 'FontSize', region_label_fontsize, 'HorizontalAlignment','center');
-
-    % Remove background color.
-    ax.Color = 'none';
-
-    % Make outline of box thicker. 
-    ax.LineWidth = 0.75;
-
-    % Make figure background white.
-    fig.Color = 'w';
-
-    
+    text(region_label_locations_range, region_label_locations_outside, region_labels, 'FontSize', region_label_fontsize, 'HorizontalAlignment','center');
 
     % Make tick labels larger. (Don't make bold because they
     % weren't bold in the spontaneous paper).
     ax.FontSize = 18;
-
-    % Add x and y axis labels. 
-    ax.XLabel.String = 'node';
-    ax.YLabel.String = 'node';
-    ax.XLabel.FontSize = 24;
-    ax.YLabel.FontSize = 24;
-
-    % Assign axis label rotation.
-%     ax.XLabelRotation = 0;
-%     ax.YLabelRotation = 180;
-
-    % Scoot y label slightly to left.
-    positions = ax.YLabel.Position;
-    ax.YLabel.Position = [positions(1) - 0.3, positions(2), positions(3)];
 
     % *** Colorbar stuff***
 
