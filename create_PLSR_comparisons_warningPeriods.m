@@ -87,9 +87,10 @@ for typei = 1:numel(types)
     comparisons(counter + typei).variablesToUse = {'duration_vector', 'pupil_diameter_vector'};
     comparisons(counter + typei).type = types{typei};
 
-    % Don't use mouse 1100 in prewalk.
+    % Don't use mouse 1100 in prewalk. Add speed vector
     if strcmp(types{typei}, 'prewalk')
         comparisons(counter + typei).mice_not_to_use = {'1100'};
+        comparisons(counter + typei).variablesToUse = {'duration_vector', 'pupil_diameter_vector'};
     else
         comparisons(counter + typei).mice_not_to_use = {};
     end
@@ -103,7 +104,6 @@ for typei = 1:numel(types)
 end
 
 counter = counter + typei; 
-
 
 % continued rest 
 types = {'motorized_rest', 'spontaneous_rest'};

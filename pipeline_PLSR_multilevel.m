@@ -64,7 +64,7 @@ end
 % Load comparisons for first level categorical, if it exists yet.
 if isfile([parameters.dir_exper 'PLSR\comparisons_level1_categorical.mat'])
     load([parameters.dir_exper 'PLSR\comparisons_level1_categorical.mat']);
-    parameters.comparisons_categorical = comparisons;
+    parameters.comparisons_categorical = comparisons(36:40);
     parameters.loop_variables.comparisons_categorical = parameters.comparisons_categorical;
     clear comparisons;
 end
@@ -117,6 +117,7 @@ parameters.loop_variables.categories.type = parameters.categories.type;
 parameters.loop_variables.comparison_types = {'categorical', 'continuous'};
 
 parameters.average_and_std_together = false;
+
 %% Create periods_nametable_forPLSR.mat
 % If hasn't been created already. 
 if ~isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'])
@@ -205,7 +206,7 @@ parameters.concatenate_vertically = false;
 % Input
 % Correlations (for instances count)
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations Ipsa Contra\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.data.filename= {'values_relevent_periods.mat'};
+parameters.loop_list.things_to_load.data.filename= {'values.mat'};
 parameters.loop_list.things_to_load.data.variable= {'values'}; 
 parameters.loop_list.things_to_load.data.level = 'mouse';
 
@@ -690,43 +691,43 @@ parameters.findBestNComponents = false;
 % parameters.loop_list.things_to_save.histogram.level = 'mouse';
 % 
 % RunAnalysis({@ConcatenateData, @EvaluateOnData}, parameters);
-% 
+% % 
 %% Level 1 categorical -- check components
 % Always clear loop list first. 
-% if isfield(parameters, 'loop_list')
-% parameters = rmfield(parameters,'loop_list');
-% end
-% 
-% % Iterators
-% parameters.loop_list.iterators = {
-%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-%                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
-% 
-% parameters.this_comparison_set = parameters.comparisons_categorical;
-% parameters.max_response_vars = 2;
-% 
-% parameters.plot_weights = false;
-% parameters.plot_MSEPs = true;
-% parameters.plot_BICs = true;
-% parameters.plot_percentVars = false;
-% 
-% % Input
-% parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
-% parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
-% parameters.loop_list.things_to_load.results.level = 'comparison';
-% 
-% parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
-% parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
-% parameters.loop_list.things_to_load.dataset.level = 'comparison';
-% 
-% % Output
-% % parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
-% % parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
-% % parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
-% % parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
-% 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
+
+parameters.this_comparison_set = parameters.comparisons_categorical;
+parameters.max_response_vars = 2;
+
+parameters.plot_weights = true;
+parameters.plot_MSEPs = false;
+parameters.plot_BICs = false;
+parameters.plot_percentVars = false;
+
+% Input
+parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
+parameters.loop_list.things_to_load.results.level = 'comparison';
+
+parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset.level = 'comparison';
+
+% Output
+parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
+parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
+parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
+
 % parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
 % parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
 % parameters.loop_list.things_to_save.fig_MSEPs_explanatory.variable= {'fig_MSEPs_explanatory'}; 
@@ -746,20 +747,20 @@ parameters.findBestNComponents = false;
 % parameters.loop_list.things_to_save.fig_BICs_response.filename= {'PLSR_BICs_response.fig'};
 % parameters.loop_list.things_to_save.fig_BICs_response.variable= {'fig_BICs_response'}; 
 % parameters.loop_list.things_to_save.fig_BICs_response.level = 'mouse';
+
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
+% parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'mouse';
 % 
-% % parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
-% % parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.filename= {'PLSR_PCTVARs_explanatory.fig'};
-% % parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.variable= {'fig_PCTVARs_explanatory'}; 
-% % parameters.loop_list.things_to_save.fig_PCTVARs_explanatory.level = 'mouse';
-% % 
-% % parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
-% % parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
-% % parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
-% % parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
-% 
-% RunAnalysis({@CheckComponents}, parameters);
-% 
-% close all;
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\MSEPs to 20\'],  'mouse', '\'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.filename= {'PLSR_PCTVARs_response.fig'};
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
+% parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
+
+RunAnalysis({@CheckComponents}, parameters);
+
+close all;
 
 %% Level 1 categorical -- plot betas
 if isfield(parameters, 'loop_list')
@@ -1115,7 +1116,7 @@ clear i j true_false_vector;
 %% Level 1 continuous -- run random permutations.
 % With best number of components.
 % Always clear loop list first. 
-do = true; 
+do = false; 
 if do 
     if isfield(parameters, 'loop_list')
     parameters = rmfield(parameters,'loop_list');
@@ -1159,6 +1160,8 @@ end
 %% Level 1 continuous -- run bootstrapping.
 % With best number of components.
 % Always clear loop list first.
+do = false;
+if do
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
 end
@@ -1196,10 +1199,13 @@ parameters.loop_list.things_to_save.Covs_bootstrap.level = 'comparison';
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);
 
 parameters.useBootstrapping = false;
-
+end
 %% Level 1 categorical -- run bootstrapping.
 % With best number of components.
 % Always clear loop list first.
+do  = false;
+if do 
+
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
 end
@@ -1237,7 +1243,7 @@ parameters.loop_list.things_to_save.Covs_bootstrap.level = 'comparison';
 RunAnalysis({@PLSR_forRunAnalysis}, parameters);
 
 parameters.useBootstrapping = false;
-
+end
 %% Level 1 categorical -- run random permutations.
 do = true;
 if do 
@@ -1359,6 +1365,8 @@ parameters.loop_list.things_to_save.significance.level = 'comparison';
 RunAnalysis({@SignificanceCalculation}, parameters);
 
 %% Level 2 continuous -- prep shuffled datasets for PLSR on shuffles.
+do = false;
+if do
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -1391,8 +1399,10 @@ parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrepSecondLevel}, parameters);
-
+end 
 %% Level 2 continuous -- check significance
+do = false;
+if do 
 % % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -1432,9 +1442,13 @@ parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}
 parameters.loop_list.things_to_save.significance.level = 'comparison';
 
 RunAnalysis({@SignificanceCalculation}, parameters);
+end 
 
 %% Level 2 categorical -- plot betas with significance, bootstrap
 % Plot all the beta intercepts in a single plot 
+do = true;
+
+if do
 parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
@@ -1503,11 +1517,15 @@ for i = 2 %1:numel(true_false_vector)
         RunAnalysis({@PlotBetasSecondLevel}, parameters);
     end
 end 
-%close all;
+close all;
 clear i j true_false_vector;
+end
 
 %% Level 2 continuous -- plot betas with significance, bootstrap
-% Plot all the beta intercepts in a single plot 
+% Plot all the beta intercepts in a single plot
+do = false;
+if do
+ 
 parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
@@ -1593,8 +1611,10 @@ for i = 2 %1:numel(true_false_vector)
 end 
 %close all;
 clear i j true_false_vector;
-
+end 
 %% Level 2 continuous -- prep permutation shuffled datasets
+do = false;
+if do 
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -1627,6 +1647,7 @@ parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrepSecondLevel}, parameters);
+end 
 
 %% Level 2 categorical -- prep permutation shuffled datasets
 %Always clear loop list first. 
@@ -1665,6 +1686,8 @@ parameters.loop_list.things_to_save.dataset.level = 'comparison';
 RunAnalysis({@DatasetPrepSecondLevel}, parameters);
 
 %% Level 2 continuous -- check significance with permutations
+do = false;
+if do 
 % % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -1710,6 +1733,7 @@ RunAnalysis({@SignificanceCalculation}, parameters);
 
 parameters.useFDR = false;
 
+end 
 %% Level 2 categorical -- check significance with permutations
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
@@ -1927,7 +1951,6 @@ clear i j true_false_vector;
 if isfield(parameters, 'loop_list')
     parameters = rmfield(parameters,'loop_list');
 end
-        
 % Iterators
 parameters.loop_list.iterators = {
                'comparison_type', {'loop_variables.comparison_types'}, 'comparison_type_iterator';
@@ -1935,6 +1958,8 @@ parameters.loop_list.iterators = {
 
 comparison_types = {'categorical', 'continuous'};
 parameters.loop_variables.comparison_types = {'categorical', 'continuous'}; 
+
+parameters.fromPLSR = true; 
 
 % Parameters for AverageByNode code.
 parameters.isVector = true;
@@ -1968,6 +1993,8 @@ RunAnalysis({@AverageByNode, @AverageData}, parameters);
 
 
 %% Calculate mean change of nodes with all other nodes, null distributions -- bootstrap
+do = false;
+if do 
 if isfield(parameters, 'loop_list')
     parameters = rmfield(parameters,'loop_list');
 end
@@ -2009,6 +2036,7 @@ parameters.loop_list.things_to_save.average.level = 'comparison';
 parameters.loop_list.things_to_rename = {{'node_averages', 'data'}}; 
 
 RunAnalysis({@AverageByNode, @AverageData}, parameters);
+end
 
 %% Calculate mean change of nodes with all other nodes, null distributions -- permutations
 if isfield(parameters, 'loop_list')
@@ -2054,6 +2082,8 @@ parameters.loop_list.things_to_rename = {{'node_averages', 'data'}};
 RunAnalysis({@AverageByNode, @AverageData}, parameters);
 
 %% Calculate significance of mean change by node -- bootstrapping
+do = false; 
+if do
 comparison_types = {'categorical', 'continuous'};
 
 for typei = 1:numel(comparison_types)
@@ -2113,7 +2143,7 @@ for typei = 1:numel(comparison_types)
     
     RunAnalysis({@SignificanceCalculation}, parameters);
 end
-
+end
 %% Calculate significance of mean change of nodes with all other -- permutations
 
 comparison_types = {'categorical', 'continuous'};

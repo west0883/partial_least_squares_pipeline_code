@@ -11,7 +11,8 @@ function [parameters] = PlotWeights(parameters)
       if isfield(parameters, 'analysis_level') && parameters.analysis_level == 2
           weights = parameters.results.maximal_components.YL;
       else
-        weights = parameters.results.maximal_components.stats.W; 
+        % weights = parameters.results.maximal_components.stats.W; 
+         weights = parameters.results.XL;
       end
 
     [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(weights, 2),4/5);

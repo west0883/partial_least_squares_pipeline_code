@@ -118,7 +118,7 @@ counter = counter + 1;
 
 % Spontaneous
 comparisons(counter).name = 'spontaneous_finished_stop_continuousVars';
-comparisons(counter).variablesToUse = {'duration_vector', 'pupil_diameter_vector'};
+comparisons(counter).variablesToUse = {'duration_vector', 'pupil_diameter_vector', 'speed_vector', 'accel_vector'};
 comparisons(counter).type = 'finished_stop';
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).figure_type = 'startstop';

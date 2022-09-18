@@ -135,7 +135,7 @@ counter = counter + 1;
 comparisons(counter).name = 'motorized_accelvsdecel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
-comparisons(counter).plotMultiplier = 1;
+comparisons(counter).plotMultiplier = -1;
 comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
@@ -186,7 +186,7 @@ counter = counter + 1;
 comparisons(counter).name = 'motorized_restvsfinishedstop_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
-comparisons(counter).plotMultiplier = -1;
+comparisons(counter).plotMultiplier = 1;
 comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
@@ -201,7 +201,7 @@ counter = counter + 1;
 comparisons(counter).name = 'spontaneous_restvsfinishedstop_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
-comparisons(counter).plotMultiplier = -1;
+comparisons(counter).plotMultiplier = 1;
 comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
@@ -473,7 +473,7 @@ counter = counter + 1;
 comparisons(counter).name = 'motorized_walkvsfaccel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
-comparisons(counter).plotMultiplier = -1;
+comparisons(counter).plotMultiplier = 1;
 comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
@@ -488,7 +488,7 @@ counter = counter + 1;
 comparisons(counter).name = 'motorized_walkvsfdecel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
-comparisons(counter).plotMultiplier = -1;
+comparisons(counter).plotMultiplier = 1;
 comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
@@ -587,6 +587,77 @@ indices_type = strcmp(period_types, 'stop') | strcmp(period_types, 'finished_sto
 % Get intersection of motorized & type. 
 comparisons(counter).indices = find(indices_spontaneous & indices_type);
 
+counter = counter + 1;
+
+%% Finished start vs rest
+comparisons(counter).name = 'motorized_fstartvsrest_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
+
+% Get relevent indices for this type.
+indices_type = strcmp(period_types, 'rest') | strcmp(period_types, 'finished_start');
+
+% Get intersection of motorized & type. 
+comparisons(counter).indices = find(indices_motorized & indices_type);
+
+counter = counter + 1;
+
+%% ** motorized start/stops/continued against spontaneous rest stuff** 
+
+indices_type = strcmp(period_types, 'rest');
+indices_spontaneous_rest = find(indices_spontaneous & indices_type);
+
+%% motorized walk vs spontaneous rest
+% Get relevent indices for this type.
+comparisons(counter).name = 'motorized_walkvsspontaneous_rest_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
+
+comparisons(counter).indices  = [find(strcmp(period_types, 'walk') & indices_motorized); indices_spontaneous_rest]; 
+counter = counter + 1;
+
+%% motorized start vs spontaneous rest
+comparisons(counter).name = 'motorized_startvsspontaneous_rest_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
+
+comparisons(counter).indices  = [find(strcmp(period_types, 'start') & indices_motorized); indices_spontaneous_rest]; 
+counter = counter + 1;
+
+%% motorized finished start vs spontaneous rest
+comparisons(counter).name = 'motorized_fstartvsspontaneous_rest_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
+
+comparisons(counter).indices  = [find(strcmp(period_types, 'finished_start') & indices_motorized); indices_spontaneous_rest]; 
+counter = counter + 1;
+
+%% motorized stop vs spontaneous rest
+comparisons(counter).name = 'motorized_stopvsspontaneous_rest_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
+
+comparisons(counter).indices  = [find(strcmp(period_types, 'stop') & indices_motorized); indices_spontaneous_rest]; 
+counter = counter + 1;
+
+%% motorized finished stop vs spontaneous rest
+comparisons(counter).name = 'motorized_fstopvsspontaneous_rest_categorical';
+comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
+comparisons(counter).mice_not_to_use = {};
+comparisons(counter).plotMultiplier = -1;
+comparisons(counter).figure_type = 'startstop';
+
+comparisons(counter).indices  = [find(strcmp(period_types, 'finished_stop') & indices_motorized); indices_spontaneous_rest]; 
 counter = counter + 1;
 
 %% Save 

@@ -55,7 +55,7 @@ end
 % Load comparisons for  continuous, if it exists yet.
 if isfile([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriods_continuous.mat'])
     load([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriods_continuous.mat']);
-    parameters.comparisons_continuous = comparisons;
+    parameters.comparisons_continuous = comparisons(7);
     parameters.loop_variables.comparisons_continuous = parameters.comparisons_continuous; 
     clear comparisons;
 end
@@ -63,7 +63,7 @@ end
 % Load comparisons for categorical, if it exists yet.
 if isfile([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriods_categorical.mat'])
     load([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriods_categorical.mat']);
-    parameters.comparisons_categorical = comparisons;
+    parameters.comparisons_categorical = comparisons([7, 8]);
     parameters.loop_variables.comparisons_categorical = parameters.comparisons_categorical;
     clear comparisons;
 end
@@ -638,48 +638,48 @@ RunAnalysis({@PLSR_forRunAnalysis}, parameters);
 parameters.findBestNComponents = false;
 
 %% Level 1 categorical -- plot histograms of number of components used .
-% 
-% % Concatenate the nubmer of components used per mouse.
-% if isfield(parameters, 'loop_list')
-% parameters = rmfield(parameters,'loop_list');
-% end
-% 
-% % Iterators
-% parameters.loop_list.iterators = {
-%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-%                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator'     
-%                };
-% 
-% parameters.concatDim = 1;
-% parameters.concatenation_level = 'comparison';
-% parameters.this_comparison_set = parameters.comparisons_categorical;
-% parameters.evaluation_instructions = {{}; 
-%                                       { 'if parameters.values{end} == size(parameters.this_comparison_set,2);'...
-%                                             'parameters.histogram = figure;' ...
-%                                             'histogram(parameters.concatenated_data);' ...
-%                                             'title(["mouse " parameters.values{1}]);' ...
-%                                             'data_evaluated = []; else; parameters.histogram = []; data_evaluated = []; end;'}};
-% % Input 
-% % Number of components used
-% parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_load.data.filename= {'PLSR_results.mat'};
-% parameters.loop_list.things_to_load.data.variable= {'PLSR_results.ncomponents_used'}; 
-% parameters.loop_list.things_to_load.data.level = 'comparison';
-% 
-% % Output 
-% % Concatenated data
-% parameters.loop_list.things_to_save.concatenated_data.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\ncomponents\'],'mouse', '\'};
-% parameters.loop_list.things_to_save.concatenated_data.filename= {'ncomponents_used_allcomparisons.mat'};
-% parameters.loop_list.things_to_save.concatenated_data.variable= {'ncomponents_used_allcomparisons'}; 
-% parameters.loop_list.things_to_save.concatenated_data.level = 'mouse';
-% % Histogram
-% parameters.loop_list.things_to_save.histogram.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\ncomponents\'], 'mouse', '\'};
-% parameters.loop_list.things_to_save.histogram.filename= {'ncomponents_used_allcomparisons.fig'};
-% parameters.loop_list.things_to_save.histogram.variable= {'ncomponents_used_allcomparisons_fig'}; 
-% parameters.loop_list.things_to_save.histogram.level = 'mouse';
-% 
-% RunAnalysis({@ConcatenateData, @EvaluateOnData}, parameters);
-% 
+
+% Concatenate the nubmer of components used per mouse.
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator'     
+               };
+
+parameters.concatDim = 1;
+parameters.concatenation_level = 'comparison';
+parameters.this_comparison_set = parameters.comparisons_categorical;
+parameters.evaluation_instructions = {{}; 
+                                      { 'if parameters.values{end} == size(parameters.this_comparison_set,2);'...
+                                            'parameters.histogram = figure;' ...
+                                            'histogram(parameters.concatenated_data);' ...
+                                            'title(["mouse " parameters.values{1}]);' ...
+                                            'data_evaluated = []; else; parameters.histogram = []; data_evaluated = []; end;'}};
+% Input 
+% Number of components used
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'PLSR_results.mat'};
+parameters.loop_list.things_to_load.data.variable= {'PLSR_results.ncomponents_used'}; 
+parameters.loop_list.things_to_load.data.level = 'comparison';
+
+% Output 
+% Concatenated data
+parameters.loop_list.things_to_save.concatenated_data.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\ncomponents\'],'mouse', '\'};
+parameters.loop_list.things_to_save.concatenated_data.filename= {'ncomponents_used_allcomparisons.mat'};
+parameters.loop_list.things_to_save.concatenated_data.variable= {'ncomponents_used_allcomparisons'}; 
+parameters.loop_list.things_to_save.concatenated_data.level = 'mouse';
+% Histogram
+parameters.loop_list.things_to_save.histogram.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\ncomponents\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.histogram.filename= {'ncomponents_used_allcomparisons.fig'};
+parameters.loop_list.things_to_save.histogram.variable= {'ncomponents_used_allcomparisons_fig'}; 
+parameters.loop_list.things_to_save.histogram.level = 'mouse';
+
+RunAnalysis({@ConcatenateData, @EvaluateOnData}, parameters);
+
 %% Level 1 categorical -- check components
 % Always clear loop list first. 
 % if isfield(parameters, 'loop_list')

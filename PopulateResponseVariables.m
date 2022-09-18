@@ -109,12 +109,12 @@ function [parameters] = PopulateResponseVariables(parameters)
         % Put variables into a cell format, 
        
         % get all variable names you've used.
-        variable_names = fieldnames(response_variables_structure);
+         fieldnames(response_variables_structure)
 
-        cell_holder = cell(1,numel(variable_names)); 
-        for variablei = 1:numel(variable_names) 
+        cell_holder = cell(1,numel(fieldnames(response_variables_structure))); 
+        for variablei = 1:numel(fieldnames(response_variables_structure)) 
     
-            cell_holder{variablei} = response_variables_structure.(variable_names{variablei});
+            cell_holder{variablei} = response_variables_structure.(parameters.response_variable_names{variablei});
     
         end 
 
@@ -126,7 +126,7 @@ function [parameters] = PopulateResponseVariables(parameters)
 
         else
             % Put into the response variable cell holder
-            for variablei = 1:numel(variable_names)
+            for variablei = 1:numel(parameters.response_variable_names)
                 response_variables_cellholder{periodi, variablei} = cell_holder{variablei};
             end
 
@@ -138,8 +138,8 @@ function [parameters] = PopulateResponseVariables(parameters)
     if (~isfield(parameters, 'concatenate_vertically')) || (isfield(parameters, 'concatenate_vertically') & ~parameters.concatenate_vertically)
        
         % Put into the response variable cell holder
-        for variablei = 1:numel(variable_names)
-            response_variables.(variable_names{variablei}) =  response_variables_cellholder(:,variablei);
+        for variablei = 1:numel(parameters.response_variable_names)
+            response_variables.(parameters.response_variable_names{variablei}) =  response_variables_cellholder(:,variablei);
         end
 
     end
