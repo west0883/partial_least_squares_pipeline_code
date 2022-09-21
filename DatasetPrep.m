@@ -54,6 +54,13 @@ function [parameters] = DatasetPrep(parameters)
     % explanatoryVariables has only one cell array column, so can be done all at once.
     explanatoryVariables = vertcat(explanatoryVariables{:});
 
+    % If it's still a cell (can happen if there's a cell with '[]' in it),
+    % do again.
+    if iscell(explanatoryVariables)
+
+       explanatoryVariables = vertcat(explanatoryVariables{:});
+    end
+
     % Each variable in responseVariables is own cell array column, so have
     % to do each of those first before horizontally concatenating the
     % different variables into  same matrix. Keep the separated variables
