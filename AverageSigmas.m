@@ -25,8 +25,16 @@ function [parameters] = AverageSigmas(parameters)
 
        end
 
-       % Make dimensions match (replicate corrs so there's a set for each response varaible.
-       xsig = repmat(parameters.dataset.zscoring.explanatoryVariables.sigma, size(ysig,2),1); 
+       % Get x sigma
+       % If using just the x zscore, make xsigma = 1.
+       if isfield(parameters, 'use_xZscore') && parameters.use_xZscore
+           xsig_single = repmat(1, size(parameters.dataset.zscoring.explanatoryVariables.sigma));
+       else
+           xsig_single = parameters.dataset.zscoring.explanatoryVariables.sigma;
+       end
+
+       % Make dimensions match (replicate xsig so there's a set for each response varaible.
+       xsig = repmat(xsig_single, size(ysig,2),1); 
 
        % Calculate sigmas
        sigmas = reshape(transpose(transpose(ysig)./xsig), 1, []);
