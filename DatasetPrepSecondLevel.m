@@ -123,11 +123,12 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
         xsig = repmat(xsig_single, size(ysig,2),1); 
         
         % Calculate sigmas
-        sigmas = reshape(transpose(transpose(ysig)./xsig), 1, []);
+        %sigmas = reshape(transpose(transpose(ysig)./xsig), 1, []);
+        sigmas = xsig ./ ysig;
 
         % multiply response variables by sigmas
         % responseVariables = responseVariables .* sigmas;
-        responseVariables = responseVariables ./ sigmas;
+        responseVariables = responseVariables .* sigmas;
         
 
     end 
