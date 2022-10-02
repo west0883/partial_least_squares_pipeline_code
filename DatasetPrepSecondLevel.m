@@ -105,6 +105,32 @@ function [parameters] = DatasetPrepSecondLevel(parameters)
        parameters.responseVariables_concatenated = [];
     end
     
+    % If multiplying by sigmas by animal, 
+    if isfield(parameters, 'sigma_byanimal') && parameters.sigma_byanimal
+        % multiply by the sigmas for this animal
+        xsig_single = parameters.dataset_info.zscoring.explanatoryVariables.sigma;
+        ysig = parameters.dataset_info.zscoring.responseVariables.sigma;
+        
+        % Keep only the first response variable if comparison type is
+        % categorical.
+        if strcmp(parameters.comparison_type, 'categorical')
+        
+            ysig = ysig(1);
+        
+        end
+
+        % Make dimensions match (replicate xsig so there's a set for each response varaible.
+        xsig = repmat(xsig_single, size(ysig,2),1); 
+        
+        % Calculate sigmas
+        sigmas = reshape(transpose(transpose(ysig)./xsig), 1, []);
+
+        % multiply response variables by sigmas
+        % responseVariables = responseVariables .* sigmas;
+        responseVariables = responseVariables ./ sigmas;
+        
+
+    end 
     % Concatenate.
     % Always concatenate across 1st dimension (rows)
     explanatoryVariables_concatenated = cat(1, parameters.explanatoryVariables_concatenated, explanatoryVariables);
