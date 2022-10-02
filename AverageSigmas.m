@@ -38,6 +38,7 @@ function [parameters] = AverageSigmas(parameters)
 
        % Calculate sigmas
        sigmas = reshape(transpose(transpose(ysig)./xsig), 1, []);
+       %sigmas = reshape(transpose(transpose(ysig).* xsig), 1, []);
     end
 
     % If the user gave a concatenation level value field (from
