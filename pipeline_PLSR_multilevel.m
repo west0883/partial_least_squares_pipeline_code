@@ -819,9 +819,13 @@ parameters.removeOutliers = false;
 % If the first level was categorical:
 parameters.firstLevelCategorical = true; 
 
+parameters.comparison_type = 'categorical';
 parameters.this_comparison_set = parameters.comparisons_categorical;
 parameters.max_mice = size(parameters.mice_all, 2);
 parameters.concatenation_level = 'mouse';
+
+% multiply by sigma by animal?
+parameters.sigma_byanimal = false;
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
@@ -829,16 +833,24 @@ parameters.loop_list.things_to_load.response.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.response.variable= {'PLSR_results.Cov'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
+% If multiplying by sigmas by animal, load zscoring info
+if isfield(parameters, 'sigma_byanimal') && parameters.sigma_byanimal
+parameters.loop_list.things_to_load.dataset_info.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset_info.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset_info.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset_info.level = 'mouse';
+end 
+
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_Cov.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_Cov_sigmasByAnimal.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrepSecondLevel}, parameters);
 
 %% Level 2 categorical -- concatenate & average sigmas
-% For each comparison. For adjusting betas in plots below. 
+% % For each comparison. For adjusting betas in plots below. 
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -882,9 +894,10 @@ parameters.plotIndividually = false;
 true_false_vector = {false, true};
 for i = 2 %1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
-    parameters.adjustBetas = true_false_vector{i};
+    parameters.adjustBetas = true_false_vector{i}; % true_false_vector{i};
+    parameters.multiply_by_average_sigma = true_false_vector{i};
 
-    for j = 1 %1:numel(true_false_vector)
+    for j = 2 %1:numel(true_false_vector)
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
@@ -901,7 +914,7 @@ for i = 2 %1:numel(true_false_vector)
         parameters.removeOutliers = false;
 
         % Color range for all plots (if betas are adjusted).
-        parameters.useColorRange = false;
+        parameters.useColorRange = true;
         
         % Comparison type (categorical or continuous)
         parameters.comparison_type = 'categorical';
@@ -924,7 +937,7 @@ for i = 2 %1:numel(true_false_vector)
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_randomPermutations_Cov_FDR.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
@@ -966,6 +979,8 @@ parameters.firstLevelCategorical = false;
 % Remove outliers & average
 parameters.averaging_across_mice = true;
 parameters.removeOutliers = false; 
+% multiply by sigma by animal?
+parameters.sigma_byanimal = false;
 
 parameters.this_comparison_set = parameters.comparisons_continuous;
 parameters.max_mice = size(parameters.mice_all, 2);
@@ -976,7 +991,13 @@ parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\
 parameters.loop_list.things_to_load.response.filename= {'PLSR_results.mat'};
 parameters.loop_list.things_to_load.response.variable= {'PLSR_results.Cov'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
-
+% If multiplying by sigmas by animal, load zscoring info
+if isfield(parameters, 'sigma_byanimal') && parameters.sigma_byanimal
+parameters.loop_list.things_to_load.dataset_info.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset_info.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset_info.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset_info.level = 'mouse';
+end 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\Ipsa Contra\'], 'comparison', '\'};
 parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_Cov.mat'};
@@ -1032,7 +1053,7 @@ for i = 2 %1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
-    for j = 1 %1:numel(true_false_vector)
+    for j = 2%1:numel(true_false_vector)
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
@@ -1286,7 +1307,7 @@ if do
     parameters.permutationGeneration = false;
 end
 
-%% Level 2 categorical -- prep shuffled datasets for PLSR on shuffles. 
+%% Level 2 categorical -- prep shuffled datasets for PLSR on shuffles, bootstrapping
 %Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -1308,6 +1329,9 @@ parameters.this_comparison_set = parameters.comparisons_categorical;
 parameters.max_mice = size(parameters.mice_all, 2);
 parameters.concatenation_level = 'mouse';
 
+% multiplying by sigmas by animal? 
+parameters.sigma_byanimal = false;
+
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_bootstrap.mat'};
@@ -1322,7 +1346,7 @@ parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrepSecondLevel}, parameters);
 
-%% Level 2 categorical -- check significance
+%% Level 2 categorical -- check significance with bootstrapping
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -1663,6 +1687,9 @@ parameters.loop_list.iterators = {
 % If the first level was categorical:
 parameters.firstLevelCategorical = true; 
 
+% multiply by sigma by animal?
+parameters.sigma_byanimal = false;
+
 % Remove outliers & average
 parameters.averaging_across_mice = true;
 parameters.removeOutliers = false; 
@@ -1676,7 +1703,13 @@ parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\
 parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_randomPermutations.mat'};
 parameters.loop_list.things_to_load.response.variable= {'Covs_randomPermutations'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
-
+% If multiplying by sigmas by animal, load zscoring info
+if isfield(parameters, 'sigma_byanimal') && parameters.sigma_byanimal
+parameters.loop_list.things_to_load.dataset_info.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 categorical\Ipsa Contra\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.dataset_info.filename= {'PLSR_dataset_info.mat'};
+parameters.loop_list.things_to_load.dataset_info.variable= {'dataset_info'}; 
+parameters.loop_list.things_to_load.dataset_info.level = 'mouse';
+end 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\Ipsa Contra\'], 'comparison', '\'};
 parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations_Cov.mat'};
@@ -1880,7 +1913,7 @@ for i = 2 %1:numel(true_false_vector)
     parameters.adjustBetas = true_false_vector{i};
 
     for j = 2 %1:numel(true_false_vector)
-         % Only include significant betas?
+         % Only include significant y etas?
          parameters.useSignificance = true_false_vector{j};
 
         if isfield(parameters, 'loop_list')
@@ -1964,16 +1997,27 @@ parameters.fromPLSR = true;
 % Parameters for AverageByNode code.
 parameters.isVector = true;
 parameters.corrsDim = 2;
+parameters.sigmasDim = 2;
 
 % Dimension to average across AFTER data has gone through AverageByNode
 % code.
 parameters.averageDim = 2; 
+
+% Multiply by average sigmas?
+parameters.multiply_by_average_sigma = true;
 
 % Input
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
 parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_Cov.mat'};
 parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
 parameters.loop_list.things_to_load.data.level = 'comparison';
+% Average sigmas.
+if parameters.multiply_by_average_sigma
+parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
+parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
+parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
+parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
+end
 
 % Output 
 % each mouse, as a matrix
@@ -1991,52 +2035,6 @@ parameters.loop_list.things_to_rename = {{'node_averages', 'data'}};
 
 RunAnalysis({@AverageByNode, @AverageData}, parameters);
 
-
-%% Calculate mean change of nodes with all other nodes, null distributions -- bootstrap
-do = false;
-if do 
-if isfield(parameters, 'loop_list')
-    parameters = rmfield(parameters,'loop_list');
-end
-        
-% Iterators
-parameters.loop_list.iterators = {
-               'comparison_type', {'loop_variables.comparison_types'}, 'comparison_type_iterator';
-               'comparison', {'loop_variables.comparisons_', 'comparison_type', '(:).name'}, 'comparison_iterator' };
-
-parameters.loop_variables.comparison_types = {'categorical', 'continuous'}; 
-
-% Parameters for AverageByNode code.
-parameters.isVector = true;
-parameters.corrsDim = 2;
-parameters.fromPLSR = true;
-
-% Dimension to average across AFTER data has gone through AverageByNode
-% code.
-parameters.averageDim = 2;
-
-% Input
-parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_bootstrap_Cov.mat'};
-parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
-parameters.loop_list.things_to_load.data.level = 'comparison';
-
-% Output 
-% each mouse, as a matrix
-parameters.loop_list.things_to_save.node_averages.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_bootstrap_Cov.mat'};
-parameters.loop_list.things_to_save.node_averages.variable = {'average_by_nodes'};
-parameters.loop_list.things_to_save.node_averages.level = 'comparison';
-% Across mice.
-parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
-parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_bootstrap_Cov.mat'};
-parameters.loop_list.things_to_save.average.variable = {'average_by_nodes'};
-parameters.loop_list.things_to_save.average.level = 'comparison';
-
-parameters.loop_list.things_to_rename = {{'node_averages', 'data'}}; 
-
-RunAnalysis({@AverageByNode, @AverageData}, parameters);
-end
 
 %% Calculate mean change of nodes with all other nodes, null distributions -- permutations
 if isfield(parameters, 'loop_list')
@@ -2058,12 +2056,21 @@ parameters.fromPLSR = true;
 % Dimension to average across AFTER data has gone through AverageByNode
 % code.
 parameters.averageDim = 2;
+% Multiply by average sigmas?
+parameters.multiply_by_average_sigma = true;
 
 % Input
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
 parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_randomPermutations_Cov.mat'};
 parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
 parameters.loop_list.things_to_load.data.level = 'comparison';
+% Average sigmas.
+if parameters.multiply_by_average_sigma
+parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\'};
+parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
+parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
+parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
+end
 
 % Output 
 % each mouse, as a matrix
@@ -2081,69 +2088,6 @@ parameters.loop_list.things_to_rename = {{'node_averages', 'data'}};
 
 RunAnalysis({@AverageByNode, @AverageData}, parameters);
 
-%% Calculate significance of mean change by node -- bootstrapping
-do = false; 
-if do
-comparison_types = {'categorical', 'continuous'};
-
-for typei = 1:numel(comparison_types)
-
-    comparison_type = comparison_types{typei};
-    parameters.comparison_type = comparison_type;
-    parameters.this_comparison_set = parameters.(['comparisons_' comparison_type]);
-
-    if isfield(parameters, 'loop_list')
-        parameters = rmfield(parameters,'loop_list');
-    end
-
-    % Iterators
-    parameters.loop_list.iterators = {
-                   'comparison', {'loop_variables.comparisons_', comparison_type, '(:).name'}, 'comparison_iterator' };
-    
-    parameters.find_significance = true;
-    
-    % Say that you do want to use bootstrapping.
-    parameters.useBootstrapping = true;
-    
-    % If you want to fit a normal distribution before t-test (default = true)
-    parameters.useNormalDistribution = true; 
-
-    if strcmp(comparison_type, 'categorical')
-
-        parameters.shufflesDim = 2;
-        
-        % The statistical alpha value
-        parameters.alphaValue = 0.05/496; %0.05/150;
-    
-    else
-        parameters.shufflesDim = 2;
-
-        % The statistical alpha value
-        parameters.alphaValue = 0.05/496; %0.05/45;
-    end
-
-    % Inputs:
-    %Test values (will grab only the intercepts with EvaluateOnData)
-    parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], comparison_type, '\Ipsa Contra\', 'comparison', '\'};
-    parameters.loop_list.things_to_load.test_values.filename= {'average_by_nodes_allmice_Cov.mat'};
-    parameters.loop_list.things_to_load.test_values.variable= {'average_by_nodes'}; 
-    parameters.loop_list.things_to_load.test_values.level = 'comparison';
-    
-    % Null distribution
-    parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], comparison_type, '\Ipsa Contra\', 'comparison', '\'};
-    parameters.loop_list.things_to_load.null_distribution.filename= {'average_by_nodes_allmice_bootstrap_Cov.mat'};
-    parameters.loop_list.things_to_load.null_distribution.variable= {'average_by_nodes'}; 
-    parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
-    
-    % Output
-    parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 '] , comparison_type, '\Ipsa Contra\', 'comparison', '\'};
-    parameters.loop_list.things_to_save.significance.filename= {'average_by_nodes_significance_bootstrap_Cov.mat'};
-    parameters.loop_list.things_to_save.significance.variable= {'significance'}; 
-    parameters.loop_list.things_to_save.significance.level = 'comparison';
-    
-    RunAnalysis({@SignificanceCalculation}, parameters);
-end
-end
 %% Calculate significance of mean change of nodes with all other -- permutations
 
 comparison_types = {'categorical', 'continuous'};
@@ -2433,3 +2377,9 @@ parameters.loop_list.things_to_rename = { {'data_evaluated', 'data'};
                                           {'concatenated_data', 'data'}};
 
 RunAnalysis({@EvaluateOnData, @PadContinuousData, @ConcatenateData, @AverageData}, parameters);
+
+%% All variance of all continuous vars
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\results\level 1 '], 'comparison_type', '\Ipsa Contra\', 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'variance_allVars.mat'};
+parameters.loop_list.things_to_load.data.variable= {'variance_allVars'}; 
+parameters.loop_list.things_to_load.data.level = 'mouse';

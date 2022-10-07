@@ -37,8 +37,8 @@ function [parameters] = AverageSigmas(parameters)
        xsig = repmat(xsig_single, size(ysig,2),1); 
 
        % Calculate sigmas
-       sigmas = reshape(transpose(transpose(ysig)./xsig), 1, []);
-       %sigmas = reshape(transpose(transpose(ysig).* xsig), 1, []);
+       %sigmas = reshape(transpose(transpose(ysig)./xsig), 1, []);
+       sigmas = reshape((xsig ./ysig')', 1, []);
     end
 
     % If the user gave a concatenation level value field (from
@@ -58,10 +58,12 @@ function [parameters] = AverageSigmas(parameters)
 
     % Concatenate across mice, if sigmas_concatenated exists
     if isfield(parameters, 'sigmas_concatenated') 
+       
         sigmas_concatenated = cat(parameters.concatDim, parameters.sigmas_concatenated, sigmas);
+        
     % Else create sigmas_concatenated for first time. 
     else
-       sigmas_concatenated = sigmas;
+       sigmas_concatenated = sigmas .^2;
     end
 
     % Put concatenation into parameters for next iteration. 
@@ -80,7 +82,7 @@ function [parameters] = AverageSigmas(parameters)
     end
 
     % Take average
-    average_sigmas = mean(sigmas_concatenated, parameters.concatDim, 'omitnan');
+    average_sigmas = sqrt(mean(sigmas_concatenated, parameters.concatDim, 'omitnan'));
 
     % Put average into output field of parameters.
     parameters.average_sigmas = average_sigmas;

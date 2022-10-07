@@ -55,7 +55,7 @@ end
 % Load comparisons for  continuous, if it exists yet.
 if isfile([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriods_continuous.mat'])
     load([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriods_continuous.mat']);
-    parameters.comparisons_continuous = comparisons(7);
+    parameters.comparisons_continuous = comparisons(2:end);
     parameters.loop_variables.comparisons_continuous = parameters.comparisons_continuous; 
     clear comparisons;
 end
@@ -63,7 +63,7 @@ end
 % Load comparisons for categorical, if it exists yet.
 if isfile([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriods_categorical.mat'])
     load([parameters.dir_exper 'PLSR Warning Periods\comparisons_warningPeriods_categorical.mat']);
-    parameters.comparisons_categorical = comparisons([7, 8]);
+    parameters.comparisons_categorical = comparisons;
     parameters.loop_variables.comparisons_categorical = parameters.comparisons_categorical;
     clear comparisons;
 end
@@ -872,7 +872,7 @@ for i = 2 %1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
-    for j = 1 %1:numel(true_false_vector)
+    for j = 2 %1:numel(true_false_vector)
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
@@ -912,7 +912,7 @@ for i = 2 %1:numel(true_false_vector)
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 categorical\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_randomPermutations_Cov.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
@@ -1020,7 +1020,7 @@ for i = 2 %1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
-    for j = 1 %1:numel(true_false_vector)
+    for j = 2 %1:numel(true_false_vector)
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
@@ -1060,7 +1060,7 @@ for i = 2 %1:numel(true_false_vector)
         % significance matrix
         if parameters.useSignificance
         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 continuous\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
+        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_randomPermutations_Cov.mat'};
         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.significance.level = 'comparison';
         end
@@ -1927,18 +1927,28 @@ parameters.loop_variables.comparison_types = {'categorical', 'continuous'};
 % Parameters for AverageByNode code.
 parameters.isVector = true;
 parameters.corrsDim = 2;
+parameters.sigmasDim = 2;
 parameters.fromPLSR = true;
 
 % Dimension to average across AFTER data has gone through AverageByNode
 % code.
 parameters.averageDim = 2; 
 parameters.average_and_std_together = false;
+ % Multiply data by sigmas
+ parameters.multiply_by_average_sigma = true;
 
 % Input
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 '], 'comparison_type', '\', 'comparison', '\'};
 parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_Cov.mat'};
 parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
 parameters.loop_list.things_to_load.data.level = 'comparison';
+
+if parameters.multiply_by_average_sigma 
+parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 '],'comparison_type','\', 'comparison', '\'};
+parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
+parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
+parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
+end
 
 % Output 
 % each mouse, as a matrix
@@ -2020,13 +2030,24 @@ parameters.fromPLSR = true;
 % Dimension to average across AFTER data has gone through AverageByNode
 % code.
 parameters.averageDim = 2;
+parameters.sigmasDim = 2;
 parameters.average_and_std_together = false;
+
+ % Multiply data by sigmas
+ parameters.multiply_by_average_sigma = true;
+
 
 % Input
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 '], 'comparison_type', '\', 'comparison', '\'};
 parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_randomPermutations_Cov.mat'};
 parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
 parameters.loop_list.things_to_load.data.level = 'comparison';
+if parameters.multiply_by_average_sigma 
+parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 '], 'comparison_type','\', 'comparison', '\'};
+parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
+parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
+parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
+end
 
 % Output 
 % each mouse, as a matrix

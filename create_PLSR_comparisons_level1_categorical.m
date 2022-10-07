@@ -186,7 +186,7 @@ counter = counter + 1;
 comparisons(counter).name = 'motorized_restvsfinishedstop_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
-comparisons(counter).plotMultiplier = 1;
+comparisons(counter).plotMultiplier = -1;
 comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.
@@ -201,7 +201,7 @@ counter = counter + 1;
 comparisons(counter).name = 'spontaneous_restvsfinishedstop_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {'1100'};
-comparisons(counter).plotMultiplier = 1;
+comparisons(counter).plotMultiplier = -1;
 comparisons(counter).figure_type = 'startstop';
 
 % Get relevent indices for this type.

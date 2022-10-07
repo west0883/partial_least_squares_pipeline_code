@@ -27,12 +27,14 @@ function [parameters] = PlotBetasSecondLevel(parameters)
    
     % Adjust Betas based on z-score sigma. % First row is constant estimate
     % If user says so
-    if isfield(parameters, 'adjustBetas') && parameters.adjustBetas
+    if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'multiply_by_average_sigma') && parameters.multiply_by_average_sigma
         % if categorical, only use first set of sigmas.
         if strcmp(parameters.comparison_type, 'categorical')
             betas_adjusted = betas .* parameters.average_sigmas(1:numel(betas));
+           
         else
             betas_adjusted = betas .* parameters.average_sigmas;
+           
         end
     else
         betas_adjusted = betas;
@@ -332,6 +334,12 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 % Separate
                 betas_separated(parameters.indices) = betas_adjusted((variablei - 1) * numel(parameters.indices) + [1:numel(parameters.indices)]);
 
+                 % If variable is pupil diameter, divide by 100 (to go from 0 to 1.0 scale to
+                % percents)
+                if strcmp(variable, 'pupil_diameter')
+                    betas_separated = betas_separated./100;
+                end
+                
                 % Rename back to holder to keep things easier
                 holder = betas_separated;
 
@@ -461,7 +469,7 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     ax.YAxisLocation = 'right';
 
     % Using text function, add region labels.
-    region_labels = {'M2', 'M1', 'S1', 'LP', 'PP', 'Rs'};
+    region_labels = {'M2', 'M1', 'S1', 'LP', 'MV', 'Rs'};
     region_label_locations_range = [3.5 8.5 13.5 18.5 24.5 30.5] ;
     region_label_locations_outside = repmat(-1, size(region_label_locations_range));
     region_label_fontsize = 18;
