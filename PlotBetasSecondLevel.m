@@ -66,25 +66,26 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     parameters.comparison = comparison;
 
     % Get figure type for this comparison.
-    figure_type = parameters.this_comparison_set(comparison_iterator).figure_type;
-    parameters.figure_type = figure_type;
-
-    % Check if this comparison needs a special color range.
-    color_indices = strcmp(parameters.color_range.specials(:,1), comparison);
-    if any(color_indices)
-        color_range_special = parameters.color_range.specials(color_indices, 2:3);
-    else
-        color_range_special = {};
-    end
-
-    % Check if this needs to be flipped.
-    if isfield(parameters.this_comparison_set(comparison_iterator), 'plotMultiplier')
-        
-        % Multiply by plot multipier.
-        betas_adjusted = betas_adjusted .* parameters.this_comparison_set(comparison_iterator).plotMultiplier;
-
-    end
-
+    if isfield(parameters, 'fromPLSR') && parameters.fromPLSR
+        figure_type = parameters.this_comparison_set(comparison_iterator).figure_type;
+        parameters.figure_type = figure_type;
+    
+        % Check if this comparison needs a special color range.
+        color_indices = strcmp(parameters.color_range.specials(:,1), comparison);
+        if any(color_indices)
+            color_range_special = parameters.color_range.specials(color_indices, 2:3);
+        else
+            color_range_special = {};
+        end
+    
+        % Check if this needs to be flipped.
+        if isfield(parameters.this_comparison_set(comparison_iterator), 'plotMultiplier')
+            
+            % Multiply by plot multipier.
+            betas_adjusted = betas_adjusted .* parameters.this_comparison_set(comparison_iterator).plotMultiplier;
+    
+        end
+    end 
     % Make a colormap with cbrewer; 
     cmap= flipud(cbrewer('div', 'RdBu', 2000, 'linear'));
     parameters.cmap = cmap;
@@ -253,7 +254,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     else
 
         % If categorical, 
-        if strcmp(parameters.comparison_type, 'categorical')
+        if ~isfield(parameters, 'comparison_type') || strcmp(parameters.comparison_type, 'categorical')
 
             % Make holder matrix
             holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
