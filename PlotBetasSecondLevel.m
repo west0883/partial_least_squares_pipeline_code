@@ -85,6 +85,8 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             betas_adjusted = betas_adjusted .* parameters.this_comparison_set(comparison_iterator).plotMultiplier;
     
         end
+    else 
+        color_range_special = {};
     end 
     % Make a colormap with cbrewer; 
     cmap= flipud(cbrewer('div', 'RdBu', 2000, 'linear'));
@@ -126,6 +128,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && parameters.useColorRange
                 color_range = parameters.color_range.(figure_type).categorical;
             % If not adjusted, make a fitted color range for this plot.
+            
             else
                 extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
                 color_range = [-extreme extreme]; 
@@ -393,7 +396,7 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
 
 
     % If adjusted, use a standard color range for each plot.
-    if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'useColorRange') && parameters.useColorRange
+    if (isfield(parameters, 'adjustBetas') && parameters.adjustBetas) || ( isfield(parameters, 'useColorRange') && parameters.useColorRange)
         color_range = parameters.color_range.(parameters.figure_type).(color_range_type);
 
     % If not adjusted, make a fitted color range for this plot.
@@ -470,8 +473,8 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     ax.YAxisLocation = 'right';
 
     % Using text function, add region labels.
-    region_labels = {'M2', 'M1', 'S1', 'LP', 'MV', 'Rs'};
-    region_label_locations_range = [3.5 8.5 13.5 18.5 24.5 30.5] ;
+    region_labels = parameters.region_labels;
+    region_label_locations_range = parameters.region_label_locations_range;
     region_label_locations_outside = repmat(-1, size(region_label_locations_range));
     region_label_fontsize = 18;
 
@@ -528,7 +531,7 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     % Minor
     grid_locations_minor = 1.5:1:parameters.number_of_sources - 0.5;
     grid_color_minor = [0.75 0.75 0.75];
-    grid_width_minor = 0.25;
+    grid_width_minor = parameters.grid_width_minor;
 
     % Put in grid lines manually.
 
@@ -549,7 +552,7 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
         grid_locations_major(regioni) = parameters.region_nodes(regioni).nodes(end) + 0.5;
     end
     grid_color_major = [0 0 0];
-    grid_width_major = 2.7;
+    grid_width_major = parameters.grid_width_major;
 
     for linei = grid_locations_major
 
