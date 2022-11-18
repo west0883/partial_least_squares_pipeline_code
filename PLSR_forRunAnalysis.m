@@ -88,8 +88,8 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                     % These are normalized category labels. Assume the
                     % relevant positive category is the max in this column.
                     % (1 vs 0 or even -1).
-                    cat_value = max(responseVariables(:,variablei));
-                    variable_indices = find(responseVariables(:,variablei) == cat_value);
+                    
+                    variable_indices = find(responseVariables(:,variablei) > 0); 
                     
                     % Find number of observations that will go into each fold.
                     % Remainder will go into the last fold.
