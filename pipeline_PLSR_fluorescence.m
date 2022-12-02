@@ -1382,7 +1382,16 @@ end
 parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 
+parameters.evaluation_instructions = {{'data_evaluated = parameters.data .* parameters.average_sigmas;'}};
+
+
 % Inputs
+% PLSR COVs 
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 2 ' comparison_type '\'], 'comparison', '\'};
+parameters.loop_list.things_to_load.data.filename= {'averages_reshaped.mat'};
+parameters.loop_list.things_to_load.data.variable= {'averages_reshaped'}; 
+parameters.loop_list.things_to_load.data.level = 'comparison';
+
 % average sigmas 
 parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
 parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
@@ -1397,3 +1406,9 @@ parameters.loop_list.things_to_load.fluorescence_mean.level = 'start';
 
 % Outputs
 % value multipliers
+parameters.loop_list.things_to_save.DFF.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 2 continuous\'], 'comparison', '\'};
+parameters.loop_list.things_to_save.DFF.filename= {'results_DFF.mat'};
+parameters.loop_list.things_to_save.DFF.variable= {'results_DFF'}; 
+parameters.loop_list.things_to_save.DFF.level = 'comparison';
+
+parameters.loop_list.things_to_rename = {{'data_evaluated', 'data'}};
