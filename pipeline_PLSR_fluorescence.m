@@ -1384,7 +1384,6 @@ parameters.loop_list.iterators = {
 
 parameters.evaluation_instructions = {{'data_evaluated = parameters.data .* parameters.average_sigmas;'}};
 
-
 % Inputs
 % PLSR COVs 
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 2 ' comparison_type '\'], 'comparison', '\'};
@@ -1412,3 +1411,5 @@ parameters.loop_list.things_to_save.DFF.variable= {'results_DFF'};
 parameters.loop_list.things_to_save.DFF.level = 'comparison';
 
 parameters.loop_list.things_to_rename = {{'data_evaluated', 'data'}};
+
+RunAnalysis({@EvaluateOnDAta, @DFF}, parameters);
