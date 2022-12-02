@@ -1303,9 +1303,9 @@ for typei = 1:numel(comparison_types)
     parameters.loop_list.iterators = {
                    'comparison', {['loop_variables.comparisons_' comparison_type '(:).name']}, 'comparison_iterator' };
     
-    
-    parameters.evaluation_instructions = {{'b = repmat(parameters.data, 2,1);'...
-                                          'data_evaluated = reshape(b, size(parameters.data,2) * 2 , size(parameters.data,1));'}};
+     
+    parameters.evaluation_instructions = {{'b = repmat(parameters.data, 1, 2);'...
+                                          'data_evaluated = reshape(transpose(b), size(parameters.data,2), size(parameters.data,1) * 2);'}};
     % Inputs 
     parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR fluorescence Warning Periods\results\level 2 ' comparison_type '\'], 'comparison', '\'};
     parameters.loop_list.things_to_load.data.filename= {'PLSR_significance_randomPermutations_Cov_FDR.mat'};
