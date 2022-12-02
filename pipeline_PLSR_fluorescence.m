@@ -1083,7 +1083,7 @@ parameters.concatenation_level = 'mouse';
 
 
 %parameters.use_xZscore = true;
-parameters.use_xZscore = true;
+parameters.use_xZscore = false;
 
 % Input 
 parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\datasets\level 1 categorical\'], 'comparison','\', 'mouse', '\'};
@@ -1124,7 +1124,7 @@ parameters.removeOutliers = false;
 parameters.concatenation_level = 'mouse';
 
 %parameters.use_xZscore = true;
-parameters.use_xZscore = true;
+parameters.use_xZscore = false;
 
 % Input 
 parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\datasets\level 1 continuous\'], 'comparison','\', 'mouse', '\'};
@@ -1350,8 +1350,8 @@ for typei = 1:numel(comparison_types)
                    'comparison', {['loop_variables.comparisons_' comparison_type '(:).name']}, 'comparison_iterator' };
     
     
-    parameters.evaluation_instructions = {{'b = repmat(parameters.data, 2,1);'...
-                                          'data_evaluated = reshape(b, size(parameters.data,2) * 2 , size(parameters.data,1));'}};
+    parameters.evaluation_instructions = {{'b = repmat(parameters.data, 1, 2);'...
+                                          'data_evaluated = reshape(transpose(b), size(parameters.data,2), size(parameters.data,1) * 2);'}};
     % Inputs 
     parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 2 ' comparison_type '\'], 'comparison', '\'};
     parameters.loop_list.things_to_load.data.filename= {'PLSR_significance_randomPermutations_Cov_FDR.mat'};
@@ -1367,3 +1367,33 @@ for typei = 1:numel(comparison_types)
     RunAnalysis({@EvaluateOnData}, parameters);
 
 end
+
+%% Calculate multipliers to get back into %F/F 
+% ** Continuous**
+% 1. convert back to absolute fluorescence units using average sigmas
+% 2. multiply by overall fluorescence mean for that IC (from
+% pipeline_DFF_means.m from fluorescence analysis pipeline folder)
+
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+        
+% Iterators
+parameters.loop_list.iterators = {
+               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+
+% Inputs
+% average sigmas 
+parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
+parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
+parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
+parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
+
+% average fluorescence per source across mice
+parameters.loop_list.things_to_load.fluorescence_mean.dir = {[parameters.dir_exper '\preprocessing\stack means\']};
+parameters.loop_list.things_to_load.fluorescence_mean.filename = {'IC_means_acrossMice_homologousTogether.mat'};
+parameters.loop_list.things_to_load.fluorescence_mean.variable = {'source_mean'};
+parameters.loop_list.things_to_load.fluorescence_mean.level = 'start';
+
+% Outputs
+% value multipliers
