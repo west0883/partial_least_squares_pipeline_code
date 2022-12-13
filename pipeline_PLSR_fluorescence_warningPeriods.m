@@ -1026,7 +1026,7 @@ parameters.concatenation_level = 'mouse';
 
 
 %parameters.use_xZscore = true;
-parameters.use_xZscore = true;
+parameters.use_xZscore = false;
 
 % Input 
 parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR fluorescence Warning Periods\variable prep\datasets\level 1 categorical\'], 'comparison','\', 'mouse', '\'};
@@ -1067,7 +1067,7 @@ parameters.removeOutliers = false;
 parameters.concatenation_level = 'mouse';
 
 %parameters.use_xZscore = true;
-parameters.use_xZscore = true;
+parameters.use_xZscore = false;
 
 % Input 
 parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR fluorescence Warning Periods\variable prep\datasets\level 1 continuous\'], 'comparison','\', 'mouse', '\'};
@@ -1319,5 +1319,75 @@ for typei = 1:numel(comparison_types)
     parameters.loop_list.things_to_save.data_evaluated.level = 'comparison';
     
     RunAnalysis({@EvaluateOnData}, parameters);
+
+end
+
+%% Calculate multipliers to get back into %F/F 
+% ** Continuous**
+% 1. convert back to absolute fluorescence units using average sigmas
+% 2. multiply by overall fluorescence mean for that IC (from
+% pipeline_DFF_means.m from fluorescence analysis pipeline folder)
+
+comparison_types = {'categorical', 'continuous'};
+
+for typei = 1:numel(comparison_types)
+
+    comparison_type = comparison_types{typei};
+
+    % Iterators
+    parameters.loop_list.iterators = {
+                   'comparison', {['loop_variables.comparisons_' comparison_type '(:).name']}, 'comparison_iterator' };
+    
+
+    if isfield(parameters, 'loop_list')
+    parameters = rmfield(parameters,'loop_list');
+    end
+            
+    % Iterators
+    parameters.loop_list.iterators = {
+                   'comparison', {'loop_variables.comparisons_' comparison_type '(:).name'}, 'comparison_iterator' };
+    
+    % Shape average sigmas to match results values, multiply results by average
+    % sigmas.
+    parameters.evaluation_instructions = {
+                                           {'b = repmat(transpose(parameters.average_sigmas), 1, 2);'...
+                                          'average_sigmas_reshaped = reshape(transpose(b), size(parameters.average_sigmas, 1), size(parameters.average_sigmas, 2) * 2);'...
+                                          'data_evaluated = parameters.data .* transpose(average_sigmas_reshaped);'}
+    
+                                           {'data_evaluated = repmat(transpose(parameters.fluorescence_mean), size(parameters.data,1)./(parameters.number_of_sources * 2), 1);'}
+                                          
+                                          };
+    
+    % Inputs
+    % PLSR COVs 
+    parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR fluorescence Warning Periods\results\level 2 ' comparison_type '\'], 'comparison', '\'};
+    parameters.loop_list.things_to_load.data.filename= {'averages_reshaped.mat'};
+    parameters.loop_list.things_to_load.data.variable= {'averages_reshaped'}; 
+    parameters.loop_list.things_to_load.data.level = 'comparison';
+    
+    % average sigmas 
+    parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR fluorescence Warning Periods\variable prep\datasets\level 2 ' comparison_type '\'], 'comparison', '\'};
+    parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
+    parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
+    parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
+    
+    % average fluorescence per source across mice (NOT renumbered --
+    % renumbering happens in dot plots)
+    parameters.loop_list.things_to_load.fluorescence_mean.dir = {[parameters.dir_exper '\preprocessing\stack means\']};
+    parameters.loop_list.things_to_load.fluorescence_mean.filename = {'IC_means_acrossMice_homologousTogether.mat'};
+    parameters.loop_list.things_to_load.fluorescence_mean.variable = {'source_mean'};
+    parameters.loop_list.things_to_load.fluorescence_mean.level = 'start';
+    
+    % Outputs
+    % value multipliers
+    parameters.loop_list.things_to_save.DFF.dir = {[parameters.dir_exper 'PLSR fluorescence Warning Periods\results\level 2 ' comparison_type '\'], 'comparison', '\'};
+    parameters.loop_list.things_to_save.DFF.filename= {'results_DFF.mat'};
+    parameters.loop_list.things_to_save.DFF.variable= {'results_DFF'}; 
+    parameters.loop_list.things_to_save.DFF.level = 'comparison';
+    
+    parameters.loop_list.things_to_rename = {{'data_evaluated', 'data'}; 
+                                             {'data_evaluated', 'fluorescence_mean'}};
+    
+    RunAnalysis({@EvaluateOnData, @EvaluateOnData, @DFF}, parameters);
 
 end
