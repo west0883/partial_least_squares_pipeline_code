@@ -6,6 +6,35 @@
 
 function [parameters] = PLSR_forRunAnalysis(parameters)
 
+    % *** Inputs *** 
+    % parameters.dataset.explanatoryVariables --
+    % parameters.dataset.responseVariables -- 
+    % parameters.ncomponents_max = 10; 
+
+    % parameters.comparison_type -- string; either 'continuous' or
+    %   'categorical'; denotes if response variables are continuous or
+    %   categorical
+
+        % ** Validation parameters **
+
+        % parameters.findBestComponents -- true/false; whether or not to
+            % find optimal number of components to use using cross-validation
+        % parameters.kFold -- number of 'folds' to do for k-fold cross
+            % validataion
+        % parameters.MonteCarloReps
+        % parameters.stratify 
+        % parameters.contiguous_partitions
+
+        % ** null distribution generation parameters ** 
+
+        % parameters.permutationGeneration
+        % parameters.n_permutations
+        % parameters.onPermutations
+        % parameters.useBootstrapping
+
+    % *** Outputs ***
+
+
     MessageToUser('PLS regressing ', parameters);
 
     % Tell user all the parameters they sent in (so they can cancel before 
