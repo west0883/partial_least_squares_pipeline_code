@@ -54,7 +54,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     
     % parametesr.results -- structure with the following fields:
             % fields with same meaning as Matlab plsregress function output:
-                % XL 
+                % XL -- > these are the "subnetwork" latent components
                 % YL
                 % XS 
                 % YS
@@ -92,12 +92,9 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % it runs for a long time if they made a mistake).
     if isfield(parameters, 'findBestNComponents') && parameters.findBestNComponents
 
-        if isfield(parameters, 'contiguous_partitions') && ~parameters.contiguous_partitions 
-
             message = ['Finding best number of components with maximum ' num2str(parameters.ncomponents_max) ...
                 ' components, ' num2str(parameters.kFolds) ' -folds.'];
             disp(message);
-        end   
     end
 
     if isfield(parameters, 'permutationGeneration') && parameters.permutationGeneration
