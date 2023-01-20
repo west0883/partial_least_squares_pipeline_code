@@ -13,76 +13,77 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
     % *** Inputs *** 
 
-    % parameters.dataset.explanatoryVariables -- n x m matrix of explanatory variables; 
-
-    % parameters.dataset.responseVariables -- n x j matrix of response
-        % variables;
-
+    % parameters.dataset.explanatoryVariables -- n x m matrix of explanatory variables;
+            % Columns should be normalized (z scored);
+    % parameters.dataset.responseVariables -- n x j matrix of response 
+            % variables; Columns should be normalized (z scored);
     % parameters.ncomponents_max -- scalar; (if no cross validation) number
-        % of latent components you want PLSR to find; (if using cross validation)
-        % the maximum number of latent components you want PLSR to try
-
+            % of latent components you want PLSR to find; (if using cross validation)
+            % the maximum number of latent components you want PLSR to try
     % parameters.comparison_type -- string; either 'continuous' or
-    %   'categorical'; denotes if response variables are continuous or
-    %   categorical
+            % 'categorical'; denotes if response variables are continuous or
+            % categorical
 
         % ** Validation parameters **
 
         % parameters.findBestComponents -- true/false; whether or not to
-            % find optimal number of components (whether or not to
-            % cross-validate)
-
+                % find optimal number of components (whether or not to
+                % cross-validate)
         % parameters.kFold -- number of 'folds' to do for k-fold cross
-            % validataion
-
+                % validataion
         % parameters.MonteCarloReps -- number of times you repeat the
-            % k-fold cross validation
-
+                % k-fold cross validation
         % parameters.stratify -- true/false; if a categorical comparison,
-            % need to make the number of each category is consistent across
-            % partitions
-
+                % need to make the number of each category is consistent across
+                % partitions
         % parameters.contiguous_partitions -- true/false; if you want to do
-            % cross-validation on partitions with adjacent observations instead
-            % of randomly selected (should be "true" when adjacent data belongs
-            % to same/similar time periods, mice, etc)
-
+                % cross-validation on partitions with adjacent observations instead
+                % of randomly selected (should be "true" when adjacent data belongs
+                % to same/similar time periods, mice, etc)
 
         % ** null distribution generation parameters ** 
 
         % parameters.permutationGeneration -- true/false; whether or not to
-            % run PLSR on random permutations; Results from random
-            % permutations are used for statistical validation.
-
+                % run PLSR on random permutations; Results from random
+                % permutations are used for statistical validation.
         % parameters.n_permutations -- scalar; number of random
-            % permutations you want to run for a null distribution (at least
-            % 500 or so)
+                % permutations you want to run for a null distribution (at least
+                % 500 or so)
 
     % *** Outputs ***
+    
     % parametesr.results -- structure with the following fields:
-        % fields with same meaning as Matlab plsregress function output:
-            % XL 
-            % YL
-            % XS 
-            % YS
-            % BETA 
-            % PCTVAR 
-            % MSEP 
-            % stats 
-        % additional fields:
-            % Cov  --- m x j matrix; covariances-- important!
-            % MSEP_byVars  
-            % pctVar_byVar
-            % n_components_used -- the number of components determined to
-                % be significant from cross-validation and used in final output
-            % maximal_components == a structure with the following fields:
+            % fields with same meaning as Matlab plsregress function output:
+                % XL 
+                % YL
+                % XS 
+                % YS
+                % BETA 
+                % PCTVAR 
+                % MSEP
+                % stats 
 
-                % MSEP -- 
-                % MSEP_byVars --
-                % W --
+            % additional fields:
+                % Cov -- m x j matrix; covariances-- important!; should
+                        % use this as the change-in-value instead of the normalized BETA variable. 
+                % MSEP_byVars  -- calculated MSE contribution of each
+                        % variable (can only get if you use
+                        % plsregress_fullcode.m instead of plsregress.m)
+                % pctVar_byVar -- calculated pctVar contribution of each
+                        % variable (can only get if you use
+                        % plsregress_fullcode.m instead of plsregress.m)
+                % n_components_used -- the number of components determined to
+                        % be significant from cross-validation and used in final output
+                % maximal_components == a structure with the following fields
+                        % (are the same as above, but for the maximum number of
+                        % components asked for if you ran cross
+                        % -validataion):
+                            % MSEP  
+                            % MSEP_byVars 
+                            % W -- (same as stats.W above)
 
     % parameters.Covs_randomPermutations -- m x j x number of permutations; Covariances from randomn
-             % permutatoins (a null distribution of covariances)
+                % permutatoins (a null distribution of covariances)
 
 
     % **** Begin function ****
@@ -117,7 +118,6 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     else
         ncomponents_max = parameters.ncomponents_max;
     end
-
 
 
     % ********************************************************************
