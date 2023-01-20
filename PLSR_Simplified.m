@@ -84,6 +84,9 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % parameters.Covs_randomPermutations -- m x j x number of permutations; Covariances from randomn
              % permutatoins (a null distribution of covariances)
 
+
+    % **** Begin function ****
+
     % Tell user all the parameters they sent in (so they can cancel before 
     % it runs for a long time if they made a mistake).
     if isfield(parameters, 'findBestNComponents') && parameters.findBestNComponents
@@ -110,12 +113,11 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     % If there are fewer observations than asked-for components, lower
     % ncomponents to 1 less than number of observation
     if size(responseVariables, 1) <= parameters.ncomponents_max
-        
         ncomponents_max = size(responseVariables, 1) - 1;
-
     else
         ncomponents_max = parameters.ncomponents_max;
     end
+
 
 
     % ********************************************************************
@@ -149,7 +151,6 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                 % divisions.
                 partition_indices_holder = cell(parameters.kFolds, parameters.MonteCarloReps, size(responseVariables, 2));
     
-
                 % For each response variable,
                 for variablei = 1:size(responseVariables, 2)
     
@@ -243,7 +244,6 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                    offset_vector = randperm(nobservations, parameters.MonteCarloReps);
                 end
                 
-
                 % For each monteCarlo repetition, 
                 for repititioni = 1:numel(offset_vector)
 
@@ -322,6 +322,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
                     SSEs_byfold(foldi, :, :) = SSEFunction(Xtrain,Ytrain,Xtest,Ytest,ncomponents_max); 
         
                 end
+
                 SSEs_byrepitition(repititioni, :, :) = squeeze(mean(SSEs_byfold, 1));
             end
 
@@ -350,8 +351,8 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
         % If not contguous partitions, run with random paritions.
         else 
-                 [~, ~, ~, ~, ~, ~, MSEP_original, stats_original, MSEP_byVars_original] ...
-               = plsregress_fullcode(explanatoryVariables, responseVariables, ncomponents_max, 'cv', parameters.crossValidationReps, 'mcreps', parameters.MonteCarloReps, 'Options', statset('UseParallel',true) );
+            [~, ~, ~, ~, ~, ~, MSEP_original, stats_original, MSEP_byVars_original] ...
+            = plsregress_fullcode(explanatoryVariables, responseVariables, ncomponents_max, 'cv', parameters.crossValidationReps, 'mcreps', parameters.MonteCarloReps, 'Options', statset('UseParallel',true) );
             
             % Save the original weights of Y for later (in case you want to look at
             % what those components look like later)
@@ -372,7 +373,6 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
     else
         ncomponents = ncomponents_max;
         results.ncomponents_used = ncomponents;
-        
     end
 
 
