@@ -1351,7 +1351,7 @@ for typei = 1:numel(comparison_types)
     
     
     parameters.evaluation_instructions = {{'b = repmat(parameters.data, 1, 2);'...
-                                          'data_evaluated = reshape(transpose(b), size(parameters.data,2), size(parameters.data,1) * 2);'}};
+                                          'data_evaluated = transpose(reshape(transpose(b), size(parameters.data,2), size(parameters.data,1) * 2));'}};
     % Inputs 
     parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 2 ' comparison_type '\'], 'comparison', '\'};
     parameters.loop_list.things_to_load.data.filename= {'PLSR_significance_randomPermutations_Cov_FDR.mat'};
