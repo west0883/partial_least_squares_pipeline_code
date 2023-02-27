@@ -2052,6 +2052,7 @@ parameters.loop_variables.comparison_types = {'categorical', 'continuous'};
 parameters.isVector = true;
 parameters.corrsDim = 2;
 parameters.fromPLSR = true;
+parameters.sigmasDim = 2;
 
 % Dimension to average across AFTER data has gone through AverageByNode
 % code.
