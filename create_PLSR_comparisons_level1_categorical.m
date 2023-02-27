@@ -135,7 +135,7 @@ counter = counter + 1;
 comparisons(counter).name = 'motorized_accelvsdecel_categorical';
 comparisons(counter).variablesToUse = {'type_dummyvars_vector'};
 comparisons(counter).mice_not_to_use = {};
-comparisons(counter).plotMultiplier = -1;
+comparisons(counter).plotMultiplier = 1;
 comparisons(counter).figure_type = 'acceldecel';
 
 % Get relevent indices for this type.
