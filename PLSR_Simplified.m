@@ -1,10 +1,10 @@
-% PLSR_forRunAnalysis.m
+% PLSR_Simplified.m
 % Sarah West
 % 6/6/22
 
-% A wrapper that runs the Matlab function plsregress_fullcode via RunAnalysis.m
+% A wrapper that runs the Matlab function plsregress_fullcode.m 
 
-function [parameters] = PLSR_forRunAnalysis(parameters)
+function [parameters] = PLSR_Simplified(parameters)
 
     % for notes purposes:
     % n = number of observations
@@ -56,9 +56,10 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             % fields with same meaning as Matlab plsregress function output:
                 % XL -- > these are the "subnetwork" latent components
                 % YL
-                % XS 
+                % XS --> "scores"
                 % YS
-                % BETA 
+                % BETA --> normalized Betas (isn't as useful as the
+                          % covariance, below)
                 % PCTVAR 
                 % MSEP
                 % stats 
