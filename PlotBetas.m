@@ -40,10 +40,12 @@ function [parameters] = PlotBetas(parameters)
             holder = betas_adjusted(:, componenti);
         end 
         
-        holder(parameters.indices) = betas_adjusted(:, componenti);
-
-        extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
-        color_range = [-extreme extreme]; 
+        if isfield(parameters, 'caxis') 
+            color_range = parameters.caxis;
+        else
+            extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
+            color_range = [-extreme extreme]; 
+        end
 
         %color_range = [-0.06 0.06];
         subplot(subplot_rows, subplot_columns, componenti); imagesc(holder); colorbar; 
