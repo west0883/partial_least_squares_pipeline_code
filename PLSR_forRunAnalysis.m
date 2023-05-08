@@ -407,7 +407,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         % Make a holding matrix for Cov permutations.
         Covs_permutations = NaN(size(results.Cov,1), numel(columns_to_use), parameters.n_permutations);  %size(results.BETA, 2)
 
-        parfor repi = 1:parameters.n_permutations 
+        parfor repi = 1:parameters.n_permutations % parfor 
 
             % For each response variable being looked at (want the diffent 
             % categories to vary independently), make a mixing vector that's
@@ -429,11 +429,23 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
 
             end
 
+            % If categorical comparison, duplicate responseVariables_mixed
+            % with a negative value
+            if isfield(parameters, 'comparison_type') && strcmp(comparison_type, 'categorical')
+                responseVariables_mixed = [responseVariables_mixed -responseVariables_mixed];
+            end 
+
             % Run the plsregress_fullcode on the mixed/permuted data.
             [XL,  YL] = plsregress_fullcode(explanatoryVariables, responseVariables_mixed, ncomponents);
             
             % Calculate normalized covariance matrix 
             Cov = XL * YL' ./ (size(explanatoryVariables,1) - 1);
+            
+            % If comparison type is categorical, keep just the first column
+            % of Cov.
+            if isfield(parameters, 'comparison_type') && strcmp(comparison_type, 'categorical')
+                Cov = Cov(:, 1);
+            end 
 
             % Put into holding matrix.
             Covs_permutations(:, :, repi) = Cov; 
