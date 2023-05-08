@@ -21,7 +21,7 @@ function [parameters] = PlotBetas(parameters)
     % Adjust Betas based on z-score sigma. % First row is constant estimate
     % If user says so
     if isfield(parameters, 'adjust_beta') && parameters.adjust_beta
-        betas_adjusted = parameters.results.Cov ./ parameters.dataset_info.zscoring.brainData.sigma' .*  parameters.dataset_info.zscoring.responseVariables.sigma; 
+        betas_adjusted = parameters.results.Cov ./ parameters.dataset_info.zscoring.explanatoryVariables.sigma' .*  parameters.dataset_info.zscoring.responseVariables.sigma; 
     else
         betas_adjusted = parameters.results.Cov;
     end
