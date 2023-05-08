@@ -21,11 +21,15 @@ function [parameters] = PlotWeights(parameters)
     fig.WindowState = 'maximized';
     for componenti = 1:size(weights, 2)
 
-        holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
-
-        % First row is constant estimate
-        holder(parameters.indices) = weights(:, componenti);
-
+        if parameters.isCorrelationMatrix
+    
+            holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
+    
+            % First row is constant estimate
+            holder(parameters.indices) = weights(:, componenti);
+        else
+            holder = weights(:, componenti);
+        end 
         % Get most negative or positive value for color range, center
         % around 0.
         extreme = max(max(holder, [], 'all', 'omitnan'), abs(min(holder, [], 'all', 'omitnan')));
