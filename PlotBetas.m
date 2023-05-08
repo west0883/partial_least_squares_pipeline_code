@@ -30,8 +30,15 @@ function [parameters] = PlotBetas(parameters)
     fig.WindowState = 'maximized';
     for componenti = 1:size(betas_adjusted, 2)
 
-        holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
-
+         if parameters.isCorrelationMatrix
+    
+            holder = NaN(parameters.number_of_sources, parameters.number_of_sources);
+    
+            % First row is constant estimate
+            holder(parameters.indices) = betas_adjusted(:, componenti);
+        else
+            holder = betas_adjusted(:, componenti);
+        end 
         
         holder(parameters.indices) = betas_adjusted(:, componenti);
 
