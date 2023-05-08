@@ -37,7 +37,9 @@ function [parameters] = PlotMSEPs(parameters)
     MSEPs_normalized = MSEPs_normalized/MSEPs_normalized(1);
 
     plot(component_vector, MSEPs_normalized);
-    legend(parameters.this_comparison_set(:).name);
+    if isfield(parameters, 'this_comparison_set')
+        legend(parameters.this_comparison_set(:).name);
+    end
 
     % Plot responses. Don't plot if user says not to.
     if isfield(parameters, 'plot_MSEPs_response') && ~parameters.plot_MSEPs_response
@@ -71,7 +73,9 @@ function [parameters] = PlotMSEPs(parameters)
         MSEPs_normalized = MSEPs_normalized/MSEPs_normalized(1);
     
         plot(component_vector, MSEPs_normalized);
-        legend(parameters.this_comparison_set(:).name);
+        if isfield(parameters, 'this_comparison_set')
+            legend(parameters.this_comparison_set(:).name);
+        end
     end
     
 end 

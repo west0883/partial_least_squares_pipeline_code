@@ -37,8 +37,9 @@ function [parameters] = PlotPCTVAR(parameters)
     set(0, 'CurrentFigure', parameters.xfig); 
     hold on; 
     plot(cumsum(parameters.results.PCTVAR(1,:)));
-    legend(parameters.this_comparison_set(:).name);
-
+    if isfield(parameters, 'this_comparison_set')
+        legend(parameters.this_comparison_set(:).name);
+    end
 
     % Plot responses only if user says so.
     if isfield(parameters, 'plot_PCTVAR_response') && parameters.plot_PCTVAR_response
@@ -67,7 +68,9 @@ function [parameters] = PlotPCTVAR(parameters)
         set(0, 'CurrentFigure', parameters.yfig); 
         hold on;
         plot (cumsum(parameters.results.PCTVAR(2,:)));
-        legend(parameters.this_comparison_set(:).name);
+        if isfield(parameters, 'this_comparison_set')
+            legend(parameters.this_comparison_set(:).name);
+        end
 
     end
     
