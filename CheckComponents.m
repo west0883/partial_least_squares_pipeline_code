@@ -10,6 +10,16 @@ function [parameters] = CheckComponents(parameters)
 
       MessageToUser('Checking ', parameters);
 
+      % Define number of sources (if is different for each mouse)
+      if isfield(parameters, 'define_number_of_sources') && parameters.define_number_of_sources
+          corr_num = size(parameters.results.Cov, 1);
+
+          % (found this with a quadratic equation)
+          parameters.number_of_sources = 0.5 * (1 + sqrt(8 * corr_num + 1 ));
+
+          parameters.indices = find(tril(ones(parameters.number_of_sources), -1));
+      end 
+
       % **** Plot weights 
       % Don't do if user says not to.
       if isfield(parameters, 'plot_weights') && ~parameters.plot_weights
