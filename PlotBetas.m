@@ -6,6 +6,16 @@
 
 function [parameters] = PlotBetas(parameters)
 
+    % Define number of sources (if is different for each mouse)
+    if isfield(parameters, 'define_number_of_sources') && parameters.define_number_of_sources
+        corr_num = size(parameters.results.Cov, 1);
+        
+        % (found this with a quadratic equation)
+        parameters.number_of_sources = 0.5 * (1 + sqrt(8 * corr_num + 1 ));
+        
+        parameters.indices = find(tril(ones(parameters.number_of_sources), -1));
+    end 
+    
     [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(parameters.results.Cov, 2),4/5);
 
     % Adjust Betas based on z-score sigma. % First row is constant estimate
