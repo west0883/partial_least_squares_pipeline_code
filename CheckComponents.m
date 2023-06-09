@@ -10,16 +10,32 @@ function [parameters] = CheckComponents(parameters)
 
       MessageToUser('Checking ', parameters);
 
-      % Define number of sources (if is different for each mouse)
-      if isfield(parameters, 'define_number_of_sources') && parameters.define_number_of_sources
-          corr_num = size(parameters.results.Cov, 1);
+      % Get data type if data_type is in the looping iterators 
+      if isfield(parameters, 'data_type_looping') && parameters.data_type_looping
 
-          % (found this with a quadratic equation)
-          parameters.number_of_sources = 0.5 * (1 + sqrt(8 * corr_num + 1 ));
+         parameters.data_type = parameters.values{strcmp(parameters.keywords,'data_type')};
 
-          parameters.indices = find(tril(ones(parameters.number_of_sources), -1));
       end 
+      
+      % for the PlotBetas function
+      if strcmp(parameters.data_type, 'corrs')
+         parameters.isCorrelationMatrix = true;
 
+          % Define number of sources (if is different for each mouse)
+          if isfield(parameters, 'define_number_of_sources') && parameters.define_number_of_sources
+              corr_num = size(parameters.results.Cov, 1);
+    
+              % (found this with a quadratic equation)
+              parameters.number_of_sources = 0.5 * (1 + sqrt(8 * corr_num + 1 ));
+    
+              parameters.indices = find(tril(ones(parameters.number_of_sources), -1));
+          end 
+
+      else
+         parameters.isCorrelationMatrix = false;
+      end
+
+     
       % **** Plot weights 
       % Don't do if user says not to.
       if isfield(parameters, 'plot_weights') && ~parameters.plot_weights
@@ -110,5 +126,14 @@ function [parameters] = CheckComponents(parameters)
           parameters.fig_PCTVARs_explanatory = parameters.xfig;
           parameters.fig_PCTVARs_response = parameters.yfig;
       end
+
+      % If user says so.
+      if isfield(parameters, 'plot_betas') && parameters.plot_betas
+
+          parameters = PlotBetas(parameters);
+          
+          parameters.fig_COVs = parameters.fig;
+    
+      end 
                 
 end 
