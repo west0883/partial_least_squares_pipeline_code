@@ -5,23 +5,15 @@
 % Plot a number of Betas from partial least squares regression. Run by RunAnalysis.
 
 function [parameters] = PlotBetas(parameters)
-
-    % Define number of sources (if is different for each mouse)
-    if isfield(parameters, 'define_number_of_sources') && parameters.define_number_of_sources
-        corr_num = size(parameters.results.Cov, 1);
-        
-        % (found this with a quadratic equation)
-        parameters.number_of_sources = 0.5 * (1 + sqrt(8 * corr_num + 1 ));
-        
-        parameters.indices = find(tril(ones(parameters.number_of_sources), -1));
-    end 
     
     [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(parameters.results.Cov, 2),4/5);
 
     % Adjust Betas based on z-score sigma. % First row is constant estimate
     % If user says so
     if isfield(parameters, 'adjust_beta') && parameters.adjust_beta
-        betas_adjusted = parameters.results.Cov ./ parameters.dataset_info.zscoring.explanatoryVariables.sigma' .*  parameters.dataset_info.zscoring.responseVariables.sigma; 
+
+        % *** Double check sigma multiplication***
+        betas_adjusted = parameters.results.Cov .* parameters.dataset.zscoring.explanatoryVariables.sigma' ./  parameters.dataset.zscoring.responseVariables.sigma; 
     else
         betas_adjusted = parameters.results.Cov;
     end
