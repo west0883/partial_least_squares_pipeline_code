@@ -225,15 +225,12 @@ periods.number_of_rolls = number_of_rolls;
 duration_vector = cellfun(@(x) ([1:x] + 1) * (window_step_size/fps) , number_of_rolls, 'UniformOutput', false);
 periods.duration_vector = duration_vector;
 
-%% Convert the rest & walk periods' duration vectors to just the average duration of motorized walk.
-% (the average duration from actual Arduino code)
-% Leave spontaneous blank (Nan) for now
-% Max tansition duration is 6.5s, so going up to the next full window for the continued.
-max_duration = 7.5;
+%% Convert the rest & walk periods' duration vectors to NaN
+% Will be replaced by duration_place vectors later
 
 for i = 1:size(periods,1)
     if strcmp(periods{i, 'type'}{1}, 'walk') || strcmp(periods{i, 'type'}{1}, 'rest')
-        periods{i, 'duration_vector'} = {max_duration}; 
+        periods{i, 'duration_vector'} = {NaN}; 
     end
 end 
 
