@@ -168,13 +168,16 @@ end
 periods.type = types; 
 clear types type type1 type2 look_for_pattern look_for this_condition;
 
-%% Make column for pupil diameter 
+%% Make column for pupil diameter, tail, nose, paw'
 % All periods. Are all NaN for now, will be put in at "populate response
 % variables" step in main pipline.
-pupil_diameter = repmat({NaN}, size(periods,1),1);
-periods.pupil_diameter = pupil_diameter;
+extra_variables = {'pupil_diameter',  'tail', 'nose', 'paw'};
+for i = 1:numel(extra_variables)
+    holder = repmat({NaN}, size(periods,1),1);
+    periods.(extra_variables{i}) = holder;
+end 
 
-clear pupil_diameter;
+clear holder extra_variables;
 
 %% Put in accel = 0 for all finisheds, walk, & rest periods
 % Leave spontaneous blank (Nan) for now
