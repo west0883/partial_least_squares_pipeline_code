@@ -77,7 +77,7 @@ periods.accel = cellfun(@(x) x/conversion_factor, accels, 'UniformOutput', false
 
 %% Remove behavior fields you don't need.
 % previous speed, two speeds ago, previous accel.
-columns_to_remove = {'previous_speed', 'previous_accel', 'two_speeds_ago'};
+columns_to_remove = {'previous_speed', 'two_speeds_ago'}; % 'previous_accel'
 for coli = 1:numel(columns_to_remove)
     periods.(columns_to_remove{coli}) = [];
 end
