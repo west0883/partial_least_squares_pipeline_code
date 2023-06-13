@@ -168,7 +168,7 @@ end
 periods.type = types; 
 clear types type type1 type2 look_for_pattern look_for this_condition;
 
-%% Make column for pupil diameter, tail, nose, paw'
+%% Make column for pupil diameter, tail, nose, FL, HL
 % All periods. Are all NaN for now, will be put in at "populate response
 % variables" step in main pipline.
 extra_variables = {'pupil_diameter',  'tail', 'nose', 'FL', 'HL'};
@@ -177,7 +177,7 @@ for i = 1:numel(extra_variables)
     periods.(extra_variables{i}) = holder;
 end 
 
-clear holder extra_variables;
+clear holder;
 
 %% Put in accel = 0 for all finisheds, walk, & rest periods
 % Leave spontaneous blank (Nan) for now
@@ -262,15 +262,24 @@ for i = 1:size(periods,1)
 end 
 periods.speed_vector = speed_vector;
 
-%% Replicate accels & pupil diameter by roll number.
-accel_vector = cell(size(periods,1),1);
-pupil_diameter_vector = cell(size(periods,1),1);
-for i = 1:size(periods,1)
-    accel_vector(i) = {repmat(periods{i, 'accel'}{1}, 1, periods{i,'number_of_rolls'}{1})};
-    pupil_diameter_vector(i) = {repmat(periods{i, 'pupil_diameter'}{1}, 1, periods{i,'number_of_rolls'}{1})};
+%% Replicate accels & pupil diameter & other variables by roll number.
+
+variables = [{'accel'} extra_variables];
+
+% set up holders
+for ii = 1:numel(variables)
+    holder.([variables{ii} '_vector']) =  cell(size(periods,1),1);
 end 
-periods.accel_vector = accel_vector;
-periods.pupil_diameter_vector = pupil_diameter_vector;
+
+for i = 1:size(periods,1)
+    for ii = 1:numel(variables)
+
+        holder.([variables{ii} '_vector'])(i) =  {repmat(periods{i, variables{ii}}{1}, 1, periods{i,'number_of_rolls'}{1})};
+    end 
+end 
+for ii = 1:numel(variables)
+    periods.([variables{ii} '_vector'])= holder.([variables{ii} '_vector']);
+end
 
 %% Make a column that says if this period is one of the "active" transitions 
 % Is for later when you want to compare all transitions to other things. 
