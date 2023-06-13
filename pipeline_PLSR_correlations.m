@@ -184,7 +184,7 @@ parameters.loop_list.things_to_load.data.variable= {'values'};
 parameters.loop_list.things_to_load.data.level = 'mouse';
 
 % Output
-parameters.loop_list.things_to_save.data_evaluated.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations Ipsa Contra\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.data_evaluated.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
 parameters.loop_list.things_to_save.data_evaluated.filename= {'values.mat'};
 parameters.loop_list.things_to_save.data_evaluated.variable= {'values'}; 
 parameters.loop_list.things_to_save.data_evaluated.level = 'mouse';
@@ -233,6 +233,16 @@ parameters.loop_list.things_to_load.diameter_vector.dir = {[parameters.dir_exper
 parameters.loop_list.things_to_load.diameter_vector.filename= {'diameter_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.diameter_vector.variable= {'diameter_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.diameter_vector.level = 'mouse';
+
+% Tail 
+
+% Nose 
+
+% FL 
+
+% HL 
+
+% rest & walk duration 
 
 % Output 
 parameters.loop_list.things_to_save.response_variables.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
