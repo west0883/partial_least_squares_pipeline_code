@@ -53,7 +53,7 @@ function [parameters] = PopulateResponseVariables(parameters)
             % Permute values  so dimensions match other response variables (put in a 1 at the beginning for the number of variables)
             values = permute(values, [3, 1, 2]);  % Use "3" as the first dimension, because it's a 1.
             
-            % Put into rstructure
+            % Put into response variables structure
             response_variables_structure.(variable) = values;    
 
         end 
@@ -119,7 +119,7 @@ function [parameters] = PopulateResponseVariables(parameters)
         % Put variables into a cell format, 
        
         % get all variable names you've used.
-         fieldnames(response_variables_structure)
+         fieldnames(response_variables_structure);
 
         cell_holder = cell(1,numel(fieldnames(response_variables_structure))); 
         for variablei = 1:numel(fieldnames(response_variables_structure)) 
@@ -144,6 +144,10 @@ function [parameters] = PopulateResponseVariables(parameters)
         end
 
     end
+
+
+    % **** Concatenate together ****
+
     % If not vertically concatenated, make each column of
     % response_variables_cellholder its own variable in the
     % response_variables table. 
@@ -155,6 +159,36 @@ function [parameters] = PopulateResponseVariables(parameters)
         end
 
     end
+
+    % **** For continued rest & walk, put in duration from duration_place**** 
+    continued_periods = {'rest', 'c_rest', 'walk', 'c_walk'};
+
+    % For each continued period
+    for periodi = 1:numel(continued_periods)
+        period = continued_periods{periodi};
+
+        % find location within response_variables_cell 
+        index2 = find(strcmp(response_variables.condition, period));
+        
+        % find location in original data matrix
+        index1 = parameters.periods{index2, 'index'};
+
+        % Go one by one, in case of multiple with this name (like in c_walk)
+        for i = 1:numel(index2)
+    
+            % Get out duration_place values
+            values = parameters.duration_place{index1(i)}; 
+    
+            % Permute values to match other variables, as above
+            values = permute(values, [2, 3, 1]);
+            
+            % Put into output (if more than one index, 
+            response_variables.duration_vector{index2(i)} = values; 
+
+        end 
+
+    end 
+
     % Pass response variables to output structure
     parameters.response_variables = response_variables;
 
