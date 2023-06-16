@@ -24,6 +24,8 @@ function [parameters] = PopulateResponseVariables(parameters)
     % For each period
     for periodi = 1:size(parameters.periods, 1)
 
+        period = parameters.periods{periodi, 1};
+
         % Get number of instances 
         instances = size(parameters.data{periodi}, 3);
 
@@ -36,20 +38,28 @@ function [parameters] = PopulateResponseVariables(parameters)
 
         end
 
-        % ***Put in pupil diameters
+        % ***Put in pupil diameters, tail, nose, FL, HL ***
 
         % Use original location in periods_nametable via index field.
         index = parameters.periods{periodi, 'index'};
-        
-        % Get out the diameters
-        diameters = parameters.diameter_vector{index};
 
-        % Permute diameters so dimensions match other response variables (put in a 1 at the beginning for the number of variables)
-        diameters = permute(diameters, [3, 1, 2]);  % Use "3" as the first dimension, because it's a 1.
+        % Put in pupil diameter, tail, nose, FL, & HL
+        for variablei = 1:numel(parameters.additional_variables)
+            variable = parameters.additional_variables{variablei};
+            
+            % Get out values for this variable
+            values = parameters.(variable){index};
+           
+            % Permute values  so dimensions match other response variables (put in a 1 at the beginning for the number of variables)
+            values = permute(values, [3, 1, 2]);  % Use "3" as the first dimension, because it's a 1.
+            
+            % Put into rstructure
+            response_variables_structure.(variable) = values;    
 
-        % Put into structure.
-        response_variables_structure.pupil_diameter_vector = diameters;
+        end 
 
+
+        % *** Put in static motorized variables ***
         % Skip these steps if there's no motorized_variables_static field,
         % just replicate the speed & accel vectors of all periods.
         if isfield(parameters, 'motorized_variables_static')
@@ -114,6 +124,7 @@ function [parameters] = PopulateResponseVariables(parameters)
         cell_holder = cell(1,numel(fieldnames(response_variables_structure))); 
         for variablei = 1:numel(fieldnames(response_variables_structure)) 
     
+            variable = parameters.response_variable_names{variablei};
             cell_holder{variablei} = response_variables_structure.(parameters.response_variable_names{variablei});
     
         end 
@@ -132,6 +143,7 @@ function [parameters] = PopulateResponseVariables(parameters)
 
         end
 
+    end
     % If not vertically concatenated, make each column of
     % response_variables_cellholder its own variable in the
     % response_variables table. 
