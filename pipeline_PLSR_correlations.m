@@ -111,7 +111,7 @@ parameters.color_range.specials =  {'motorized_transitions_continuousVars_start'
                                     'walk_motorizedvsspon_categorical', 'categorical', [-0.3 0.3]};
                                     
 % Names of all continuous variables.
-parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter', 'tail', 'nose', 'paw'};
+parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter', 'tail', 'nose', 'FL', 'HL'};
 
 % Put relevant variables into loop_variables.
 parameters.loop_variables.mice_all = parameters.mice_all;
@@ -201,9 +201,12 @@ end
 parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
 
 % Variables to replicate
-parameters.response_variable_names = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector'};
+parameters.response_variable_names = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
 parameters.variables_static = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'duration_vector'};
 parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
+% Additional variables -- pupil, tail, nose, FL, HL; always present &
+% loaded in
+parameters.additional_variables = parameters.response_variable_names(7:end);
 % Original order of spontaneous (for velocity & accel indexing)
 parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 'stopwalk', 'postwalk'};
 
@@ -211,7 +214,7 @@ parameters.concatenate_vertically = false;
 
 % Input
 % Correlations (for instances count)
-parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations Ipsa Contra\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\correlations\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.data.filename= {'values.mat'};
 parameters.loop_list.things_to_load.data.variable= {'values'}; 
 parameters.loop_list.things_to_load.data.level = 'mouse';
@@ -229,18 +232,34 @@ parameters.loop_list.things_to_load.accel_vector.variable= {'accel_averaged_by_i
 parameters.loop_list.things_to_load.accel_vector.level = 'mouse';
 
 % Pupil diameter
-parameters.loop_list.things_to_load.diameter_vector.dir = {[parameters.dir_exper 'behavior\eye\rolled concatenated diameters\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.diameter_vector.filename= {'diameter_averaged_by_instance.mat'};
-parameters.loop_list.things_to_load.diameter_vector.variable= {'diameter_averaged_by_instance'}; 
-parameters.loop_list.things_to_load.diameter_vector.level = 'mouse';
+parameters.loop_list.things_to_load.pupil_diameter_vector.dir = {[parameters.dir_exper 'behavior\eye\rolled concatenated diameters\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.pupil_diameter_vector.filename= {'diameter_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.pupil_diameter_vector.variable= {'diameter_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.pupil_diameter_vector.level = 'mouse';
 
 % Tail 
+parameters.loop_list.things_to_load.tail_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\tail\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.tail_vector.filename= {'velocity_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.tail_vector.variable= {'velocity_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.tail_vector.level = 'mouse';
 
 % Nose 
+parameters.loop_list.things_to_load.nose_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\nose\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.nose_vector.filename= {'velocity_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.nose_vector.variable= {'velocity_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.nose_vector.level = 'mouse';
 
 % FL 
+parameters.loop_list.things_to_load.FL_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\FL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.FL_vector.filename= {'velocity_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.FL_vector.variable= {'velocity_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.FL_vector.level = 'mouse';
 
 % HL 
+parameters.loop_list.things_to_load.HL_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\HL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.HL_vector.filename= {'velocity_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.HL_vector.variable= {'velocity_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.HL_vector.level = 'mouse';
 
 % rest & walk duration 
 
