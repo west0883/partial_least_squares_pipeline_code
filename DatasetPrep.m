@@ -21,6 +21,7 @@ function [parameters] = DatasetPrep(parameters)
     % responseVariables is now an array
     holder = cell(1, numel(comparison_variablesToUse));
     for i = 1:numel(comparison_variablesToUse)
+        
         holder{i} = parameters.response{comparison_indices, comparison_variablesToUse{i}}; 
 
     end
@@ -151,7 +152,7 @@ function [parameters] = DatasetPrep(parameters)
    
     % *** Deal with missing data values ***
 
-    % Calculate number of missing values for each variable. 
+    % Calculate number of missing values for each variable.
     dataset.NaN_ratios.responseVariables = sum(isnan(responseVariables), 1)/size(responseVariables,1);
     dataset.NaN_ratios.explanatoryVariables = sum(isnan(explanatoryVariables), 1)/size(explanatoryVariables,1);
 
