@@ -396,7 +396,7 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
 
     % If renumbering, rearrage by new node renumbering
     if isfield(parameters, 'useRenumbering') && parameters.useRenumbering
-        holder = ArrangeNewNumbering(holder, parameters.node_renumbering, true, [1 2], 0);
+        holder = ArrangeNewNumbering(holder, parameters.node_renumbering, true, [1 2], 0, [parameters.number_of_sources parameters.number_of_sources]);
     end
 
     % Make a figure
