@@ -1110,6 +1110,27 @@ for i = 1 %1:numel(true_false_vector)
         parameters.loop_list.things_to_save.pupil_diameter_fig.filename = {['pupil_diameter_ ' title]};
         parameters.loop_list.things_to_save.pupil_diameter_fig.variable = {'pupil_diameter_fig'};
         parameters.loop_list.things_to_save.pupil_diameter_fig.level = 'end';
+
+        parameters.loop_list.things_to_save.tail_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+        parameters.loop_list.things_to_save.tail_fig.filename = {['tail_ ' title]};
+        parameters.loop_list.things_to_save.tail_fig.variable = {'tail_fig'};
+        parameters.loop_list.things_to_save.tail_fig.level = 'end';
+        
+        parameters.loop_list.things_to_save.nose_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+        parameters.loop_list.things_to_save.nose_fig.filename = {['nose_ ' title]};
+        parameters.loop_list.things_to_save.nose_fig.variable = {'nose_fig'};
+        parameters.loop_list.things_to_save.nose_fig.level = 'end';
+        
+        parameters.loop_list.things_to_save.FL_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+        parameters.loop_list.things_to_save.FL_fig.filename = {['FL_ ' title]};
+        parameters.loop_list.things_to_save.FL_fig.variable = {'FL_fig'};
+        parameters.loop_list.things_to_save.FL_fig.level = 'end';
+        
+          parameters.loop_list.things_to_save.HL_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+        parameters.loop_list.things_to_save.HL_fig.filename = {['HL_ ' title]};
+        parameters.loop_list.things_to_save.HL_fig.variable = {'HL_fig'};
+        parameters.loop_list.things_to_save.HL_fig.level = 'end';
+        
         
         RunAnalysis({@PlotBetasSecondLevel}, parameters);
     end
