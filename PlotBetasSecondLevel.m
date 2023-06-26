@@ -324,6 +324,18 @@ function [parameters] = PlotBetasSecondLevel(parameters)
 
                     case 4 % pupil diameter
                         units = 'per % max diameter';
+
+                    case 5 % tail 
+                        units = 'per pixel/s';
+
+                    case 6 % nose
+                        units = 'per pixel/s';
+                    
+                    case 7 % FL
+                        units = 'per pixel/s';
+                   
+                    case 8 % HL
+                        units = 'per pixel/s';
                 end
 
                 colorbar_string = ['\Delta{\it r} ' units];
@@ -490,8 +502,11 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     % *** Colorbar stuff***
 
     % Make colorbar
+    try
     Colorbar_handle = colorbar; caxis(color_range); colormap(cmap);
-
+    catch
+        error('line 496');
+    end 
     % Scoot colorbar to right.
     Colorbar_handle.Position = Colorbar_handle.Position + [0.11 0 0 0];
 
