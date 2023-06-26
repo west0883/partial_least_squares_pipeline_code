@@ -1034,11 +1034,11 @@ RunAnalysis({@AverageSigmas}, parameters);
 parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
-for i = 2 %1:numel(true_false_vector)
+for i = 1 %1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
-    for j = 2%1:numel(true_false_vector)
+    for j = 1%1:numel(true_false_vector)
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
@@ -1122,7 +1122,7 @@ clear i j true_false_vector;
 %% Level 1 continuous -- run random permutations.
 % With best number of components.
 % Always clear loop list first. 
-do = false; 
+do = true; 
 if do 
     if isfield(parameters, 'loop_list')
     parameters = rmfield(parameters,'loop_list');
@@ -1293,87 +1293,87 @@ if do
 end
 
 %% Level 2 categorical -- prep shuffled datasets for PLSR on shuffles, bootstrapping
-%Always clear loop list first. 
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
+% %Always clear loop list first. 
+% if isfield(parameters, 'loop_list')
+% parameters = rmfield(parameters,'loop_list');
+% end
+% 
+% % Iterators
+% parameters.loop_list.iterators = {
+%                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
+%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
+% 
+% % If the first level was categorical:
+% parameters.firstLevelCategorical = true; 
+% 
+% % Remove outliers & average
+% parameters.averaging_across_mice = true;
+% parameters.removeOutliers = false; 
+% 
+% parameters.this_comparison_set = parameters.comparisons_categorical;
+% parameters.max_mice = size(parameters.mice_all, 2);
+% parameters.concatenation_level = 'mouse';
+% 
+% % multiplying by sigmas by animal? 
+% parameters.sigma_byanimal = false;
+% 
+% % Input 
+% parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_bootstrap.mat'};
+% parameters.loop_list.things_to_load.response.variable= {'Covs_bootstrap'}; 
+% parameters.loop_list.things_to_load.response.level = 'mouse';
+% 
+% % Output
+% parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
+% parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_bootstrap_Cov.mat'};
+% parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
+% parameters.loop_list.things_to_save.dataset.level = 'comparison';
+% 
+% RunAnalysis({@DatasetPrepSecondLevel}, parameters);
+% 
+% %% Level 2 categorical -- check significance with bootstrapping
+% % Always clear loop list first. 
+% if isfield(parameters, 'loop_list')
+% parameters = rmfield(parameters,'loop_list');
+% end
+% 
+% % Iterators
+% parameters.loop_list.iterators = {
+%                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
+% 
+% parameters.shufflesDim = 2;
+% parameters.find_significance = true;
+% 
+% % The statistical alpha value
+% parameters.alphaValue =  0.05/496; %0.001; %0.05/150;  %/(numel(parameters.comparisons_categorical) - 4;
+% 
+% % Use the Bootstrapping method. 
+% parameters.useBootstrapping = true;
+% 
+% % If you want to fit a normal distribution before t-test (default = true)
+% parameters.useNormalDistribution = true; 
+% 
+% % Inputs:
+% % Test values
+% parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
+% parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_Cov.mat'};
+% parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
+% parameters.loop_list.things_to_load.test_values.level = 'comparison';
+% % Null distribution
+% parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
+% parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_bootstrap_Cov.mat'};
+% parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
+% parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
+% 
+% % Outputs
+% parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\'], 'comparison', '\'};
+% parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
+% parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
+% parameters.loop_list.things_to_save.significance.level = 'comparison';
+% 
+% RunAnalysis({@SignificanceCalculation}, parameters);
 
-% Iterators
-parameters.loop_list.iterators = {
-               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
-               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
-
-% If the first level was categorical:
-parameters.firstLevelCategorical = true; 
-
-% Remove outliers & average
-parameters.averaging_across_mice = true;
-parameters.removeOutliers = false; 
-
-parameters.this_comparison_set = parameters.comparisons_categorical;
-parameters.max_mice = size(parameters.mice_all, 2);
-parameters.concatenation_level = 'mouse';
-
-% multiplying by sigmas by animal? 
-parameters.sigma_byanimal = false;
-
-% Input 
-parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_bootstrap.mat'};
-parameters.loop_list.things_to_load.response.variable= {'Covs_bootstrap'}; 
-parameters.loop_list.things_to_load.response.level = 'mouse';
-
-% Output
-parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_bootstrap_Cov.mat'};
-parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
-parameters.loop_list.things_to_save.dataset.level = 'comparison';
-
-RunAnalysis({@DatasetPrepSecondLevel}, parameters);
-
-%% Level 2 categorical -- check significance with bootstrapping
-% Always clear loop list first. 
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {
-               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
-
-parameters.shufflesDim = 2;
-parameters.find_significance = true;
-
-% The statistical alpha value
-parameters.alphaValue =  0.05/496; %0.001; %0.05/150;  %/(numel(parameters.comparisons_categorical) - 4;
-
-% Use the Bootstrapping method. 
-parameters.useBootstrapping = true;
-
-% If you want to fit a normal distribution before t-test (default = true)
-parameters.useNormalDistribution = true; 
-
-% Inputs:
-% Test values
-parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_Cov.mat'};
-parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
-parameters.loop_list.things_to_load.test_values.level = 'comparison';
-% Null distribution
-parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_bootstrap_Cov.mat'};
-parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
-parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
-
-% Outputs
-parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
-parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
-parameters.loop_list.things_to_save.significance.level = 'comparison';
-
-RunAnalysis({@SignificanceCalculation}, parameters);
-
-%% Level 2 continuous -- prep shuffled datasets for PLSR on shuffles.
+%% Level 2 continuous -- prep shuffled datasets for PLSR on bootstrap shuffles.
 do = false;
 if do
 % Always clear loop list first. 
@@ -1409,7 +1409,8 @@ parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
 RunAnalysis({@DatasetPrepSecondLevel}, parameters);
 end 
-%% Level 2 continuous -- check significance
+%% Level 2 continuous -- check significance with bootstrapping
+
 do = false;
 if do 
 % % Always clear loop list first. 
@@ -1455,7 +1456,7 @@ end
 
 %% Level 2 categorical -- plot betas with significance, bootstrap
 % Plot all the beta intercepts in a single plot 
-do = true;
+do = false;
 
 if do
 parameters.plotIndividually = false;
@@ -1622,7 +1623,7 @@ end
 clear i j true_false_vector;
 end 
 %% Level 2 continuous -- prep permutation shuffled datasets
-do = false;
+do = true;
 if do 
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
@@ -1704,7 +1705,7 @@ parameters.loop_list.things_to_save.dataset.level = 'comparison';
 RunAnalysis({@DatasetPrepSecondLevel}, parameters);
 
 %% Level 2 continuous -- check significance with permutations
-do = false;
+do = true;
 if do 
 % % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
