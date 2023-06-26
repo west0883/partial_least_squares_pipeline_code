@@ -79,7 +79,7 @@ periods.accel = cellfun(@(x) x/conversion_factor, accels, 'UniformOutput', false
 
 %% Remove behavior fields you don't need.
 % previous speed, two speeds ago, previous accel.
-columns_to_remove = {'previous_speed', 'previous_accel', 'two_speeds_ago'};
+columns_to_remove = {'previous_speed', 'two_speeds_ago'}; % 'previous_accel'
 for coli = 1:numel(columns_to_remove)
     periods.(columns_to_remove{coli}) = [];
 end
@@ -178,14 +178,17 @@ end
 periods.type = types; 
 clear types type type1 type2 look_for_pattern look_for this_condition;
 
-%% Make column for pupil diameter 
+
+%% Make column for pupil diameter, tail, nose, FL, HL
 % All periods. Are all NaN for now, will be put in at "populate response
 % variables" step in main pipline.
-pupil_diameter = repmat({NaN}, size(periods,1),1);
-periods.pupil_diameter = pupil_diameter;
+extra_variables = {'pupil_diameter',  'tail', 'nose', 'FL', 'HL'};
+for i = 1:numel(extra_variables)
+    holder = repmat({NaN}, size(periods,1),1);
+    periods.(extra_variables{i}) = holder;
+end 
 
-clear pupil_diameter;
-
+clear holder;
 %% Put in accel = 0 for all.
 accels = repmat({0}, size(periods,1), 1);
 periods.accel = accels;
@@ -246,18 +249,32 @@ periods.number_of_rolls = number_of_rolls;
 duration_vector = cellfun(@(x) ([1:x] + 1) * (window_step_size/fps) , number_of_rolls, 'UniformOutput', false);
 periods.duration_vector = duration_vector;
 
-%% Replicate speed, accels, & pupil diameter by roll number.
-speed_vector =  cell(size(periods,1),1);
-accel_vector = cell(size(periods,1),1);
-pupil_diameter_vector = cell(size(periods,1),1);
+%% Convert the rest & walk periods' duration vectors to NaN
+% Will be replaced by duration_place vectors later
+
 for i = 1:size(periods,1)
-    speed_vector(i) = {repmat(periods{i, 'speed'}{1}, 1, periods{i,'number_of_rolls'}{1})};
-    accel_vector(i) = {repmat(periods{i, 'accel'}{1}, 1, periods{i,'number_of_rolls'}{1})};
-    pupil_diameter_vector(i) = {repmat(periods{i, 'pupil_diameter'}{1}, 1, periods{i,'number_of_rolls'}{1})};
+    if strcmp(periods{i, 'type'}{1}, 'motorized_walk') || strcmp(periods{i, 'type'}{1}, 'motorized_rest') || strcmp(periods{i, 'type'}{1}, 'spontaneous_walk') || strcmp(periods{i, 'type'}{1}, 'spontaneous_rest')
+        periods{i, 'duration_vector'} = {NaN}; 
+    end
 end 
-periods.speed_vector = speed_vector;
-periods.accel_vector = accel_vector;
-periods.pupil_diameter_vector = pupil_diameter_vector;
+
+%% Replicate speed, accels, & pupil diameter by roll number.
+variables = [{'accel'} extra_variables];
+
+% set up holders
+for ii = 1:numel(variables)
+    holder.([variables{ii} '_vector']) =  cell(size(periods,1),1);
+end 
+
+for i = 1:size(periods,1)
+    for ii = 1:numel(variables)
+
+        holder.([variables{ii} '_vector'])(i) =  {repmat(periods{i, variables{ii}}{1}, 1, periods{i,'number_of_rolls'}{1})};
+    end 
+end 
+for ii = 1:numel(variables)
+    periods.([variables{ii} '_vector'])= holder.([variables{ii} '_vector']);
+end
 
 %% Make a column that says if this period is one of the walk "active" warnings 
 % Is for later when you want to compare all transitions to other things. 
