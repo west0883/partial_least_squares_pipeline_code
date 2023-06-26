@@ -35,7 +35,7 @@ function [parameters] = PadContinuousData(parameters)
         % variables to use.
         variablesToUse= parameters.comparisons_continuous(strcmp({parameters.comparisons_continuous(:).name}, comparison)).variablesToUse;
 
-        % If not useing all 4 variables, 
+        % If not useing all variables, 
         if numel(variablesToUse) < numel(parameters.continuous_variable_names)
 
             % Make new matrix of data.
