@@ -98,9 +98,9 @@ parameters.loop_variables.comparison_types = {'categorical', 'continuous'};
 
 %% Create periods_nametable_forPLSR.mat
 % If hasn't been created already. 
-if ~isfile([parameters.dir_exper 'PLSR Warning Periods\periods_nametable_forPLSR.mat'])
+if ~isfile([parameters.dir_exper 'PLSR Warning Periods\periods_nametable_forPLSR_warningPeriods.mat'])
     create_periods_nametable_forPLSR_warningPeriods
-    load([parameters.dir_exper 'PLSR Warning Periods\periods_nametable_forPLSR.mat']);
+    load([parameters.dir_exper 'PLSR Warning Periods\periods_nametable_forPLSR_warningPeriods.mat']);
     parameters.periods = periods; 
 
     % Also load the indices to remove
