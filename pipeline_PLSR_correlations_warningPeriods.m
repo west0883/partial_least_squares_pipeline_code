@@ -410,10 +410,11 @@ parameters.loop_list.iterators = {
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 
 parameters.this_comparison_set = parameters.comparisons_continuous;
-parameters.max_response_vars = 4;
+parameters.max_response_vars = 8;
+parameters.data_type = 'corrs';
 
 % Plot weights?
-parameters.plot_weights = false;
+parameters.plot_weights = true;
 
 % Plot MSEPs?
 parameters.plot_MSEPs = true;
@@ -423,6 +424,9 @@ parameters.plot_BICs = true;
 
 % Plot percent vars? 
 parameters.plot_percentVars = false;
+
+% Plot betas?
+parameters.plot_betas = true;
 
 % Input
 parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\'], 'comparison','\', 'mouse', '\'};
@@ -436,10 +440,10 @@ parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'};
 parameters.loop_list.things_to_load.dataset.level = 'comparison';
 
 % Output
-% parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\'], 'comparison', '\with 20 components\' 'mouse', '\'};
-% parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
-% parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
-% parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
+parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\'], 'comparison', '\with 20 components\' 'mouse', '\'};
+parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
+parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
+parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
 
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\MSEPs to 20\'],  'mouse', '\'};
 parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
@@ -471,45 +475,14 @@ parameters.loop_list.things_to_save.fig_BICs_response.level = 'mouse';
 % parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
 % parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
 
+parameters.loop_list.things_to_save.fig_COVs.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+parameters.loop_list.things_to_save.fig_COVs.filename= {'PLSR_Covs.fig'};
+parameters.loop_list.things_to_save.fig_COVs.variable= {'fig'}; 
+parameters.loop_list.things_to_save.fig_COVs.level = 'comparison';
+
 RunAnalysis({@CheckComponents}, parameters);
 close all;
 
-
-%% Plot Betas from continuous level 1 
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {
-               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-               'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator'     
-               };
-
-% Adjust beta values based on zscore sigmas?
-parameters.adjust_beta = false;
-
-% Input 
-parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'}; 
-parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
-parameters.loop_list.things_to_load.results.level = 'comparison';
-
-% Also load in dataset values for the zscore sigma.
-parameters.loop_list.things_to_load.dataset_info.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.dataset_info.filename= {'PLSR_dataset_info.mat'};
-parameters.loop_list.things_to_load.dataset_info.variable= {'dataset_info'}; 
-parameters.loop_list.things_to_load.dataset_info.level = 'comparison';
-
-% Output
-parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_save.fig.filename= {'PLSR_Covs.fig'};
-parameters.loop_list.things_to_save.fig.variable= {'fig'}; 
-parameters.loop_list.things_to_save.fig.level = 'comparison';
-
-RunAnalysis({@PlotBetas}, parameters);
-
-close all;
 
 %% Remove continuous variables effects from each behavior type. 
 % Always clear loop list first. 
@@ -689,7 +662,7 @@ parameters.loop_list.things_to_save.histogram.level = 'mouse';
 RunAnalysis({@ConcatenateData, @EvaluateOnData}, parameters);
 
 %% Level 1 categorical -- check components
-% Always clear loop list first. 
+% % Always clear loop list first. 
 % if isfield(parameters, 'loop_list')
 % parameters = rmfield(parameters,'loop_list');
 % end
@@ -702,10 +675,11 @@ RunAnalysis({@ConcatenateData, @EvaluateOnData}, parameters);
 % parameters.this_comparison_set = parameters.comparisons_categorical;
 % parameters.max_response_vars = 2;
 % 
-% parameters.plot_weights = false;
+% parameters.plot_weights = true;
 % parameters.plot_MSEPs = true;
 % parameters.plot_BICs = true;
 % parameters.plot_percentVars = false;
+% parameters.plot_betas = true;
 % 
 % % Input
 % parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
@@ -719,10 +693,10 @@ RunAnalysis({@ConcatenateData, @EvaluateOnData}, parameters);
 % parameters.loop_list.things_to_load.dataset.level = 'comparison';
 % 
 % % Output
-% % parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
-% % parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
-% % parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
-% % parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
+% parameters.loop_list.things_to_save.fig_weights.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
+% parameters.loop_list.things_to_save.fig_weights.filename= {'PLSR_weights.fig'};
+% parameters.loop_list.things_to_save.fig_weights.variable= {'fig_weights'}; 
+% parameters.loop_list.things_to_save.fig_weights.level = 'comparison';
 % 
 % parameters.loop_list.things_to_save.fig_MSEPs_explanatory.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
 % parameters.loop_list.things_to_save.fig_MSEPs_explanatory.filename= {'PLSR_MSEPs_explanatory.fig'};
@@ -754,44 +728,15 @@ RunAnalysis({@ConcatenateData, @EvaluateOnData}, parameters);
 % % parameters.loop_list.things_to_save.fig_PCTVARs_response.variable= {'fig_PCTVARs_response'}; 
 % % parameters.loop_list.things_to_save.fig_PCTVARs_response.level = 'mouse';
 % 
+% parameters.loop_list.things_to_save.fig_COVs.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\MSEPs to 20\'],  'mouse', '\'};
+% parameters.loop_list.things_to_save.fig_COVs.filename= {'PLSR_COVs.fig'};
+% parameters.loop_list.things_to_save.fig_COVs.variable= {'fig_COVs'}; 
+% parameters.loop_list.things_to_save.fig_COVs.level = 'mouse';
+% 
 % RunAnalysis({@CheckComponents}, parameters);
 % 
 % close all;
 
-%% Level 1 categorical -- plot betas
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {
-               'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-               'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator'     
-               };
-% Adjust beta values based on zscore sigmas?
-parameters.adjust_beta = false;
-
-% Input 
-parameters.loop_list.things_to_load.results.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.results.filename= {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.results.variable= {'PLSR_results'}; 
-parameters.loop_list.things_to_load.results.level = 'comparison';
-
-% Also load in dataset values for the zscore sigma.
-parameters.loop_list.things_to_load.dataset_info.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.dataset_info.filename= {'PLSR_dataset_info.mat'};
-parameters.loop_list.things_to_load.dataset_info.variable= {'dataset_info'}; 
-parameters.loop_list.things_to_load.dataset_info.level = 'comparison';
-
-% Output
-parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_save.fig.filename= {'PLSR_Cov.fig'};
-parameters.loop_list.things_to_save.fig.variable= {'fig'}; 
-parameters.loop_list.things_to_save.fig.level = 'comparison';
-
-RunAnalysis({@PlotBetas}, parameters); 
-
-close all;
 
 %% RUN AVERAGES FOR LEVEL 2
 
