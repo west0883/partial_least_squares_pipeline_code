@@ -175,12 +175,12 @@ end
 parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
 
 % Variables to replicate
-parameters.response_variable_names = {'type_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'walk_active_warning_dummyvars_vector'};
+parameters.response_variable_names = {'type_dummyvars_vector', 'walk_active_warning_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
 parameters.variables_static = {'type_dummyvars_vector', 'duration_vector', 'walk_active_warning_dummyvars_vector'};
-parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
+%parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
 
 % Additional variables -- pupil, tail, nose, FL, HL; always present & loaded in
-parameters.additional_variables = parameters.response_variable_names(7:end);
+parameters.additional_variables = parameters.response_variable_names(6:end);
 
 % Original order of spontaneous (for velocity & accel indexing)
 parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 'stopwalk', 'postwalk'};
@@ -188,15 +188,20 @@ parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 
 parameters.concatenate_vertically = false;
 
 % Evaluation instructions.
-parameters.evaluation_instructions = {{
-          'data = parameters.diameter_vector;'...
+parameters.evaluation_instructions = {cell(numel(parameters.additional_variables), 1)};
+for variablei = 1:numel(parameters.additional_variables)
+    variable = parameters.additional_variables{variablei};
+    parameters.evaluation_instructions(variablei)= {[
+          'data = parameters.' variable ';'...
           'for i = 1:numel(parameters.indices_to_shorten(:,2));'...
                'index = parameters.indices_to_shorten(i,2);'...
                'data_sub = data{index};'...
                'data{index} = data_sub(9:17,:);'...
           'end;'...
-          'data_evaluated = data;'
-          }};
+          'data_evaluated = data;']
+          };
+end
+
 % Input
 % Correlations (for instances count)
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\correlations\'], 'mouse', '\'};
@@ -217,10 +222,40 @@ parameters.loop_list.things_to_load.accel_vector.variable= {'accel_averaged_by_i
 parameters.loop_list.things_to_load.accel_vector.level = 'mouse';
 
 % Pupil diameter
-parameters.loop_list.things_to_load.diameter_vector.dir = {[parameters.dir_exper 'behavior\eye\rolled concatenated diameters\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.diameter_vector.filename= {'diameter_averaged_by_instance.mat'};
-parameters.loop_list.things_to_load.diameter_vector.variable= {'diameter_averaged_by_instance'}; 
-parameters.loop_list.things_to_load.diameter_vector.level = 'mouse';
+parameters.loop_list.things_to_load.pupil_diameter_vector.dir = {[parameters.dir_exper 'behavior\eye\rolled concatenated diameters\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.pupil_diameter_vector.filename= {'diameter_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.pupil_diameter_vector.variable= {'diameter_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.pupil_diameter_vector.level = 'mouse';
+
+% Tail 
+parameters.loop_list.things_to_load.tail_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\tail\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.tail_vector.filename= {'velocity_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.tail_vector.variable= {'velocity_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.tail_vector.level = 'mouse';
+
+% Nose 
+parameters.loop_list.things_to_load.nose_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\nose\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.nose_vector.filename= {'velocity_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.nose_vector.variable= {'velocity_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.nose_vector.level = 'mouse';
+
+% FL 
+parameters.loop_list.things_to_load.FL_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\FL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.FL_vector.filename= {'velocity_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.FL_vector.variable= {'velocity_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.FL_vector.level = 'mouse';
+
+% HL 
+parameters.loop_list.things_to_load.HL_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\HL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.HL_vector.filename= {'velocity_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.HL_vector.variable= {'velocity_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.HL_vector.level = 'mouse';
+
+% rest & walk duration 
+parameters.loop_list.things_to_load.duration_place.dir = {[parameters.dir_exper 'behavior\duration place concatenated\both conditions\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.duration_place.filename= {'all_duration_place.mat'};
+parameters.loop_list.things_to_load.duration_place.variable= {'all_duration_place'}; 
+parameters.loop_list.things_to_load.duration_place.level = 'mouse';
 
 % Output 
 parameters.loop_list.things_to_save.response_variables.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\response variables\'], 'mouse', '\'};
@@ -228,9 +263,15 @@ parameters.loop_list.things_to_save.response_variables.filename= {'response_vari
 parameters.loop_list.things_to_save.response_variables.variable= {'response_variables'}; 
 parameters.loop_list.things_to_save.response_variables.level = 'mouse';
 
-parameters.loop_list.things_to_rename = {{'data_evaluated', 'diameter_vector'}};
+parameters.loop_list.things_to_rename = cell(numel(parameters.additional_variables), 1);
+for variablei = 1:numel(parameters.additional_variables)
+    variable = parameters.additional_variables{variablei};
+    parameters.loop_list.things_to_rename{variablei} = {'data_evaluated', variable};
 
-RunAnalysis({@EvaluateOnData, @PopulateResponseVariables}, parameters);
+end
+
+functions = [repmat({@EvaluateOnData}, 1, numel(parameters.additional_variables)) {@PopulateResponseVariables}];
+RunAnalysis(functions, parameters);
 
 %% Prepare datasets per continuous comparison. 
 if isfield(parameters, 'loop_list')
@@ -821,11 +862,11 @@ RunAnalysis({@AverageSigmas}, parameters);
 parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
-for i = 2 %1:numel(true_false_vector)
+for i = 1 %:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
-    for j = 2 %1:numel(true_false_vector)
+    for j = 1 %1:numel(true_false_vector)
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
@@ -969,11 +1010,11 @@ RunAnalysis({@AverageSigmas}, parameters);
 parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
-for i = 2 %1:numel(true_false_vector)
+for i = 1 %1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
-    for j = 2 %1:numel(true_false_vector)
+    for j = 1 %1:numel(true_false_vector)
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
@@ -1704,11 +1745,11 @@ parameters.useFDR = false;
 parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
-for i = 2 %1:numel(true_false_vector)
+for i = 1 %1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
 
-    for j = 2 %1:numel(true_false_vector)
+    for j = 1 %1:numel(true_false_vector)
          % Only include significant betas?
          parameters.useSignificance = true_false_vector{j};
 
