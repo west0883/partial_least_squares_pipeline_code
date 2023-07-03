@@ -113,7 +113,7 @@ parameters.color_range.specials = {
                                     
                                     
 % Names of all continuous variables.
-parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter'};
+parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter','tail', 'nose', 'FL', 'HL'};
 
 % Put relevant variables into loop_variables.
 parameters.loop_variables.mice_all = parameters.mice_all;
@@ -165,68 +165,82 @@ parameters.loop_list.things_to_save.data_evaluated.level = 'mouse';
 RunAnalysis({@EvaluateOnData}, parameters); 
 
 %% Put in response variables, no vertical concatenation. Also trim pupil diameter.
-if isfield(parameters, 'loop_list')
-parameters = rmfield(parameters,'loop_list');
-end
-
-% Iterators
-parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
-
-% Variables to replicate
-parameters.response_variable_names = {'type_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'walk_active_warning_dummyvars_vector'};
-parameters.variables_static = {'type_dummyvars_vector', 'duration_vector', 'walk_active_warning_dummyvars_vector'};
-% parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
-
-% Original order of spontaneous (for velocity & accel indexing)
-parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 'stopwalk', 'postwalk'};
-
-parameters.concatenate_vertically = false;
-
-% Evaluation instructions.
-parameters.evaluation_instructions = {{
-          'data = parameters.diameter_vector;'...
-          'for i = 1:numel(parameters.indices_to_shorten(:,2));'...
-               'index = parameters.indices_to_shorten(i,2);'...
-               'data_sub = data{index};'...
-               'data{index} = data_sub(9:17,:);'...
-          'end;'...
-          'data_evaluated = data;'
-          }};
-% Input
-% Correlations (for instances count)
-parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR fluorescence Warning Periods\variable prep\correlations\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.data.filename= {'values.mat'};
-parameters.loop_list.things_to_load.data.variable= {'values'}; 
-parameters.loop_list.things_to_load.data.level = 'mouse';
-
-% Spontaneous velocity
-parameters.loop_list.things_to_load.speed_vector.dir = {[parameters.dir_exper 'behavior\spontaneous\rolled concatenated velocity\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.speed_vector.filename= {'velocity_averaged_by_instance.mat'};
-parameters.loop_list.things_to_load.speed_vector.variable= {'velocity_averaged_by_instance'}; 
-parameters.loop_list.things_to_load.speed_vector.level = 'mouse';
-
-% Spontaneous accel.
-parameters.loop_list.things_to_load.accel_vector.dir = {[parameters.dir_exper 'behavior\spontaneous\rolled concatenated velocity\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.accel_vector.filename= {'accel_averaged_by_instance.mat'};
-parameters.loop_list.things_to_load.accel_vector.variable= {'accel_averaged_by_instance'}; 
-parameters.loop_list.things_to_load.accel_vector.level = 'mouse';
-
-% Pupil diameter
-parameters.loop_list.things_to_load.diameter_vector.dir = {[parameters.dir_exper 'behavior\eye\rolled concatenated diameters\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.diameter_vector.filename= {'diameter_averaged_by_instance.mat'};
-parameters.loop_list.things_to_load.diameter_vector.variable= {'diameter_averaged_by_instance'}; 
-parameters.loop_list.things_to_load.diameter_vector.level = 'mouse';
-
-% Output 
-parameters.loop_list.things_to_save.response_variables.dir = {[parameters.dir_exper 'PLSR fluorescence Warning Periods\variable prep\response variables\'], 'mouse', '\'};
-parameters.loop_list.things_to_save.response_variables.filename= {'response_variables_table.mat'};
-parameters.loop_list.things_to_save.response_variables.variable= {'response_variables'}; 
-parameters.loop_list.things_to_save.response_variables.level = 'mouse';
-
-parameters.loop_list.things_to_rename = {{'data_evaluated', 'diameter_vector'}};
-
-RunAnalysis({@EvaluateOnData, @PopulateResponseVariables}, parameters);
-
+% if isfield(parameters, 'loop_list')
+% parameters = rmfield(parameters,'loop_list');
+% end
+% 
+% % Iterators
+% parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
+% 
+% % Variables to replicate
+% parameters.response_variable_names = {'type_dummyvars_vector', 'walk_active_warning_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector' };
+% parameters.variables_static = {'type_dummyvars_vector', 'duration_vector', 'walk_active_warning_dummyvars_vector'};
+% % parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
+% 
+% % Original order of spontaneous (for velocity & accel indexing)
+% parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 'stopwalk', 'postwalk'};
+% 
+% parameters.concatenate_vertically = false;
+% 
+% % Additional variables -- pupil, tail, nose, FL, HL; always present & loaded in
+% parameters.additional_variables = parameters.response_variable_names(6:end);
+% 
+% % Evaluation instructions.
+% parameters.evaluation_instructions = {cell(numel(parameters.additional_variables), 1)};
+% for variablei = 1:numel(parameters.additional_variables)
+%     variable = parameters.additional_variables{variablei};
+%     parameters.evaluation_instructions(variablei)= {[
+%           'data = parameters.' variable ';'...
+%           'for i = 1:numel(parameters.indices_to_shorten(:,2));'...
+%                'index = parameters.indices_to_shorten(i,2);'...
+%                'data_sub = data{index};'...
+%                'data{index} = data_sub(9:17,:);'...
+%           'end;'...
+%           'data_evaluated = data;']
+%           };
+% end
+% 
+% % Input
+% % Correlations (for instances count)
+% parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR fluorescence Warning Periods\variable prep\correlations\'], 'mouse', '\'};
+% parameters.loop_list.things_to_load.data.filename= {'values.mat'};
+% parameters.loop_list.things_to_load.data.variable= {'values'}; 
+% parameters.loop_list.things_to_load.data.level = 'mouse';
+% 
+% % Spontaneous velocity
+% parameters.loop_list.things_to_load.speed_vector.dir = {[parameters.dir_exper 'behavior\spontaneous\rolled concatenated velocity\'], 'mouse', '\'};
+% parameters.loop_list.things_to_load.speed_vector.filename= {'velocity_averaged_by_instance.mat'};
+% parameters.loop_list.things_to_load.speed_vector.variable= {'velocity_averaged_by_instance'}; 
+% parameters.loop_list.things_to_load.speed_vector.level = 'mouse';
+% 
+% % Spontaneous accel.
+% parameters.loop_list.things_to_load.accel_vector.dir = {[parameters.dir_exper 'behavior\spontaneous\rolled concatenated velocity\'], 'mouse', '\'};
+% parameters.loop_list.things_to_load.accel_vector.filename= {'accel_averaged_by_instance.mat'};
+% parameters.loop_list.things_to_load.accel_vector.variable= {'accel_averaged_by_instance'}; 
+% parameters.loop_list.things_to_load.accel_vector.level = 'mouse';
+% 
+% % Pupil diameter
+% parameters.loop_list.things_to_load.pupil_diameter_vector.dir = {[parameters.dir_exper 'behavior\eye\rolled concatenated diameters\'], 'mouse', '\'};
+% parameters.loop_list.things_to_load.pupil_diameter_vector.filename= {'diameter_averaged_by_instance.mat'};
+% parameters.loop_list.things_to_load.pupil_diameter_vector.variable= {'diameter_averaged_by_instance'}; 
+% parameters.loop_list.things_to_load.pupil_diameter_vector.level = 'mouse';
+% 
+% % Output 
+% parameters.loop_list.things_to_save.response_variables.dir = {[parameters.dir_exper 'PLSR fluorescence Warning Periods\variable prep\response variables\'], 'mouse', '\'};
+% parameters.loop_list.things_to_save.response_variables.filename= {'response_variables_table.mat'};
+% parameters.loop_list.things_to_save.response_variables.variable= {'response_variables'}; 
+% parameters.loop_list.things_to_save.response_variables.level = 'mouse';
+% 
+% 
+% parameters.loop_list.things_to_rename = cell(numel(parameters.additional_variables), 1);
+% for variablei = 1:numel(parameters.additional_variables)
+%     variable = parameters.additional_variables{variablei};
+%     parameters.loop_list.things_to_rename{variablei} = {'data_evaluated', variable};
+% 
+% end
+% 
+% functions = [repmat({@EvaluateOnData}, 1, numel(parameters.additional_variables)) {@PopulateResponseVariables}];
+% RunAnalysis(functions, parameters);
 %% Prepare datasets per continuous comparison. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
