@@ -259,7 +259,7 @@ for i = 1:size(periods,1)
 end 
 
 %% Replicate speed, accels, & pupil diameter by roll number.
-variables = [{'accel'} extra_variables];
+variables = [{'speed'} {'accel'} extra_variables];
 
 % set up holders
 for ii = 1:numel(variables)
