@@ -325,17 +325,12 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                     case 4 % pupil diameter
                         units = 'per % max diameter';
 
-                    case 5 % tail 
-                        units = 'per pixel/s';
-
-                    case 6 % nose
-                        units = 'per pixel/s';
-                    
-                    case 7 % FL
-                        units = 'per pixel/s';
-                   
-                    case 8 % HL
-                        units = 'per pixel/s';
+                    otherwise % tail, nose, FL, HL
+                        if  isfield(parameters, 'convertToCM') && parameters.convertToCM
+                            units = 'per cm/s';
+                        else
+                            units = 'per pixel/s';
+                        end 
                 end
 
                 colorbar_string = ['\Delta{\it r} ' units];
@@ -350,12 +345,28 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 % Separate
                 betas_separated(parameters.indices) = betas_adjusted((variablei - 1) * numel(parameters.indices) + [1:numel(parameters.indices)]);
 
-                 % If variable is pupil diameter, divide by 100 (to go from 0 to 1.0 scale to
+                % If variable is pupil diameter, divide by 100 (to go from 0 to 1.0 scale to
                 % percents)
                 if strcmp(variable, 'pupil_diameter')
                     betas_separated = betas_separated./100;
                 end
-                
+
+                % Convert certain variables from pixels/s to cm/s.
+                if isfield(parameters, 'convertToCM') && parameters.convertToCM
+                    
+                    % See if the current variable is included in the list
+                    % of variables to convert
+                    indices = strcmp(variable, parameters.convertToCM_variables);
+                    
+                    % if this variable is included,
+                    if any(indices)
+
+                        % Convert betas
+                        betas_separated = betas_separated .* parameters.pixelToCM_conversion;
+
+                    end 
+                end 
+
                 % Rename back to holder to keep things easier
                 holder = betas_separated;
 
