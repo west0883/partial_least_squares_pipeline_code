@@ -37,7 +37,7 @@ parameters.dir_exper=[parameters.dir_base parameters.experiment_name '\'];
 load([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'], 'periods');
 
 % Continuous variable names
-continuous_variable_names = {'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+continuous_variable_names = {'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
 
 % Pull out the relevant columns/info from periods
 period_motorized_vs_spon = periods.motorized_vs_spon;
@@ -103,7 +103,7 @@ counter = counter + typei + 1;
 
 % Motorized
 comparisons(counter).name = 'motorized_finished_stop_continuousVars';
-comparisons(counter).variablesToUse = {'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+comparisons(counter).variablesToUse = {'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
 comparisons(counter).type = 'finished_stop';
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).figure_type = 'startstop';
@@ -118,7 +118,7 @@ counter = counter + 1;
 
 % Spontaneous
 comparisons(counter).name = 'spontaneous_finished_stop_continuousVars';
-comparisons(counter).variablesToUse = {'speed_vector', 'accel_vector','duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+comparisons(counter).variablesToUse = {'speed_vector', 'accel_vector','duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
 comparisons(counter).type = 'finished_stop';
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).figure_type = 'startstop';
@@ -134,7 +134,7 @@ counter = counter + 1;
 %% Motorized walk.
 % Motorized
 comparisons(counter).name = 'motorized_walk_continuousVars';
-comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector' , 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector' , 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
 comparisons(counter).type = 'walk';
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).figure_type = 'continued';
@@ -150,7 +150,7 @@ counter = counter + 1;
 %% Spontaneous walk.
 % Include accel as well.
 comparisons(counter).name = 'spontaneous_walk_continuousVars';
-comparisons(counter).variablesToUse = {'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+comparisons(counter).variablesToUse = {'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
 comparisons(counter).type = 'walk';
 comparisons(counter).mice_not_to_use = {'1100'};
 comparisons(counter).figure_type = 'continued';
@@ -166,7 +166,7 @@ counter = counter + 1;
 %% Continuous variables, rest
 % Motorized
 comparisons(counter).name = 'motorized_rest_continuousVars';
-comparisons(counter).variablesToUse = {'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector' };
+comparisons(counter).variablesToUse = {'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector' };
 comparisons(counter).type = 'rest';
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).figure_type = 'continued';
@@ -181,7 +181,7 @@ counter = counter + 1;
 
 % Spontaneous
 comparisons(counter).name = 'spontaneous_rest_continuousVars';
-comparisons(counter).variablesToUse = {'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+comparisons(counter).variablesToUse = {'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
 comparisons(counter).type = 'rest';
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).figure_type = 'continued';
@@ -199,7 +199,7 @@ counter = counter + 1;
 
 % Only relevant for motorized.
 comparisons(counter).name = 'motorized_finished_start_continuousVars';
-comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
 comparisons(counter).type = 'finished_start';
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).figure_type = 'startstop';
@@ -217,7 +217,7 @@ counter = counter + 1;
 
 % Only relevant for motorized.
 comparisons(counter).name = 'motorized_finished_accel_continuousVars';
-comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
 comparisons(counter).type = 'finished_accel';
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).figure_type = 'acceldecel';
@@ -235,7 +235,7 @@ counter = counter + 1;
 
 % Only relevant for motorized.
 comparisons(counter).name = 'motorized_finished_decel_continuousVars';
-comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+comparisons(counter).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
 comparisons(counter).type = 'finished_decel';
 comparisons(counter).mice_not_to_use = {};
 comparisons(counter).figure_type = 'acceldecel';

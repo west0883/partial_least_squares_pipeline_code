@@ -34,7 +34,7 @@ parameters.dir_exper=[parameters.dir_base parameters.experiment_name '\'];
 load([parameters.dir_exper 'PLSR Warning Periods\periods_nametable_forPLSR_warningPeriods.mat'], 'periods');
 
 % Continuous variable names
-continuous_variable_names = {'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+continuous_variable_names = {'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
 
 % Pull out the relevant columns/info from periods
 period_types = periods.type;
@@ -65,7 +65,7 @@ types = {'wstop', 'waccel', 'wdecel', 'walk_wmaint'};
 
 for typei = 1:numel(types)
     comparisons(counter + typei).name = ['continuousVars_' types{typei}];
-    comparisons(counter + typei).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+    comparisons(counter + typei).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
     comparisons(counter + typei).type = types{typei};
     comparisons(counter + typei).mice_not_to_use = {};
     comparisons(counter + typei).figure_type = 'warningPeriods';
@@ -84,13 +84,13 @@ types = {'wstart', 'rest_wmaint', 'prewalk'};
 
 for typei = 1:numel(types)
     comparisons(counter + typei).name = ['continuousVars_' types{typei}];
-    comparisons(counter + typei).variablesToUse = {'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+    comparisons(counter + typei).variablesToUse = {'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
     comparisons(counter + typei).type = types{typei};
 
     % Don't use mouse 1100 in prewalk. Add speed vector
     if strcmp(types{typei}, 'prewalk')
         comparisons(counter + typei).mice_not_to_use = {'1100'};
-        comparisons(counter + typei).variablesToUse = {'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+        comparisons(counter + typei).variablesToUse = {'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
     else
         comparisons(counter + typei).mice_not_to_use = {};
     end
@@ -109,7 +109,7 @@ counter = counter + typei;
 types = {'motorized_rest', 'spontaneous_rest'};
 for typei = 1:numel(types)
     comparisons(counter + typei).name = ['continuousVars_' types{typei}];
-    comparisons(counter + typei).variablesToUse = {'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+    comparisons(counter + typei).variablesToUse = {'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
     comparisons(counter + typei).type = types{typei};
     comparisons(counter + typei).mice_not_to_use = {};
     comparisons(counter + typei).figure_type = 'warningPeriods';
@@ -126,7 +126,7 @@ counter = counter + typei;
 types = {'motorized_walk'};
 for typei = 1:numel(types)
     comparisons(counter + typei).name = ['continuousVars_' types{typei}];
-    comparisons(counter + typei).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+    comparisons(counter + typei).variablesToUse = {'speed_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'angle_vector'};
     comparisons(counter + typei).type = types{typei};
     comparisons(counter + typei).mice_not_to_use = {};
     comparisons(counter + typei).figure_type = 'warningPeriods';
