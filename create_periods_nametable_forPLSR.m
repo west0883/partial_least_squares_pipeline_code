@@ -168,10 +168,10 @@ end
 periods.type = types; 
 clear types type type1 type2 look_for_pattern look_for this_condition;
 
-%% Make column for pupil diameter, tail, nose, FL, HL
+%% Make column for pupil diameter, tail, nose, FL, HL, angle
 % All periods. Are all NaN for now, will be put in at "populate response
 % variables" step in main pipline.
-extra_variables = {'pupil_diameter',  'tail', 'nose', 'FL', 'HL'};
+extra_variables = {'pupil_diameter',  'tail', 'nose', 'FL', 'HL', 'angle'};
 for i = 1:numel(extra_variables)
     holder = repmat({NaN}, size(periods,1),1);
     periods.(extra_variables{i}) = holder;
