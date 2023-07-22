@@ -111,7 +111,7 @@ parameters.color_range.specials =  {'motorized_transitions_continuousVars_start'
                                     'walk_motorizedvsspon_categorical', 'categorical', [-0.3 0.3]};
                                     
 % Names of all continuous variables.
-parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter', 'tail', 'nose', 'FL', 'HL'};
+parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter', 'tail', 'nose', 'FL', 'HL', 'angle'};
 
 % Put relevant variables into loop_variables.
 parameters.loop_variables.mice_all = parameters.mice_all;
