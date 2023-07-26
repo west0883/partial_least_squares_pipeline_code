@@ -78,8 +78,8 @@ function [parameters] = DatasetPrep(parameters)
         columns_to_remove = ~any(responseVariables_separateVariables{variablei});
 
         % If there are columns to remove, remove them.
-        if ~isempty(columns_to_remove)
-            responseVariables_separateVariables{variablei}(:, columns_to_remove) = [];  
+        if columns_to_remove
+            responseVariables_separateVariables{variablei} = [];  
         end
     end
 
@@ -164,7 +164,8 @@ function [parameters] = DatasetPrep(parameters)
 
         % Put indices of missing data into output structure.
         dataset.missing_data_imputation.indices = find(isnan(responseVariables));
-        dataset.missing_data_imputation.induces_rowcolumn = ind2sub(size(responseVariables), dataset.missing_data_imputation.indices);
+        [row, column] = ind2sub(size(responseVariables), dataset.missing_data_imputation.indices);
+        dataset.missing_data_imputation.induces_rowcolumn = [row, column];
 
         % Run the modified code for trimmed square regression (TSR) for PLS
         [explanatoryVariables, responseVariables, iterations_needed, tolerance_reached, components_needed] = plsmbtsr1_TSRonly(explanatoryVariables, responseVariables, parameters.imputation_components_variance_explained, parameters.imputation_max_components);% parameters.imputation_ncomponents); 
