@@ -87,20 +87,35 @@ end
 parameters.color_range.continued.categorical = [-0.6 0.6];
 parameters.color_range.continued.speed = [-0.6 0.6];
 parameters.color_range.continued.accel = [-0.06 0.06]; % Make it match with other accels.
-parameters.color_range.continued.duration = [];
-parameters.color_range.continued.pupil_diameter = [-0.02 0.02 ];
+parameters.color_range.continued.duration = [-0.06 0.06];
+parameters.color_range.continued.pupil_diameter = [-0.01 0.01 ];
+parameters.color_range.continued.tail = [-0.0025 0.0025];
+parameters.color_range.continued.nose = [-0.02 0.02];
+parameters.color_range.continued.FL = [-0.0025 0.0025 ];
+parameters.color_range.continued.HL = [-0.0025 0.0025 ];
+parameters.color_range.continued.x = [-0.01 0.01 ];
 
 parameters.color_range.startstop.categorical = [-0.6 0.6];
 parameters.color_range.startstop.speed = [-0.6 0.6];
 parameters.color_range.startstop.accel = [-0.06 0.06];
 parameters.color_range.startstop.duration = [-0.3 0.3];
-parameters.color_range.startstop.pupil_diameter = [-0.02 0.02];
+parameters.color_range.startstop.pupil_diameter = [-0.01 0.01];
+parameters.color_range.startstop.tail = [-0.0025 0.0025 ];
+parameters.color_range.startstop.nose = [-0.02 0.02 ];
+parameters.color_range.startstop.FL = [-0.0025 0.0025  ];
+parameters.color_range.startstop.HL = [-0.0025 0.0025 ];
+parameters.color_range.startstop.x = [-0.01 0.01 ];
 
 parameters.color_range.acceldecel.categorical = [-0.1 0.1];
 parameters.color_range.acceldecel.speed = [-0.1 0.1];
 parameters.color_range.acceldecel.accel = [-0.06 0.06];
 parameters.color_range.acceldecel.duration = [-0.3 0.3];
-parameters.color_range.acceldecel.pupil_diameter = [-0.02 0.02 ];
+parameters.color_range.acceldecel.pupil_diameter = [-0.01 0.01 ];
+parameters.color_range.acceldecel.tail = [-0.0025 0.0025 ];
+parameters.color_range.acceldecel.nose = [-0.02 0.02];
+parameters.color_range.acceldecel.FL = [-0.0025 0.0025 ];
+parameters.color_range.acceldecel.HL = [-0.0025 0.0025 ];
+parameters.color_range.acceldecel.x = [-0.01 0.01 ];
 
 % special figures that get their own color ranges
 parameters.color_range.specials =  {'motorized_transitions_continuousVars_start', 'duration', [-1 1];
@@ -1834,6 +1849,8 @@ parameters.useFDR = false;
 parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
+parameters.fromPLSR = true;
+
 for i = 2 %1:numel(true_false_vector)
     % Adjust beta values based on zscore sigmas?
     parameters.adjustBetas = true_false_vector{i};
