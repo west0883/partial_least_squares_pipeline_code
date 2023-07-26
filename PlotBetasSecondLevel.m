@@ -216,6 +216,7 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 % If adjusted, use a standard color range for each plot.
                 if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'useColorRange') && parameters.useColorRange
                     color_range = parameters.color_range.(figure_type).(variable);
+
                 % If not adjusted, make a fitted color range for this plot.
                 else
                     extreme = max(max(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan'), abs(min(betas_separated_variables(:,:, variablei), [], 'all', 'omitnan')));
