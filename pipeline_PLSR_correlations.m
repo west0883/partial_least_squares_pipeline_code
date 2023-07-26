@@ -111,7 +111,7 @@ parameters.color_range.specials =  {'motorized_transitions_continuousVars_start'
                                     'walk_motorizedvsspon_categorical', 'categorical', [-0.3 0.3]};
                                     
 % Names of all continuous variables.
-parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter', 'tail', 'nose', 'FL', 'HL', 'angle'};
+parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter', 'tail', 'nose', 'FL', 'HL', 'x'};
 
 % Put relevant variables into loop_variables.
 parameters.loop_variables.mice_all = parameters.mice_all;
@@ -201,9 +201,9 @@ end
 parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
 
 % Variables to replicate
-parameters.response_variable_names = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+parameters.response_variable_names = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'x_vector'};
 parameters.variables_static = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'duration_vector'};
-%parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
+parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
 % Additional variables -- pupil, tail, nose, FL, HL; always present & loaded in
 parameters.additional_variables = parameters.response_variable_names(7:end);
 % Original order of spontaneous (for velocity & accel indexing)
@@ -237,28 +237,34 @@ parameters.loop_list.things_to_load.pupil_diameter_vector.variable= {'diameter_a
 parameters.loop_list.things_to_load.pupil_diameter_vector.level = 'mouse';
 
 % Tail 
-parameters.loop_list.things_to_load.tail_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\tail\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.tail_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\tail\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.tail_vector.filename= {'velocity_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.tail_vector.variable= {'velocity_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.tail_vector.level = 'mouse';
 
 % Nose 
-parameters.loop_list.things_to_load.nose_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\nose\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.nose_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\nose\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.nose_vector.filename= {'velocity_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.nose_vector.variable= {'velocity_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.nose_vector.level = 'mouse';
 
 % FL 
-parameters.loop_list.things_to_load.FL_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\FL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.FL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\FL\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.FL_vector.filename= {'velocity_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.FL_vector.variable= {'velocity_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.FL_vector.level = 'mouse';
 
 % HL 
-parameters.loop_list.things_to_load.HL_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\HL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.HL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\HL\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.HL_vector.filename= {'velocity_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.HL_vector.variable= {'velocity_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.HL_vector.level = 'mouse';
+
+% x 
+parameters.loop_list.things_to_load.x_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\FL\x\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.x_vector.filename= {'velocity_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.x_vector.variable= {'velocity_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.x_vector.level = 'mouse';
 
 % rest & walk duration 
 parameters.loop_list.things_to_load.duration_place.dir = {[parameters.dir_exper 'behavior\duration place concatenated\both conditions\'], 'mouse', '\'};
@@ -322,7 +328,7 @@ RunAnalysis({@DatasetPrep}, parameters);
 parameters.removeOutliers = false;
 parameters.imputeMissing = false;
 
-%% Find the average ratio of NaNs in pupil diameter, tail, nose, FL, HL, across continuous comparisons per mouse.
+%% Find the average ratio of NaNs in pupil diameter, tail, nose, FL, HL, x, across continuous comparisons per mouse.
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
 end
@@ -332,7 +338,7 @@ parameters.loop_list.iterators = {
                 'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
                 'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 
-parameters.evaluation_instructions = {{'data_evaluated = parameters.data.responseVariables(end-4:end);'}}; % DLC data is always the last 5 variables entered.
+parameters.evaluation_instructions = {{'data_evaluated = parameters.data.responseVariables(end-5:end);'}}; % DLC data is always the last 5 variables entered.
 parameters.concatDim = 1;
 parameters.concatenation_level = 'comparison';
 parameters.averageDim = 1;
