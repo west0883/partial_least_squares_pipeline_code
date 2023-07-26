@@ -73,13 +73,12 @@ function [parameters] = DatasetPrep(parameters)
    
     % **Remove unnecessary columns of variables.
     for variablei =  1:numel(comparison_variablesToUse)
-
-        % Find if there are AREN'T any non-zero elements in each column.
+        
         columns_to_remove = ~any(responseVariables_separateVariables{variablei});
 
-        % If there are columns to remove, remove them.
-        if columns_to_remove
-            responseVariables_separateVariables{variablei} = [];  
+         % If there are columns to remove, remove them.
+        if ~isempty(columns_to_remove)
+            responseVariables_separateVariables{variablei}(:, columns_to_remove) = [];  
         end
     end
 
