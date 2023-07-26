@@ -70,7 +70,7 @@ end
 % Load comparisons for first level categorical, if it exists yet.
 if isfile([parameters.dir_exper 'PLSR\comparisons_level1_categorical.mat'])
     load([parameters.dir_exper 'PLSR\comparisons_level1_categorical.mat']);
-    parameters.comparisons_categorical = comparisons;
+    parameters.comparisons_categorical = comparisons(1:35); % don't run the motorized vs spontaneous rest periods;
     parameters.loop_variables.comparisons_categorical = parameters.comparisons_categorical;
     clear comparisons;
 end
@@ -708,6 +708,7 @@ parameters.loop_list.things_to_save.histogram.level = 'mouse';
 
 RunAnalysis({@ConcatenateData, @EvaluateOnData}, parameters);
 
+close all; 
 
 %% Level 1 categorical -- check components
 % Always clear loop list first. 
