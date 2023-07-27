@@ -61,8 +61,8 @@ parameters.periods_bothConditions = periods_bothConditions;
 
 % Load periods_nametable_PLSR.m, if it exists yet. (Otherwise is created in
 % first step).
-if isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR_fluorescenceSingleTimePoints.mat'])
-    load([parameters.dir_exper 'PLSR\periods_nametable_forPLSR_fluorescenceSingleTimePoints.mat']);
+if isfile([parameters.dir_exper 'PLSR fluorescence\periods_nametable_forPLSR_fluorescenceSingleTimePoints.mat'])
+    load([parameters.dir_exper 'PLSR fluorescence\periods_nametable_forPLSR_fluorescenceSingleTimePoints.mat']);
     parameters.periods = periods;
 
     % Also load the indices to remove
@@ -144,9 +144,8 @@ parameters.loop_variables.comparison_types = {'categorical', 'continuous'};
 
 parameters.average_and_std_together = false;
 
-%% Average fluorescence within roll 
-% (so you have 1 value per roll instead of 20),
-% Then average across left/right hemisphere nodes
+%% Average fluorescence by pairs of nodes
+% Average across left/right hemisphere nodes
 % Then permute to match correlations formatting.
 
 % Always clear loop list first. 
@@ -166,32 +165,21 @@ parameters.loop_variables.mice_all = parameters.mice_all;
 % Dimension to average across
 parameters.averageDim = 1; 
 
-parameters.evaluation_instructions = {{}; 
-                                       {'if size(parameters.average,1) ~= 32;'...
-                                            'data_evaluated = {};'...
-                                       'elseif ~isempty(parameters.average);' ...     
-                                            'if ndims(parameters.average) < 3;'...
-                                                'data1 = parameters.average(1:2:32, :);'...
-                                                 'data2 = parameters.average(2:2:32,:);'...
-                                             'else;'...
-                                                  'data1 = parameters.average(1:2:32, :,:);' ...
-                                                  'data2 = parameters.average(2:2:32, :,:);' ...
-                                              'end;'...
-                                              'data3 = cat(4, data1, data2);'...
-                                              'data4 = mean(data3, 4,"omitnan");'...
-                                              'data_evaluated = permute(data4, [1 3 2]);'...
-                                      'else;'...
-                                      'data_evaluated = {};'...
-                                      'end;'}
+parameters.evaluation_instructions = {           
+                                     {'data = parameters.data;' ... 
+                                     'holder = reshape(data, size(data, 1), 2 , parameters.number_of_sources);'... % instances x paired nodes x 16
+                                     'holder2 = squeeze(mean(holder, 2, "omitnan"));'...   % mean across paired nodes, now instances x 16
+                                     'data_evaluated = permute(holder2, [2 3 1]);'  % transpose so it's 16 nodes x 1 roll x instances
+                                      }
                                       };
   
 % permute from nodes X instance x roll to
 % nodes X roll X instance 
 
 % Input
-parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'fluorescence analysis\rolled timeseries\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.data.filename= {'timeseries_rolled.mat'};
-parameters.loop_list.things_to_load.data.variable= {'timeseries_rolled{', 'period_iterator', ',1}'}; 
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'fluorescence analysis\fluorescence for fluorescence PLSR\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'forFluorescence.mat'};
+parameters.loop_list.things_to_load.data.variable= {'forFluorescence{', 'period_iterator', ',1}'}; 
 parameters.loop_list.things_to_load.data.level = 'mouse';
 
 % Output
@@ -201,7 +189,7 @@ parameters.loop_list.things_to_save.data_evaluated.variable= {'timeseries_permut
 parameters.loop_list.things_to_save.data_evaluated.level = 'mouse';
 
 % run
-RunAnalysis({@AverageData, @EvaluateOnData}, parameters)
+RunAnalysis({@EvaluateOnData}, parameters)
 
 
 %% *** Run the PLSR pipeline ***
@@ -235,55 +223,94 @@ parameters.loop_list.things_to_save.data_evaluated.level = 'mouse';
 RunAnalysis({@EvaluateOnData}, parameters); 
 
 %% Put in response variables, no vertical concatenation
+% Edit for use with the new fluorescence PSLR (single time points)
 
-% if isfield(parameters, 'loop_list')
-% parameters = rmfield(parameters,'loop_list');
-% end
-% 
-% % Iterators
-% parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
-% 
-% % Variables to replicate
-% parameters.response_variable_names = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector'};
-% parameters.variables_static = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'duration_vector'};
-% parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
-% % Original order of spontaneous (for velocity & accel indexing)
-% parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 'stopwalk', 'postwalk'};
-% 
-% parameters.concatenate_vertically = false;
-% 
-% % Input
-% % Correlations (for instances count)
-% parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR fluorescence\permuted timeseries\\'], 'mouse', '\'};
-% parameters.loop_list.things_to_load.data.filename= {'timeseries_permuted.mat'};
-% parameters.loop_list.things_to_load.data.variable= {'timeseries_permuted'}; 
-% parameters.loop_list.things_to_load.data.level = 'mouse';
-% 
-% % Spontaneous velocity
-% parameters.loop_list.things_to_load.speed_vector.dir = {[parameters.dir_exper 'behavior\spontaneous\rolled concatenated velocity\'], 'mouse', '\'};
-% parameters.loop_list.things_to_load.speed_vector.filename= {'velocity_averaged_by_instance.mat'};
-% parameters.loop_list.things_to_load.speed_vector.variable= {'velocity_averaged_by_instance'}; 
-% parameters.loop_list.things_to_load.speed_vector.level = 'mouse';
-% 
-% % Spontaneous accel.
-% parameters.loop_list.things_to_load.accel_vector.dir = {[parameters.dir_exper 'behavior\spontaneous\rolled concatenated velocity\'], 'mouse', '\'};
-% parameters.loop_list.things_to_load.accel_vector.filename= {'accel_averaged_by_instance.mat'};
-% parameters.loop_list.things_to_load.accel_vector.variable= {'accel_averaged_by_instance'}; 
-% parameters.loop_list.things_to_load.accel_vector.level = 'mouse';
-% 
-% % Pupil diameter
-% parameters.loop_list.things_to_load.diameter_vector.dir = {[parameters.dir_exper 'behavior\eye\rolled concatenated diameters\'], 'mouse', '\'};
-% parameters.loop_list.things_to_load.diameter_vector.filename= {'diameter_averaged_by_instance.mat'};
-% parameters.loop_list.things_to_load.diameter_vector.variable= {'diameter_averaged_by_instance'}; 
-% parameters.loop_list.things_to_load.diameter_vector.level = 'mouse';
-% 
-% % Output 
-% parameters.loop_list.things_to_save.response_variables.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\response variables\'], 'mouse', '\'};
-% parameters.loop_list.things_to_save.response_variables.filename= {'response_variables_table.mat'};
-% parameters.loop_list.things_to_save.response_variables.variable= {'response_variables'}; 
-% parameters.loop_list.things_to_save.response_variables.level = 'mouse';
-% 
-% RunAnalysis({@PopulateResponseVariables}, parameters);
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
+
+% Variables to replicate
+parameters.response_variable_names = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'x_vector'};
+parameters.variables_static = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'duration_vector'};
+parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
+% Additional variables -- pupil, tail, nose, FL, HL; always present & loaded in
+parameters.additional_variables = parameters.response_variable_names(7:end);
+% Original order of spontaneous (for velocity & accel indexing)
+parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 'stopwalk', 'postwalk'};
+
+parameters.concatenate_vertically = false;
+
+% Input
+% Fluorescence (for instances count)
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'values.mat'};
+parameters.loop_list.things_to_load.data.variable= {'values'}; 
+parameters.loop_list.things_to_load.data.level = 'mouse';
+
+% Spontaneous velocity
+parameters.loop_list.things_to_load.speed_vector.dir = {[parameters.dir_exper 'behavior\spontaneous\velocity for fluorescence PLSR\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.speed_vector.filename= {'velocity_forFluorescence.mat'};
+parameters.loop_list.things_to_load.speed_vector.variable= {'velocity_forFluorescence'}; 
+parameters.loop_list.things_to_load.speed_vector.level = 'mouse';
+
+% Spontaneous accel.
+parameters.loop_list.things_to_load.accel_vector.dir = {[parameters.dir_exper 'behavior\spontaneous\acceleration for fluorescence PLSR\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.accel_vector.filename= {'accel_forFluorescence.mat'};
+parameters.loop_list.things_to_load.accel_vector.variable= {'accel_forFluorescence'}; 
+parameters.loop_list.things_to_load.accel_vector.level = 'mouse';
+
+% Pupil diameter
+parameters.loop_list.things_to_load.pupil_diameter_vector.dir = {[parameters.dir_exper 'behavior\eye\diameter for fluorescence PLSR\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.pupil_diameter_vector.filename= {'diameter_forFluorescence.mat'};
+parameters.loop_list.things_to_load.pupil_diameter_vector.variable= {'diameter_forFluorescence'}; 
+parameters.loop_list.things_to_load.pupil_diameter_vector.level = 'mouse';
+
+% Tail 
+parameters.loop_list.things_to_load.tail_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR\tail\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.tail_vector.filename= {'velocity_forFluorescence.mat'};
+parameters.loop_list.things_to_load.tail_vector.variable= {'velocity_forFluorescence'}; 
+parameters.loop_list.things_to_load.tail_vector.level = 'mouse';
+
+% Nose 
+parameters.loop_list.things_to_load.nose_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR\nose\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.nose_vector.filename= {'velocity_forFluorescence.mat'};
+parameters.loop_list.things_to_load.nose_vector.variable= {'velocity_forFluorescence'}; 
+parameters.loop_list.things_to_load.nose_vector.level = 'mouse';
+
+% FL 
+parameters.loop_list.things_to_load.FL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR\FL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.FL_vector.filename= {'velocity_forFluorescence.mat'};
+parameters.loop_list.things_to_load.FL_vector.variable= {'velocity_forFluorescence'}; 
+parameters.loop_list.things_to_load.FL_vector.level = 'mouse';
+
+% HL 
+parameters.loop_list.things_to_load.HL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR\HL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.HL_vector.filename= {'velocity_forFluorescence.mat'};
+parameters.loop_list.things_to_load.HL_vector.variable= {'velocity_forFluorescence'}; 
+parameters.loop_list.things_to_load.HL_vector.level = 'mouse';
+
+% x 
+parameters.loop_list.things_to_load.x_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR\FL\x\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.x_vector.filename= {'velocity_forFluorescence.mat'};
+parameters.loop_list.things_to_load.x_vector.variable= {'velocity_forFluorescence'}; 
+parameters.loop_list.things_to_load.x_vector.level = 'mouse';
+
+% rest & walk duration 
+parameters.loop_list.things_to_load.duration_place.dir = {[parameters.dir_exper 'behavior\duration place concatenated\both conditions\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.duration_place.filename= {'all_duration_place.mat'};
+parameters.loop_list.things_to_load.duration_place.variable= {'all_duration_place'}; 
+parameters.loop_list.things_to_load.duration_place.level = 'mouse';
+
+% Output 
+parameters.loop_list.things_to_save.response_variables.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\response variables\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.response_variables.filename= {'response_variables_table.mat'};
+parameters.loop_list.things_to_save.response_variables.variable= {'response_variables'}; 
+parameters.loop_list.things_to_save.response_variables.level = 'mouse';
+
+RunAnalysis({@PopulateResponseVariables}, parameters);
 
 %% Prepare datasets per continuous comparison. 
 if isfield(parameters, 'loop_list')
@@ -312,7 +339,7 @@ parameters.imputation_components_variance_explained = 85; % in percents
 parameters.imputation_max_components = 10; 
 
 % Input 
-parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\variable prep\response variables\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\response variables\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.response.filename= {'response_variables_table.mat'};
 parameters.loop_list.things_to_load.response.variable= {'response_variables'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
