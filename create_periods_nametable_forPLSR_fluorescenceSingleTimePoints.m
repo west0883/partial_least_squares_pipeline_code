@@ -250,7 +250,6 @@ for i = 1:size(periods,1)
 
         speed_vector{i} = fliplr(periods{i, 'speed'}{1} -  periods{i, 'accel'}{1} * (duration_vector + window_step_size/fps));
 
-
     elseif strcmp(periods{i, 'type'}{1}, 'stop') || strcmp(periods{i, 'type'}{1}, 'decel')
         % The time is the center of the roll window
         duration_vector = periods{i, "duration_vector"}{1};
@@ -351,6 +350,6 @@ periods.transition_or_not_dummyvars_vector = transition_or_not_dummyvars_vector;
 
 
 %% Save 
-save([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'], 'periods', '-v7.3');
+save([parameters.dir_exper 'PLSR\periods_nametable_forPLSR_fluorescenceSingleTimePoints.mat'], 'periods', '-v7.3');
 
 %clear all;
