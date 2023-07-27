@@ -350,6 +350,6 @@ periods.transition_or_not_dummyvars_vector = transition_or_not_dummyvars_vector;
 
 
 %% Save 
-save([parameters.dir_exper 'PLSR\periods_nametable_forPLSR_fluorescenceSingleTimePoints.mat'], 'periods', '-v7.3');
+save([parameters.dir_exper 'PLSR fluorescence\periods_nametable_forPLSR_fluorescenceSingleTimePoints.mat'], 'periods', '-v7.3');
 
 %clear all;
