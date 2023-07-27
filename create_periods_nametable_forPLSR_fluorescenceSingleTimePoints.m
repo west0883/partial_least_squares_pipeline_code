@@ -40,8 +40,8 @@ clear periods;
 periods = [periods_motorized; periods_spontaneous]; 
 
 fps = 20;
-window_size = 20;
-window_step_size = 5; 
+window_size = 1;
+window_step_size = 1; 
 
 % Make a partial least squares regression folder. 
 if ~isdir([parameters.dir_exper 'PLSR\'])
@@ -223,7 +223,8 @@ periods.number_of_rolls = number_of_rolls;
 %% Create "instantaneous" duration vectors 
 % Based on roll numbers for all periods.
 % The time of a given roll is the center of the roll window.
-duration_vector = cellfun(@(x) ([1:x] + 1) * (window_step_size/fps) , number_of_rolls, 'UniformOutput', false);
+% For this single-timepoint, make it start right at the start of the period
+duration_vector = cellfun(@(x) ([1:x] - 1) * (window_step_size/fps) , number_of_rolls, 'UniformOutput', false);
 periods.duration_vector = duration_vector;
 
 %% Convert the rest & walk periods' duration vectors to NaN
@@ -244,15 +245,17 @@ end
 for i = 1:size(periods,1)
     if strcmp(periods{i, 'type'}{1}, 'start') || strcmp(periods{i, 'type'}{1}, 'accel') 
 
-        % The time is the center of the roll window
+        % The time is the *start* of the time point (starts on 0)
         duration_vector = periods{i, "duration_vector"}{1};
-        speed_vector{i} = fliplr(periods{i, 'speed'}{1} - duration_vector * periods{i, 'accel'}{1});
+
+        speed_vector{i} = fliplr(periods{i, 'speed'}{1} -  periods{i, 'accel'}{1} * (duration_vector + window_step_size/fps));
 
 
     elseif strcmp(periods{i, 'type'}{1}, 'stop') || strcmp(periods{i, 'type'}{1}, 'decel')
         % The time is the center of the roll window
         duration_vector = periods{i, "duration_vector"}{1};
-        speed_vector{i} = fliplr(periods{i, 'speed'}{1} + duration_vector * periods{i, 'accel'}{1});
+
+        speed_vector{i} = fliplr(periods{i, 'speed'}{1} +  periods{i, 'accel'}{1} * (duration_vector + window_step_size/fps));
 
     else
         % If not one of those special transitions, replicate by
