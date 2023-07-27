@@ -299,9 +299,9 @@ parameters.loop_list.things_to_load.x_vector.variable= {'velocity_forFluorescenc
 parameters.loop_list.things_to_load.x_vector.level = 'mouse';
 
 % rest & walk duration 
-parameters.loop_list.things_to_load.duration_place.dir = {[parameters.dir_exper 'behavior\duration place concatenated\both conditions\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.duration_place.filename= {'all_duration_place.mat'};
-parameters.loop_list.things_to_load.duration_place.variable= {'all_duration_place'}; 
+parameters.loop_list.things_to_load.duration_place.dir = {[parameters.dir_exper 'behavior\duration place concatenated\duration place for fluorescence PLSR\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.duration_place.filename= {'duration_place_forFluorescence.mat'};
+parameters.loop_list.things_to_load.duration_place.variable= {'duration_place_forFluorescence'}; 
 parameters.loop_list.things_to_load.duration_place.level = 'mouse';
 
 % Output 
@@ -310,7 +310,7 @@ parameters.loop_list.things_to_save.response_variables.filename= {'response_vari
 parameters.loop_list.things_to_save.response_variables.variable= {'response_variables'}; 
 parameters.loop_list.things_to_save.response_variables.level = 'mouse';
 
-RunAnalysis({@PopulateResponseVariables}, parameters);
+RunAnalysis({@PopulateResponseVariables_forFluorescence}, parameters);
 
 %% Prepare datasets per continuous comparison. 
 if isfield(parameters, 'loop_list')
