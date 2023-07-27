@@ -61,8 +61,8 @@ parameters.periods_bothConditions = periods_bothConditions;
 
 % Load periods_nametable_PLSR.m, if it exists yet. (Otherwise is created in
 % first step).
-if isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat'])
-    load([parameters.dir_exper 'PLSR\periods_nametable_forPLSR.mat']);
+if isfile([parameters.dir_exper 'PLSR\periods_nametable_forPLSR_fluorescenceSingleTimePoints.mat'])
+    load([parameters.dir_exper 'PLSR\periods_nametable_forPLSR_fluorescenceSingleTimePoints.mat']);
     parameters.periods = periods;
 
     % Also load the indices to remove
