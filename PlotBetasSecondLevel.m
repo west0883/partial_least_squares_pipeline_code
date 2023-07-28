@@ -28,6 +28,14 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     % Adjust Betas based on z-score sigma. % First row is constant estimate
     % If user says so
     if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'multiply_by_average_sigma') && parameters.multiply_by_average_sigma
+       
+        if strcmp(parameters.output_type, 'BETA')
+
+           % Remove intercepts
+           betas(1:parameters.number_of_sources + 1:end) = [];
+
+        end 
+
         % if categorical, only use first set of sigmas.
         if strcmp(parameters.comparison_type, 'categorical')
             betas_adjusted = betas .* parameters.average_sigmas(1:numel(betas));
@@ -50,6 +58,13 @@ function [parameters] = PlotBetasSecondLevel(parameters)
         else
             significance = parameters.significance;
         end
+
+        if strcmp(parameters.output_type, 'BETA')
+
+          % Remove intercepts
+          significance(1:parameters.number_of_sources + 1:end) = [];
+
+        end 
 
         % Only keep/plot beta values that reach significance 
         betas_adjusted = betas_adjusted .* significance; 
