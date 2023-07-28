@@ -436,19 +436,29 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             end 
 
             % Run the plsregress_fullcode on the mixed/permuted data.
-            [XL,  YL] = plsregress_fullcode(explanatoryVariables, responseVariables_mixed, ncomponents);
+            [XL,  YL, ~, ~, BETA] = plsregress_fullcode(explanatoryVariables, responseVariables_mixed, ncomponents);
             
             % Calculate normalized covariance matrix 
             Cov = XL * YL' ./ (size(explanatoryVariables,1) - 1);
             
+            % If user said so, use BETA
+            if isfield(parameters, 'permute_on') && strcmp(parameters.permute_on, 'BETA')
+            
+               % Remove intercept
+               permutated_output = BETA(2:end, :);
+            % Otherwise, use Cov
+            else 
+               permutated_output = Cov;
+            end 
+
             % If comparison type is categorical, keep just the first column
-            % of Cov.
+            % of Cov or BETA.
             if isfield(parameters, 'comparison_type') && strcmp(comparison_type, 'categorical')
-                Cov = Cov(:, 1);
+                permutated_output = permutated_output(:, 1);
             end 
 
             % Put into holding matrix.
-            Covs_permutations(:, :, repi) = Cov; 
+            Covs_permutations(:, :, repi) = permutated_output; 
             
         end 
 
