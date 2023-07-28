@@ -90,8 +90,8 @@ if A > max_components
 end
 disp(['Need ' num2str(A) ' components.']);
 
-maxiter= 1000;   %5000;
-conv=1.0e-10;
+maxiter= 500;   %5000;
+conv = 1.0e-9;  %1.0e-10;
 diff=100;
 It=0;
 while It < maxiter && diff > conv
