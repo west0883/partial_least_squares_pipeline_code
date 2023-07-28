@@ -405,8 +405,12 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
         end
 
         % Make a holding matrix for Cov permutations.
-        Covs_permutations = NaN(size(results.Cov,1), numel(columns_to_use), parameters.n_permutations);  %size(results.BETA, 2)
-
+        if isfield(parameters, 'permute_on') && strcmp(parameters.permute_on, 'BETA')
+            Covs_permutations = NaN(size(results.Cov,1) + 1, numel(columns_to_use), parameters.n_permutations);  %size(results.BETA, 2)
+        else
+            Covs_permutations = NaN(size(results.Cov,1), numel(columns_to_use), parameters.n_permutations);  %size(results.BETA, 2)
+        end 
+        
         parfor repi = 1:parameters.n_permutations % parfor 
 
             % For each response variable being looked at (want the diffent 
@@ -445,7 +449,7 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             if isfield(parameters, 'permute_on') && strcmp(parameters.permute_on, 'BETA')
             
                % Remove intercept
-               permutated_output = BETA(2:end, :);
+               permutated_output = BETA;
             % Otherwise, use Cov
             else 
                permutated_output = Cov;
