@@ -404,12 +404,10 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             columns_to_use = 1:size(responseVariables, 2);
         end
 
-        % Make a holding matrix for Cov permutations.
-        if isfield(parameters, 'permute_on') && strcmp(parameters.permute_on, 'BETA')
-            Covs_permutations = NaN(size(results.Cov,1) + 1, numel(columns_to_use), parameters.n_permutations);  %size(results.BETA, 2)
-        else
-            Covs_permutations = NaN(size(results.Cov,1), numel(columns_to_use), parameters.n_permutations);  %size(results.BETA, 2)
-        end 
+        % Make a holding matrix for Cov & BETA permutations.
+        BETAs_permutations = NaN(size(results.Cov,1) + 1, numel(columns_to_use), parameters.n_permutations);  %size(results.BETA, 2)
+
+        Covs_permutations = NaN(size(results.Cov,1), numel(columns_to_use), parameters.n_permutations);  %size(results.BETA, 2)
         
         parfor repi = 1:parameters.n_permutations % parfor 
 
@@ -444,30 +442,26 @@ function [parameters] = PLSR_forRunAnalysis(parameters)
             
             % Calculate normalized covariance matrix 
             Cov = XL * YL' ./ (size(explanatoryVariables,1) - 1);
-            
-            % If user said so, use BETA
-            if isfield(parameters, 'permute_on') && strcmp(parameters.permute_on, 'BETA')
-            
-               % Remove intercept
-               permutated_output = BETA;
-            % Otherwise, use Cov
-            else 
-               permutated_output = Cov;
-            end 
+       
+           permutated_output_BETA = BETA; 
+           permutated_output_Cov = Cov;
 
             % If comparison type is categorical, keep just the first column
-            % of Cov or BETA.
+            % of Cov & BETA.
             if isfield(parameters, 'comparison_type') && strcmp(comparison_type, 'categorical')
-                permutated_output = permutated_output(:, 1);
+                permutated_output_Cov = permutated_output_Cov(:, 1);
+                permutated_output_BETA = permutated_output_BETA(:, 1);
             end 
 
             % Put into holding matrix.
-            Covs_permutations(:, :, repi) = permutated_output; 
+            Covs_permutations(:, :, repi) = permutated_output_Cov; 
+            BETAs_permutations(:, :, repi) = permutated_output_BETA; 
             
         end 
 
         % Put Covs_permutations into output structure, as single precision.
         parameters.Covs_randomPermutations = single(Covs_permutations);
+        parameters.BETAs_randomPermutations = single(BETAs_permutations);
 
     end 
 
