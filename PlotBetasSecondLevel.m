@@ -29,13 +29,21 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     % If user says so
     if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'multiply_by_average_sigma') && parameters.multiply_by_average_sigma
        
-        if strcmp(parameters.output_type, 'BETA')
+        % Remove intercepts from Betas in fluorescence
+        if strcmp(parameters.output_type, 'BETA') && strcmp(parameters.plot_type, 'fluorescence')
 
-           % Remove intercepts
+           % Remove intercepts 
            betas(1:parameters.number_of_sources + 1:end) = [];
-
+        
         end 
 
+        % Remove intercepts from Betas in correlations
+        if strcmp(parameters.output_type, 'BETA') && strcmp(parameters.plot_type, 'correlations')
+
+
+           betas(1:numel(parameters.indices) + 1:end) = [];
+        
+        end 
         % if categorical, only use first set of sigmas.
         if strcmp(parameters.comparison_type, 'categorical')
             betas_adjusted = betas .* parameters.average_sigmas(1:numel(betas));
@@ -59,11 +67,20 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             significance = parameters.significance;
         end
 
-        if strcmp(parameters.output_type, 'BETA')
+        % Remove intercepts from significance in fluorescence
+        if strcmp(parameters.output_type, 'BETA') && strcmp(parameters.plot_type, 'fluorescence')
 
           % Remove intercepts
           significance(1:parameters.number_of_sources + 1:end) = [];
 
+        end 
+
+        % Remove intercepts from significance in correlations
+        if strcmp(parameters.output_type, 'BETA') && strcmp(parameters.plot_type, 'correlations')
+
+
+           significance(1:numel(parameters.indices) + 1:end) = [];
+        
         end 
 
         % Only keep/plot beta values that reach significance 
