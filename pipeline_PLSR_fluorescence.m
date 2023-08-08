@@ -40,7 +40,7 @@ parameters.mice_all = parameters.mice_all;
 parameters.digitNumber = 2;
 parameters.yDim = 256;
 parameters.xDim = 256;
-parameters.number_of_sources = 16; 
+parameters.number_of_sources = 32; 
 parameters.indices = 1:16;
 
 % Load the motorized/spontaneous list of periods, to fit in with
@@ -145,10 +145,54 @@ parameters.loop_variables.output_types = {'Cov', 'BETA'}; % For continuous varia
 
 parameters.average_and_std_together = false;
 
-%% Average fluorescence by pairs of nodes
-% Average across left/right hemisphere nodes
-% Then permute to match correlations formatting.
+% %% Average fluorescence by pairs of nodes
+% % Average across left/right hemisphere nodes
+% % Then permute to match correlations formatting.
+% 
+% % Always clear loop list first. 
+% if isfield(parameters, 'loop_list')
+% parameters = rmfield(parameters,'loop_list');
+% end
+% 
+% 
+% % Iterators
+% parameters.loop_list.iterators = {
+%                 'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+%                 'period', {'loop_variables.periods_bothConditions'}, 'period_iterator';              
+%                };
+% 
+% parameters.loop_variables.mice_all = parameters.mice_all;
+% 
+% % Dimension to average across
+% parameters.averageDim = 1; 
+% 
+% parameters.evaluation_instructions = {           
+%                                      {'data = parameters.data;' ... 
+%                                      'holder = reshape(data, size(data, 1), 2 , parameters.number_of_sources);'... % instances x paired nodes x 16
+%                                      'holder2 = squeeze(mean(holder, 2, "omitnan"));'...   % mean across paired nodes, now instances x 16
+%                                      'data_evaluated = permute(holder2, [2 3 1]);'  % transpose so it's 16 nodes x 1 roll x instances
+%                                       }
+%                                       };
+%   
+% % permute from nodes X instance x roll to
+% % nodes X roll X instance 
+% 
+% % Input
+% parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'fluorescence analysis\fluorescence for fluorescence PLSR\'], 'mouse', '\'};
+% parameters.loop_list.things_to_load.data.filename= {'forFluorescence.mat'};
+% parameters.loop_list.things_to_load.data.variable= {'forFluorescence{', 'period_iterator', ',1}'}; 
+% parameters.loop_list.things_to_load.data.level = 'mouse';
+% 
+% % Output
+% parameters.loop_list.things_to_save.data_evaluated.dir = {[parameters.dir_exper 'PLSR fluorescence\permuted timeseries\'], 'mouse', '\'};
+% parameters.loop_list.things_to_save.data_evaluated.filename= {'timeseries_permuted.mat'};
+% parameters.loop_list.things_to_save.data_evaluated.variable= {'timeseries_permuted{', 'period_iterator', ',1}'}; 
+% parameters.loop_list.things_to_save.data_evaluated.level = 'mouse';
+% 
+% % run
+% RunAnalysis({@EvaluateOnData}, parameters)
 
+%% Instead of averaging, just permute
 % Always clear loop list first. 
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -168,9 +212,7 @@ parameters.averageDim = 1;
 
 parameters.evaluation_instructions = {           
                                      {'data = parameters.data;' ... 
-                                     'holder = reshape(data, size(data, 1), 2 , parameters.number_of_sources);'... % instances x paired nodes x 16
-                                     'holder2 = squeeze(mean(holder, 2, "omitnan"));'...   % mean across paired nodes, now instances x 16
-                                     'data_evaluated = permute(holder2, [2 3 1]);'  % transpose so it's 16 nodes x 1 roll x instances
+                                     'data_evaluated = permute(data, [2 3 1]);'  % transpose so it's 32 nodes x 1 roll x instances
                                       }
                                       };
   
@@ -191,7 +233,6 @@ parameters.loop_list.things_to_save.data_evaluated.level = 'mouse';
 
 % run
 RunAnalysis({@EvaluateOnData}, parameters)
-
 
 %% *** Run the PLSR pipeline ***
 
@@ -234,10 +275,10 @@ end
 parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
 
 % Variables to replicate
-parameters.response_variable_names = {'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'x_vector'};
-parameters.variables_static = {'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'duration_vector'};
+parameters.response_variable_names = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'x_vector'};
+parameters.variables_static = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'duration_vector'};
 parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
-% Additional variables -- pupil, tail, nose, FL, HL; always present & loaded in
+% Additional variables -- pupil, tail, nose, FL, HL, x; always present & loaded in
 parameters.additional_variables = parameters.response_variable_names(7:end);
 % Original order of spontaneous (for velocity & accel indexing)
 parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 'stopwalk', 'postwalk'};
