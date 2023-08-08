@@ -86,7 +86,7 @@ parameters.color_range.specials = {
                                     };
                                     
 % Names of all continuous variables.
-parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter', 'tail', 'nose', 'FL', 'HL'};
+parameters.continuous_variable_names = {'speed', 'accel', 'duration', 'pupil_diameter', 'tail', 'nose', 'FL', 'HL', 'x'};
 
 % Put relevant variables into loop_variables.
 parameters.loop_variables.mice_all = parameters.mice_all;
@@ -95,6 +95,7 @@ parameters.loop_variables.conditions = {'motorized'; 'spontaneous'};
 parameters.loop_variables.conditions_stack_locations = {'stacks'; 'spontaneous'};
 parameters.loop_variables.variable_type = {'response variables', 'correlations'};
 parameters.loop_variables.comparison_types = {'categorical', 'continuous'};
+parameters.loop_variables.output_types =  {'Cov','BETA'};
 
 %% Create periods_nametable_forPLSR.mat
 % If hasn't been created already. 
@@ -175,7 +176,7 @@ end
 parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
 
 % Variables to replicate
-parameters.response_variable_names = {'type_dummyvars_vector', 'walk_active_warning_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector'};
+parameters.response_variable_names = {'type_dummyvars_vector', 'walk_active_warning_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'x_vector'};
 parameters.variables_static = {'type_dummyvars_vector', 'duration_vector', 'walk_active_warning_dummyvars_vector'};
 %parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
 
@@ -228,28 +229,34 @@ parameters.loop_list.things_to_load.pupil_diameter_vector.variable= {'diameter_a
 parameters.loop_list.things_to_load.pupil_diameter_vector.level = 'mouse';
 
 % Tail 
-parameters.loop_list.things_to_load.tail_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\tail\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.tail_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\tail\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.tail_vector.filename= {'velocity_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.tail_vector.variable= {'velocity_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.tail_vector.level = 'mouse';
 
 % Nose 
-parameters.loop_list.things_to_load.nose_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\nose\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.nose_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\nose\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.nose_vector.filename= {'velocity_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.nose_vector.variable= {'velocity_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.nose_vector.level = 'mouse';
 
 % FL 
-parameters.loop_list.things_to_load.FL_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\FL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.FL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\FL\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.FL_vector.filename= {'velocity_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.FL_vector.variable= {'velocity_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.FL_vector.level = 'mouse';
 
 % HL 
-parameters.loop_list.things_to_load.HL_vector.dir = {[parameters.dir_exper 'behavior\body\value per roll velocity\HL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.HL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\HL\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.HL_vector.filename= {'velocity_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.HL_vector.variable= {'velocity_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.HL_vector.level = 'mouse';
+
+% x 
+parameters.loop_list.things_to_load.x_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\FL\x\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.x_vector.filename= {'velocity_averaged_by_instance.mat'};
+parameters.loop_list.things_to_load.x_vector.variable= {'velocity_averaged_by_instance'}; 
+parameters.loop_list.things_to_load.x_vector.level = 'mouse';
 
 % rest & walk duration 
 parameters.loop_list.things_to_load.duration_place.dir = {[parameters.dir_exper 'behavior\duration place concatenated\both conditions\'], 'mouse', '\'};
@@ -791,6 +798,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
@@ -808,12 +816,12 @@ parameters.concatenation_level = 'mouse';
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.response.filename= {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.response.variable= {'PLSR_results.Cov'}; 
+parameters.loop_list.things_to_load.response.variable= {'PLSR_results.' ,'output_type'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_Cov.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_' ,'output_type', '.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -940,6 +948,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator';
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
@@ -956,12 +965,12 @@ parameters.concatenation_level = 'mouse';
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.response.filename= {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.response.variable= {'PLSR_results.Cov'}; 
+parameters.loop_list.things_to_load.response.variable= {'PLSR_results.', 'output_type'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_Cov.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_', 'output_type', '.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -1129,97 +1138,21 @@ if do
     parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
 
     % Output
+    % Cov 
     parameters.loop_list.things_to_save.Covs_randomPermutations.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
     parameters.loop_list.things_to_save.Covs_randomPermutations.filename= {'PLSR_Covs_randomPermutations.mat'};
     parameters.loop_list.things_to_save.Covs_randomPermutations.variable= {'Covs_randomPermutations'}; 
     parameters.loop_list.things_to_save.Covs_randomPermutations.level = 'comparison';
-    
+    % beta
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.filename= {'PLSR_BETAs_randomPermutations.mat'};
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.variable= {'BETAs_randomPermutations'}; 
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.level = 'comparison';
     RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
     
     parameters.permutationGeneration = false;
 end 
 
-% %% Level 1 continuous -- run bootstrapping.
-% % With best number of components.
-% % Always clear loop list first.
-% if isfield(parameters, 'loop_list')
-% parameters = rmfield(parameters,'loop_list');
-% end
-% 
-% % Iterators
-% parameters.loop_list.iterators = {
-%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator';
-%                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-% 
-% % Do you want permutations?
-% parameters.useBootstrapping = true;
-% parameters.permutationGeneration = false;
-% parameters.n_bootstraps = 10000;
-% parameters.stratify = false;
-% parameters.comparison_type = 'continuous';
-% 
-% % Input
-% % dataset
-% parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
-% parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'};
-% parameters.loop_list.things_to_load.dataset.level = 'comparison';
-% % optimized number of components to use.
-% parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\'], 'comparison','\', 'mouse', '\'};
-% parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
-% parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'};
-% parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
-% 
-% % Output
-% parameters.loop_list.things_to_save.Covs_bootstrap.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_save.Covs_bootstrap.filename= {'PLSR_Covs_bootstrap.mat'};
-% parameters.loop_list.things_to_save.Covs_bootstrap.variable= {'Covs_bootstrap'};
-% parameters.loop_list.things_to_save.Covs_bootstrap.level = 'comparison';
-% 
-% RunAnalysis({@PLSR_forRunAnalysis}, parameters);
-% 
-% parameters.useBootstrapping = false;
-
-% %% Level 1 categorical -- run bootstrapping.
-% % With best number of components.
-% % Always clear loop list first.
-% if isfield(parameters, 'loop_list')
-% parameters = rmfield(parameters,'loop_list');
-% end
-% 
-% % Iterators
-% parameters.loop_list.iterators = {
-%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator';
-%                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
-% 
-% % Do you want permutations?
-% parameters.useBootstrapping = true;
-% parameters.permutationGeneration = false;
-% parameters.n_bootstraps = 10000;
-% parameters.stratify = true;
-% parameters.comparison_type = 'categorical';
-% 
-% % Input
-% % dataset
-% parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
-% parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'};
-% parameters.loop_list.things_to_load.dataset.level = 'comparison';
-% % optimized number of components to use.
-% parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison','\', 'mouse', '\'};
-% parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
-% parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'};
-% parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
-% 
-% % Output
-% parameters.loop_list.things_to_save.Covs_bootstrap.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_save.Covs_bootstrap.filename= {'PLSR_Covs_bootstrap.mat'};
-% parameters.loop_list.things_to_save.Covs_bootstrap.variable= {'Covs_bootstrap'};
-% parameters.loop_list.things_to_save.Covs_bootstrap.level = 'comparison';
-% 
-% RunAnalysis({@PLSR_forRunAnalysis}, parameters);
-% 
-% parameters.useBootstrapping = false;
 
 %% Level 1 categorical -- run random permutations.
 do = true;
@@ -1253,329 +1186,21 @@ if do
     parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
     
     % Output
+    % Covs
     parameters.loop_list.things_to_save.Covs_randomPermutations.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
     parameters.loop_list.things_to_save.Covs_randomPermutations.filename= {'PLSR_Covs_randomPermutations.mat'};
     parameters.loop_list.things_to_save.Covs_randomPermutations.variable= {'Covs_randomPermutations'}; 
     parameters.loop_list.things_to_save.Covs_randomPermutations.level = 'comparison';
-    
+    % Betas 
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.filename= {'PLSR_BETAs_randomPermutations.mat'};
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.variable= {'BETAs_randomPermutations'}; 
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.level = 'comparison';
     RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
     
     parameters.permutationGeneration = false;
 end
 
- %% Level 2 categorical -- prep shuffled datasets for PLSR on shuffles. 
-% %Always clear loop list first. 
-% if isfield(parameters, 'loop_list')
-% parameters = rmfield(parameters,'loop_list');
-% end
-% 
-% % Iterators
-% parameters.loop_list.iterators = {
-%                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
-%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
-% 
-% % If the first level was categorical:
-% parameters.firstLevelCategorical = true; 
-% 
-% % Remove outliers & average
-% parameters.averaging_across_mice = true;
-% parameters.removeOutliers = false; 
-% 
-% parameters.this_comparison_set = parameters.comparisons_categorical;
-% parameters.max_mice = size(parameters.mice_all, 2);
-% parameters.concatenation_level = 'mouse';
-% 
-% % Input 
-% parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_bootstrap.mat'};
-% parameters.loop_list.things_to_load.response.variable= {'Covs_bootstrap'}; 
-% parameters.loop_list.things_to_load.response.level = 'mouse';
-% 
-% % Output
-% parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-% parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_bootstrap_Cov.mat'};
-% parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
-% parameters.loop_list.things_to_save.dataset.level = 'comparison';
-% 
-% RunAnalysis({@DatasetPrepSecondLevel}, parameters);
-% 
-% %% Level 2 categorical -- check significance
-% % Always clear loop list first. 
-% if isfield(parameters, 'loop_list')
-% parameters = rmfield(parameters,'loop_list');
-% end
-% 
-% % Iterators
-% parameters.loop_list.iterators = {
-%                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
-% 
-% parameters.shufflesDim = 2;
-% parameters.find_significance = true;
-% 
-% % The statistical alpha value
-% parameters.alphaValue =  0.05/496; %0.001; %0.05/150;  %/(numel(parameters.comparisons_categorical) - 4;
-% 
-% % Use the Bootstrapping method. 
-% parameters.useBootstrapping = true;
-% 
-% % If you want to fit a normal distribution before t-test (default = true)
-% parameters.useNormalDistribution = true; 
-% 
-% % Inputs:
-% % Test values
-% parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-% parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_Cov.mat'};
-% parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
-% parameters.loop_list.things_to_load.test_values.level = 'comparison';
-% % Null distribution
-% parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-% parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_bootstrap_Cov.mat'};
-% parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
-% parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
-% 
-% % Outputs
-% parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 categorical\'], 'comparison', '\'};
-% parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
-% parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
-% parameters.loop_list.things_to_save.significance.level = 'comparison';
-% 
-% RunAnalysis({@SignificanceCalculation}, parameters);
-% 
-% %% Level 2 continuous -- prep shuffled datasets for PLSR on shuffles.
-% % Always clear loop list first. 
-% if isfield(parameters, 'loop_list')
-% parameters = rmfield(parameters,'loop_list');
-% end
-% 
-% % Iterators
-% parameters.loop_list.iterators = {
-%                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator';
-%                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
-% 
-% % If the first level was categorical:
-% parameters.firstLevelCategorical = false; 
-% 
-% parameters.this_comparison_set = parameters.comparisons_continuous;
-% parameters.max_mice = size(parameters.mice_all, 2);
-% parameters.concatenation_level = 'mouse';
-% parameters.averaging_across_mice = true;
-% parameters.removeOutliers = false;
-% 
-% % Input 
-% parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
-% parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_bootstrap.mat'};
-% parameters.loop_list.things_to_load.response.variable= {'Covs_bootstrap'}; 
-% parameters.loop_list.things_to_load.response.level = 'mouse';
-% 
-% % Output
-% parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-% parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_bootstrap_Cov.mat'};
-% parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
-% parameters.loop_list.things_to_save.dataset.level = 'comparison';
-% 
-% RunAnalysis({@DatasetPrepSecondLevel}, parameters);
-% 
-% %% Level 2 continuous -- check significance
-% % % Always clear loop list first. 
-% if isfield(parameters, 'loop_list')
-% parameters = rmfield(parameters,'loop_list');
-% end
-% 
-% % Iterators
-% parameters.loop_list.iterators = {
-%                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-% parameters.shufflesDim = 2; % After the EvaluateOnData reduction
-% parameters.find_significance = true;
-% 
-% % The statistical alpha value
-% parameters.alphaValue = 0.05/ 496; %0.001; %0.05/45; %/numel(parameters.comparisons_continuous);
-% 
-% % Say that you do want to use bootstrapping.
-% parameters.useBootstrapping = true;
-% 
-% % If you want to fit a normal distribution before t-test (default = true)
-% parameters.useNormalDistribution = true; 
-% 
-% % Inputs:
-% % Test values (will grab only the intercepts with EvaluateOnData)
-% % parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-% % parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info.mat'};
-% % parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
-% % parameters.loop_list.things_to_load.test_values.level = 'comparison';
-% % Null distribution
-% parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-% parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_bootstrap_Cov.mat'};
-% parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
-% parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
-% 
-% % Outputs
-% parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 continuous\'], 'comparison', '\'};
-% parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
-% parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
-% parameters.loop_list.things_to_save.significance.level = 'comparison';
-% 
-% RunAnalysis({@SignificanceCalculation}, parameters);
-% 
-% %% Level 2 categorical -- plot betas with significance, bootstrap
-% % Plot all the beta intercepts in a single plot 
-% parameters.plotIndividually = false;
-% % Do for each variation of significance & adjusted
-% true_false_vector = {false, true};
-% for i = 2 %1:numel(true_false_vector)
-%     % Adjust beta values based on zscore sigmas?
-%     parameters.adjustBetas = true_false_vector{i};
-% 
-%     for j = 2 %1:numel(true_false_vector)
-%          % Only include significant betas?
-%          parameters.useSignificance = true_false_vector{j};
-% 
-%         if isfield(parameters, 'loop_list')
-%         parameters = rmfield(parameters,'loop_list');
-%         end
-%         
-%         % Iterators
-%         parameters.loop_list.iterators = {
-%                        'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
-% 
-%         % Averaging? 
-%         parameters.averaging_across_mice = true;
-%         parameters.removeOutliers = false;
-% 
-%         % Color range for all plots (if betas are adjusted).
-%         parameters.useColorRange = true;
-%         
-%         % Comparison type (categorical or continuous)
-%         parameters.comparison_type = 'categorical';
-%         parameters.this_comparison_set = parameters.comparisons_categorical;
-%         
-%         title = 'PLSR_Covs_all_comparisons';
-%         if parameters.adjustBetas
-%             title = [title '_Adjusted'];
-%         end
-%         if parameters.useSignificance 
-%             title = [title '_withSignificance'];
-%         end
-%         title = [title '.fig'];
-%         
-%         % Input
-%         parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-%         parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info_Cov.mat'};
-%         parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
-%         parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
-%         % significance matrix
-%         if parameters.useSignificance
-%         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 categorical\'], 'comparison', '\'};
-%         parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
-%         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
-%         parameters.loop_list.things_to_load.significance.level = 'comparison';
-%         end
-%         % Average sigmas.
-%         if parameters.adjustBetas
-%         parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-%         parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
-%         parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
-%         parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
-%         end
-%         
-%         % Output
-%         parameters.loop_list.things_to_save.fig.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 categorical\']};
-%         parameters.loop_list.things_to_save.fig.filename = {title};
-%         parameters.loop_list.things_to_save.fig.variable = {'PLSR_Covs'};
-%         parameters.loop_list.things_to_save.fig.level = 'end';
-%         
-%         RunAnalysis({@PlotBetasSecondLevel}, parameters);
-%     end
-% end 
-% %close all;
-% clear i j true_false_vector;
-% 
-% %% Level 2 continuous -- plot betas with significance, bootstrap
-% % Plot all the beta intercepts in a single plot 
-% parameters.plotIndividually = false;
-% % Do for each variation of significance & adjusted
-% true_false_vector = {false, true};
-% for i = 2 %1:numel(true_false_vector)
-%     % Adjust beta values based on zscore sigmas?
-%     parameters.adjustBetas = true_false_vector{i};
-% 
-%     for j = 2 %1:numel(true_false_vector)
-%          % Only include significant betas?
-%          parameters.useSignificance = true_false_vector{j};
-% 
-%         if isfield(parameters, 'loop_list')
-%         parameters = rmfield(parameters,'loop_list');
-%         end
-%         
-%         % Iterators
-%         parameters.loop_list.iterators = {
-%                        'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-% 
-%         % Averaging? 
-%         parameters.averaging_across_mice = true;
-%         parameters.removeOutliers = false;
-% 
-%         % Color range for all plots (if betas are adjusted).
-%         parameters.useColorRange = true;
-% 
-%         % Comparison type (continuous or continuous)
-%         parameters.comparison_type = 'continuous';
-%         parameters.this_comparison_set = parameters.comparisons_continuous;
-%         
-%         title = 'PLSR_Covs_all_comparisons';
-%         if parameters.adjustBetas
-%             title = [title '_Adjusted'];
-%         end
-%         if parameters.useSignificance 
-%             title = [title '_withSignificance'];
-%         end
-%         title = [title '.fig'];
-%         
-%         % Input
-%         parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-%         parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info_Cov.mat'};
-%         parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
-%         parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
-%         % significance matrix
-%         if parameters.useSignificance
-%         parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 continuous\'], 'comparison', '\'};
-%         parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
-%         parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
-%         parameters.loop_list.things_to_load.significance.level = 'comparison';
-%         end
-%         % Average sigmas.
-%         if parameters.adjustBetas
-%         parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-%         parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
-%         parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
-%         parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
-%         end
-%         
-%         % Output
-%         parameters.loop_list.things_to_save.speed_fig.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 continuous\']};
-%         parameters.loop_list.things_to_save.speed_fig.filename = {['speed_ ' title]};
-%         parameters.loop_list.things_to_save.speed_fig.variable = {'speed_fig'};
-%         parameters.loop_list.things_to_save.speed_fig.level = 'end';
-% 
-%         parameters.loop_list.things_to_save.accel_fig.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 continuous\']};
-%         parameters.loop_list.things_to_save.accel_fig.filename = {['accel_ ' title]};
-%         parameters.loop_list.things_to_save.accel_fig.variable = {'accel_fig'};
-%         parameters.loop_list.things_to_save.accel_fig.level = 'end';
-% 
-%         parameters.loop_list.things_to_save.duration_fig.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 continuous\']};
-%         parameters.loop_list.things_to_save.duration_fig.filename = {['duration_ ' title]};
-%         parameters.loop_list.things_to_save.duration_fig.variable = {'duration_fig'};
-%         parameters.loop_list.things_to_save.duration_fig.level = 'end';
-% 
-%         parameters.loop_list.things_to_save.pupil_diameter_fig.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 continuous\']};
-%         parameters.loop_list.things_to_save.pupil_diameter_fig.filename = {['pupil_diameter_ ' title]};
-%         parameters.loop_list.things_to_save.pupil_diameter_fig.variable = {'pupil_diameter_fig'};
-%         parameters.loop_list.things_to_save.pupil_diameter_fig.level = 'end';
-%         
-%         RunAnalysis({@PlotBetasSecondLevel}, parameters);
-%     end
-% end 
-% %close all;
-% clear i j true_false_vector;
 
 %% Level 2 continuous -- prep permutation shuffled datasets
 % Always clear loop list first. 
@@ -1585,6 +1210,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator';      
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator';
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
@@ -1599,13 +1225,13 @@ parameters.removeOutliers = false;
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_randomPermutations.mat'};
-parameters.loop_list.things_to_load.response.variable= {'Covs_randomPermutations'}; 
+parameters.loop_list.things_to_load.response.filename= {'PLSR_', 'output_type', 's_randomPermutations.mat'};
+parameters.loop_list.things_to_load.response.variable= {'output_type', 's_randomPermutations'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations_', 'output_type', '.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -1619,6 +1245,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
@@ -1635,13 +1262,13 @@ parameters.concatenation_level = 'mouse';
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_randomPermutations.mat'};
-parameters.loop_list.things_to_load.response.variable= {'Covs_randomPermutations'}; 
+parameters.loop_list.things_to_load.response.filename= {'PLSR_', 'output_type', 's_randomPermutations.mat'};
+parameters.loop_list.things_to_load.response.variable= {'output_type', 's_randomPermutations'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations_', 'output_type', '.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -1655,6 +1282,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 parameters.shufflesDim = 2; % After the EvaluateOnData reduction
 parameters.find_significance = true;
@@ -1674,18 +1302,18 @@ parameters.useFDR = true;
 % Inputs:
 %Test values (will grab only the intercepts with EvaluateOnData)
 parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_Cov.mat'};
+parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_', 'output_type', '.mat'};
 parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.test_values.level = 'comparison';
 % Null distribution
 parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations_', 'output_type', '.mat'};
 parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
 
 % Outputs
 parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 continuous\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_Cov_FDR.mat'};
+parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_', 'output_type', '_FDR.mat'};
 parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
 parameters.loop_list.things_to_save.significance.level = 'comparison';
 
@@ -1701,6 +1329,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
 parameters.shufflesDim = 2;
@@ -1721,18 +1350,18 @@ parameters.useFDR = true;
 % Inputs:
 % Test values
 parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_Cov.mat'};
+parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_', 'output_type', '.mat'};
 parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.test_values.level = 'comparison';
 % Null distribution
 parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations_', 'output_type', '.mat'};
 parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
 
 % Outputs
 parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_Cov_FDR.mat'};
+parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_', 'output_type', '_FDR.mat'};
 parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
 parameters.loop_list.things_to_save.significance.level = 'comparison';
 
@@ -1912,6 +1541,7 @@ end
         
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                'comparison_type', {'loop_variables.comparison_types'}, 'comparison_type_iterator';
                'comparison', {'loop_variables.comparisons_', 'comparison_type', '(:).name'}, 'comparison_iterator' };
 
@@ -1933,7 +1563,7 @@ parameters.average_and_std_together = false;
 
 % Input
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_Cov.mat'};
+parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_', 'output_type', '.mat'};
 parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
 parameters.loop_list.things_to_load.data.level = 'comparison';
 
@@ -1947,62 +1577,18 @@ end
 % Output 
 % each mouse, as a matrix
 parameters.loop_list.things_to_save.node_averages.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_Cov.mat'};
+parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_', 'output_type', '.mat'};
 parameters.loop_list.things_to_save.node_averages.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.node_averages.level = 'comparison';
 % Across mice.
 parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_Cov.mat'};
+parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_', 'output_type', '.mat'};
 parameters.loop_list.things_to_save.average.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.average.level = 'comparison';
 
 parameters.loop_list.things_to_rename = {{'node_averages', 'data'}}; 
 
 RunAnalysis({@AverageByNode, @AverageData}, parameters);
-
-
-%% Calculate mean change of nodes with all other nodes, null distributions -- bootstrap
-% if isfield(parameters, 'loop_list')
-%     parameters = rmfield(parameters,'loop_list');
-% end
-%         
-% % Iterators
-% parameters.loop_list.iterators = {
-%                'comparison_type', {'loop_variables.comparison_types'}, 'comparison_type_iterator';
-%                'comparison', {'loop_variables.comparisons_', 'comparison_type', '(:).name'}, 'comparison_iterator' };
-% 
-% parameters.loop_variables.comparison_types = {'categorical', 'continuous'}; 
-% 
-% % Parameters for AverageByNode code.
-% parameters.isVector = true;
-% parameters.corrsDim = 2;
-% parameters.fromPLSR = true;
-% 
-% % Dimension to average across AFTER data has gone through AverageByNode
-% % code.
-% parameters.averageDim = 2;
-% 
-% % Input
-% parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-% parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_bootstrap_Cov.mat'};
-% parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
-% parameters.loop_list.things_to_load.data.level = 'comparison';
-% 
-% % Output 
-% % each mouse, as a matrix
-% parameters.loop_list.things_to_save.node_averages.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-% parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_bootstrap_Cov.mat'};
-% parameters.loop_list.things_to_save.node_averages.variable = {'average_by_nodes'};
-% parameters.loop_list.things_to_save.node_averages.level = 'comparison';
-% % Across mice.
-% parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-% parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_bootstrap_Cov.mat'};
-% parameters.loop_list.things_to_save.average.variable = {'average_by_nodes'};
-% parameters.loop_list.things_to_save.average.level = 'comparison';
-% 
-% parameters.loop_list.things_to_rename = {{'node_averages', 'data'}}; 
-% 
-% RunAnalysis({@AverageByNode, @AverageData}, parameters);
 
 %% Calculate mean change of nodes with all other nodes, null distributions -- permutations
 if isfield(parameters, 'loop_list')
@@ -2011,6 +1597,7 @@ end
         
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                'comparison_type', {'loop_variables.comparison_types'}, 'comparison_type_iterator';
                'comparison', {'loop_variables.comparisons_', 'comparison_type', '(:).name'}, 'comparison_iterator' };
 
@@ -2033,7 +1620,7 @@ parameters.average_and_std_together = false;
 
 % Input
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR Warning Periods\variable prep\datasets\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_randomPermutations_', 'output_type', '.mat'};
 parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
 parameters.loop_list.things_to_load.data.level = 'comparison';
 if parameters.multiply_by_average_sigma 
@@ -2046,79 +1633,18 @@ end
 % Output 
 % each mouse, as a matrix
 parameters.loop_list.things_to_save.node_averages.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_randomPermutations_', 'output_type', '.mat'};
 parameters.loop_list.things_to_save.node_averages.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.node_averages.level = 'comparison';
 % Across mice.
 parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_randomPermutations_', 'output_type', '.mat'};
 parameters.loop_list.things_to_save.average.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.average.level = 'comparison';
 
 parameters.loop_list.things_to_rename = {{'node_averages', 'data'}}; 
 
 RunAnalysis({@AverageByNode, @AverageData}, parameters);
-
-%% Calculate significance of mean change by node -- bootstrapping
-% comparison_types = {'categorical', 'continuous'};
-% 
-% for typei = 1:numel(comparison_types)
-% 
-%     comparison_type = comparison_types{typei};
-%     parameters.comparison_type = comparison_type;
-%     parameters.this_comparison_set = parameters.(['comparisons_' comparison_type]);
-% 
-%     if isfield(parameters, 'loop_list')
-%         parameters = rmfield(parameters,'loop_list');
-%     end
-% 
-%     % Iterators
-%     parameters.loop_list.iterators = {
-%                    'comparison', {'loop_variables.comparisons_', comparison_type, '(:).name'}, 'comparison_iterator' };
-%     
-%     parameters.find_significance = true;
-%     
-%     % Say that you do want to use bootstrapping.
-%     parameters.useBootstrapping = true;
-%     
-%     % If you want to fit a normal distribution before t-test (default = true)
-%     parameters.useNormalDistribution = true; 
-% 
-%     if strcmp(comparison_type, 'categorical')
-% 
-%         parameters.shufflesDim = 2;
-%         
-%         % The statistical alpha value
-%         parameters.alphaValue = 0.05/496; %0.05/150;
-%     
-%     else
-%         parameters.shufflesDim = 2;
-% 
-%         % The statistical alpha value
-%         parameters.alphaValue = 0.05/496; %0.05/45;
-%     end
-% 
-%     % Inputs:
-%     %Test values (will grab only the intercepts with EvaluateOnData)
-%     parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 '], comparison_type, '\', 'comparison', '\'};
-%     parameters.loop_list.things_to_load.test_values.filename= {'average_by_nodes_allmice_Cov.mat'};
-%     parameters.loop_list.things_to_load.test_values.variable= {'average_by_nodes'}; 
-%     parameters.loop_list.things_to_load.test_values.level = 'comparison';
-%     
-%     % Null distribution
-%     parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 '], comparison_type, '\', 'comparison', '\'};
-%     parameters.loop_list.things_to_load.null_distribution.filename= {'average_by_nodes_allmice_bootstrap_Cov.mat'};
-%     parameters.loop_list.things_to_load.null_distribution.variable= {'average_by_nodes'}; 
-%     parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
-%     
-%     % Output
-%     parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 '] , comparison_type, '\', 'comparison', '\'};
-%     parameters.loop_list.things_to_save.significance.filename= {'average_by_nodes_significance_bootstrap_Cov.mat'};
-%     parameters.loop_list.things_to_save.significance.variable= {'significance'}; 
-%     parameters.loop_list.things_to_save.significance.level = 'comparison';
-%     
-%     RunAnalysis({@SignificanceCalculation}, parameters);
-% end
 
 %% Calculate significance of mean change of nodes with all other -- permutations
 
@@ -2136,6 +1662,7 @@ for typei = 1:numel(comparison_types)
 
     % Iterators
     parameters.loop_list.iterators = {
+                   'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                    'comparison', {'loop_variables.comparisons_', comparison_type, '(:).name'}, 'comparison_iterator' };
     
     parameters.find_significance = true;
@@ -2167,19 +1694,19 @@ for typei = 1:numel(comparison_types)
     % Inputs:
     %Test values (will grab only the intercepts with EvaluateOnData)
     parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 '], comparison_type, '\', 'comparison', '\'};
-    parameters.loop_list.things_to_load.test_values.filename= {'average_by_nodes_allmice_Cov.mat'};
+    parameters.loop_list.things_to_load.test_values.filename= {'average_by_nodes_allmice_', 'output_type', '.mat'};
     parameters.loop_list.things_to_load.test_values.variable= {'average_by_nodes'}; 
     parameters.loop_list.things_to_load.test_values.level = 'comparison';
     
     % Null distribution
     parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 '], comparison_type, '\', 'comparison', '\'};
-    parameters.loop_list.things_to_load.null_distribution.filename= {'average_by_nodes_allmice_randomPermutations_Cov.mat'};
+    parameters.loop_list.things_to_load.null_distribution.filename= {'average_by_nodes_allmice_randomPermutations_', 'output_type', '.mat'};
     parameters.loop_list.things_to_load.null_distribution.variable= {'average_by_nodes'}; 
     parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
     
     % Output
     parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR Warning Periods\results\level 2 '] , comparison_type, '\', 'comparison', '\'};
-    parameters.loop_list.things_to_save.significance.filename= {'average_by_nodes_significance_randomPermutations_Cov_FDR.mat'};
+    parameters.loop_list.things_to_save.significance.filename= {'average_by_nodes_significance_randomPermutations_', 'output_type', '_FDR.mat'};
     parameters.loop_list.things_to_save.significance.variable= {'significance'}; 
     parameters.loop_list.things_to_save.significance.level = 'comparison';
     
