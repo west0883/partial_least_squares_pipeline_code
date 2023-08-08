@@ -67,6 +67,13 @@ function [parameters] = PlotBetasSecondLevel(parameters)
             significance = parameters.significance;
         end
 
+        % If output type is used in the iterators, use that as the output
+        % type.
+        if any(strcmp(parameters.keywords, 'output_type'))
+
+            parameters.output_type = parameters.values{strcmp(parameters.keywords, 'output_type')}; 
+        end
+        
         % Remove intercepts from significance in fluorescence
         if strcmp(parameters.output_type, 'BETA') && strcmp(parameters.plot_type, 'fluorescence')
 
