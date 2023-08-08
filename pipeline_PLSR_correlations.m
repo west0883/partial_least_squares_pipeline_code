@@ -136,7 +136,7 @@ parameters.loop_variables.conditions_stack_locations = {'stacks'; 'spontaneous'}
 parameters.loop_variables.variable_type = {'response variables', 'correlations'};
 parameters.loop_variables.categories.type = parameters.categories.type;
 parameters.loop_variables.comparison_types = {'categorical', 'continuous'};
-parameters.loop_variables.output_types = {'Cov', 'BETA'}; % For continuous variables, I want to also see the actual regressors
+parameters.loop_variables.output_types =  {'Cov','BETA'}; %{'Cov', % For continuous variables, I want to also see the actual regressors
 
 parameters.average_and_std_together = false;
 
@@ -815,6 +815,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
@@ -836,7 +837,7 @@ parameters.sigma_byanimal = false;
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.response.filename= {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.response.variable= {'PLSR_results.Cov'}; 
+parameters.loop_list.things_to_load.response.variable= {'PLSR_results.', 'output_type'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % If multiplying by sigmas by animal, load zscoring info
@@ -849,7 +850,7 @@ end
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_Cov.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_', 'output_type', '.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -920,7 +921,7 @@ for i = 1 %:numel(true_false_vector)
         parameters.removeOutliers = false;
 
         % Color range for all plots (if betas are adjusted).
-        parameters.useColorRange = true;
+        parameters.useColorRange = false;
         
         % Comparison type (categorical or continuous)
         parameters.comparison_type = 'categorical';
@@ -1054,113 +1055,120 @@ end
 RunAnalysis({@AverageSigmas}, parameters);
 
 %% Level 2 continuous -- plot betas
-% Plot all the beta intercepts in a single plot 
-parameters.plotIndividually = false;
-% Do for each variation of significance & adjusted
-true_false_vector = {false, true};
-for i = 1 %1:numel(true_false_vector)
-    % Adjust beta values based on zscore sigmas?
-    parameters.adjustBetas = true_false_vector{i};
-
-    for j = 1%1:numel(true_false_vector)
-         % Only include significant betas?
-         parameters.useSignificance = true_false_vector{j};
-
-        if isfield(parameters, 'loop_list')
-        parameters = rmfield(parameters,'loop_list');
-        end
-        
-        % Iterators
-        parameters.loop_list.iterators = {
-                       'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-
-        % Averaging? 
-        parameters.averaging_across_mice = true;
-        parameters.removeOutliers = false;
-
-        % Color range for all plots (if betas are adjusted).
-        parameters.useColorRange = false;
-
-        % Comparison type (continuous or continuous)
-        parameters.comparison_type = 'continuous';
-        parameters.this_comparison_set = parameters.comparisons_continuous;
-        
-        title = 'PLSR_Covs_all_comparisons';
-        if parameters.adjustBetas
-            title = [title '_Adjusted'];
-        end
-        if parameters.useSignificance 
-            title = [title '_withSignificance'];
-        end
-        title = [title '.fig'];
-        
-        % Input
-        parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info_Cov.mat'};
-        parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
-        parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
-        % significance matrix
-        if parameters.useSignificance
-        parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
-        parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
-        parameters.loop_list.things_to_load.significance.level = 'comparison';
-        end
-        % Average sigmas.
-        if parameters.adjustBetas
-        parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
-        parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
-        parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
-        end
-        
-        % Output
-        parameters.loop_list.things_to_save.speed_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
-        parameters.loop_list.things_to_save.speed_fig.filename = {['speed_ ' title]};
-        parameters.loop_list.things_to_save.speed_fig.variable = {'speed_fig'};
-        parameters.loop_list.things_to_save.speed_fig.level = 'end';
-
-        parameters.loop_list.things_to_save.accel_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
-        parameters.loop_list.things_to_save.accel_fig.filename = {['accel_ ' title]};
-        parameters.loop_list.things_to_save.accel_fig.variable = {'accel_fig'};
-        parameters.loop_list.things_to_save.accel_fig.level = 'end';
-
-        parameters.loop_list.things_to_save.duration_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
-        parameters.loop_list.things_to_save.duration_fig.filename = {['duration_ ' title]};
-        parameters.loop_list.things_to_save.duration_fig.variable = {'duration_fig'};
-        parameters.loop_list.things_to_save.duration_fig.level = 'end';
-
-        parameters.loop_list.things_to_save.pupil_diameter_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
-        parameters.loop_list.things_to_save.pupil_diameter_fig.filename = {['pupil_diameter_ ' title]};
-        parameters.loop_list.things_to_save.pupil_diameter_fig.variable = {'pupil_diameter_fig'};
-        parameters.loop_list.things_to_save.pupil_diameter_fig.level = 'end';
-
-        parameters.loop_list.things_to_save.tail_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
-        parameters.loop_list.things_to_save.tail_fig.filename = {['tail_ ' title]};
-        parameters.loop_list.things_to_save.tail_fig.variable = {'tail_fig'};
-        parameters.loop_list.things_to_save.tail_fig.level = 'end';
-        
-        parameters.loop_list.things_to_save.nose_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
-        parameters.loop_list.things_to_save.nose_fig.filename = {['nose_ ' title]};
-        parameters.loop_list.things_to_save.nose_fig.variable = {'nose_fig'};
-        parameters.loop_list.things_to_save.nose_fig.level = 'end';
-        
-        parameters.loop_list.things_to_save.FL_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
-        parameters.loop_list.things_to_save.FL_fig.filename = {['FL_ ' title]};
-        parameters.loop_list.things_to_save.FL_fig.variable = {'FL_fig'};
-        parameters.loop_list.things_to_save.FL_fig.level = 'end';
-        
-          parameters.loop_list.things_to_save.HL_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
-        parameters.loop_list.things_to_save.HL_fig.filename = {['HL_ ' title]};
-        parameters.loop_list.things_to_save.HL_fig.variable = {'HL_fig'};
-        parameters.loop_list.things_to_save.HL_fig.level = 'end';
-        
-        
-        RunAnalysis({@PlotBetasSecondLevel}, parameters);
-    end
-end 
-%close all;
-clear i j true_false_vector;
+% % Plot all the beta intercepts in a single plot 
+% parameters.plotIndividually = false;
+% % Do for each variation of significance & adjusted
+% true_false_vector = {false, true};
+% 
+% for output_typei = 2 % 1:numel(parameters.loop_variables.output_types)
+%     output_type = parameters.loop_variables.output_types{output_typei};
+%     true_false_vector = {false, true};
+%     parameters.output_type = output_type; 
+% 
+%     for i = 1 %1:numel(true_false_vector)
+%         % Adjust beta values based on zscore sigmas?
+%         parameters.adjustBetas = true_false_vector{i};
+%     
+%         for j = 1%1:numel(true_false_vector)
+%              % Only include significant betas?
+%              parameters.useSignificance = true_false_vector{j};
+%     
+%             if isfield(parameters, 'loop_list')
+%             parameters = rmfield(parameters,'loop_list');
+%             end
+%             
+%             % Iterators
+%             parameters.loop_list.iterators = {
+%                            'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+%     
+%             % Averaging? 
+%             parameters.averaging_across_mice = true;
+%             parameters.removeOutliers = false;
+%     
+%             % Color range for all plots (if betas are adjusted).
+%             parameters.useColorRange = false;
+%     
+%             % Comparison type (continuous or continuous)
+%             parameters.comparison_type = 'continuous';
+%             parameters.this_comparison_set = parameters.comparisons_continuous;
+%             
+%              title = ['PLSR_' output_type 's_all_comparisons'];
+%             if parameters.adjustBetas
+%                 title = [title '_Adjusted'];
+%             end
+%             if parameters.useSignificance 
+%                 title = [title '_withSignificance'];
+%             end
+%             title = [title '.fig'];
+%             
+%             % Input
+%             parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
+%             parameters.loop_list.things_to_load.average_across_mice.filename = {['PLSR_dataset_info_' output_type '.mat']};
+%             parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
+%             parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
+%             % significance matrix
+%             if parameters.useSignificance
+%             parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\'], 'comparison', '\'};
+%             parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_bootstrap_Cov.mat'};
+%             parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
+%             parameters.loop_list.things_to_load.significance.level = 'comparison';
+%             end
+%             % Average sigmas.
+%             if parameters.adjustBetas
+%             parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
+%             parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
+%             parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
+%             parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
+%             end
+%             
+%             % Output
+%             parameters.loop_list.things_to_save.speed_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+%             parameters.loop_list.things_to_save.speed_fig.filename = {['speed_ ' title]};
+%             parameters.loop_list.things_to_save.speed_fig.variable = {'speed_fig'};
+%             parameters.loop_list.things_to_save.speed_fig.level = 'end';
+%     
+%             parameters.loop_list.things_to_save.accel_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+%             parameters.loop_list.things_to_save.accel_fig.filename = {['accel_ ' title]};
+%             parameters.loop_list.things_to_save.accel_fig.variable = {'accel_fig'};
+%             parameters.loop_list.things_to_save.accel_fig.level = 'end';
+%     
+%             parameters.loop_list.things_to_save.duration_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+%             parameters.loop_list.things_to_save.duration_fig.filename = {['duration_ ' title]};
+%             parameters.loop_list.things_to_save.duration_fig.variable = {'duration_fig'};
+%             parameters.loop_list.things_to_save.duration_fig.level = 'end';
+%     
+%             parameters.loop_list.things_to_save.pupil_diameter_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+%             parameters.loop_list.things_to_save.pupil_diameter_fig.filename = {['pupil_diameter_ ' title]};
+%             parameters.loop_list.things_to_save.pupil_diameter_fig.variable = {'pupil_diameter_fig'};
+%             parameters.loop_list.things_to_save.pupil_diameter_fig.level = 'end';
+%     
+%             parameters.loop_list.things_to_save.tail_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+%             parameters.loop_list.things_to_save.tail_fig.filename = {['tail_ ' title]};
+%             parameters.loop_list.things_to_save.tail_fig.variable = {'tail_fig'};
+%             parameters.loop_list.things_to_save.tail_fig.level = 'end';
+%             
+%             parameters.loop_list.things_to_save.nose_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+%             parameters.loop_list.things_to_save.nose_fig.filename = {['nose_ ' title]};
+%             parameters.loop_list.things_to_save.nose_fig.variable = {'nose_fig'};
+%             parameters.loop_list.things_to_save.nose_fig.level = 'end';
+%             
+%             parameters.loop_list.things_to_save.FL_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+%             parameters.loop_list.things_to_save.FL_fig.filename = {['FL_ ' title]};
+%             parameters.loop_list.things_to_save.FL_fig.variable = {'FL_fig'};
+%             parameters.loop_list.things_to_save.FL_fig.level = 'end';
+%             
+%               parameters.loop_list.things_to_save.HL_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+%             parameters.loop_list.things_to_save.HL_fig.filename = {['HL_ ' title]};
+%             parameters.loop_list.things_to_save.HL_fig.variable = {'HL_fig'};
+%             parameters.loop_list.things_to_save.HL_fig.level = 'end';
+%             
+%             
+%             RunAnalysis({@PlotBetasSecondLevel}, parameters);
+%         end
+%     end 
+% end
+% %close all;
+% clear i j true_false_vector;
 
 %% SIGNIFICANCE STUFF 
 
@@ -1169,49 +1177,49 @@ clear i j true_false_vector;
 % Always clear loop list first. 
 do = true; 
 if do 
-    for output_typei = 2 % 1:numel(parameters.loop_variables.output_type)
-
-        output_type = parameters.loop_variables.output_types{output_typei};
-
-        parameters.permute_on = output_type;
-        if isfield(parameters, 'loop_list')
-        parameters = rmfield(parameters,'loop_list');
-        end
-        
-        % Iterators
-        parameters.loop_list.iterators = {
-                       'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-                       'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-        
-        % Do you want permutations?
-        parameters.permutationGeneration = true;
-        parameters.useBootstrapping = false;
-        parameters.n_permutations = 1000;
-        parameters.stratify = false;
-        parameters.comparison_type = 'continuous';
-        
-        % Input 
-        % dataset
-        parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
-        parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
-        parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
-        parameters.loop_list.things_to_load.dataset.level = 'comparison';
-        % optimized number of components to use.
-        parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\', 'mouse', '\'};
-        parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
-        parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
-        parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
-    
-        % Output
-        parameters.loop_list.things_to_save.Covs_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
-        parameters.loop_list.things_to_save.Covs_randomPermutations.filename= {['PLSR_' output_type 's_randomPermutations.mat']};
-        parameters.loop_list.things_to_save.Covs_randomPermutations.variable= {[output_type 's_randomPermutations']}; 
-        parameters.loop_list.things_to_save.Covs_randomPermutations.level = 'comparison';
-        
-        RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
-        
-        parameters.permutationGeneration = false;
+    if isfield(parameters, 'loop_list')
+    parameters = rmfield(parameters,'loop_list');
     end
+    
+    % Iterators
+    parameters.loop_list.iterators = {
+                   'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+                   'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+    
+    % Do you want permutations?
+    parameters.permutationGeneration = true;
+    parameters.useBootstrapping = false;
+    parameters.n_permutations = 1000;
+    parameters.stratify = false;
+    parameters.comparison_type = 'continuous';
+    
+    % Input 
+    % dataset
+    parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+    parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+    parameters.loop_list.things_to_load.dataset.level = 'comparison';
+    % optimized number of components to use.
+    parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\', 'mouse', '\'};
+    parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
+    parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
+    parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
+
+    % Output
+    % Covs
+    parameters.loop_list.things_to_save.Covs_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_save.Covs_randomPermutations.filename= {'PLSR_Covs_randomPermutations.mat'};
+    parameters.loop_list.things_to_save.Covs_randomPermutations.variable= {'Covs_randomPermutations'}; 
+    parameters.loop_list.things_to_save.Covs_randomPermutations.level = 'comparison';
+    % Betas
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.filename= {'PLSR_BETAs_randomPermutations.mat'};
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.variable= {'BETAs_randomPermutations'}; 
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.level = 'comparison';
+
+    RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+    
+    parameters.permutationGeneration = false;
 end 
 
 
@@ -1247,10 +1255,16 @@ if do
     parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
     
     % Output
+    % Covs
     parameters.loop_list.things_to_save.Covs_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
     parameters.loop_list.things_to_save.Covs_randomPermutations.filename= {'PLSR_Covs_randomPermutations.mat'};
     parameters.loop_list.things_to_save.Covs_randomPermutations.variable= {'Covs_randomPermutations'}; 
     parameters.loop_list.things_to_save.Covs_randomPermutations.level = 'comparison';
+    % Betas
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.filename= {'PLSR_BETAs_randomPermutations.mat'};
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.variable= {'BETAs_randomPermutations'}; 
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.level = 'comparison';
     
     RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
     
@@ -1267,6 +1281,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
+                'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator';
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
@@ -1281,13 +1296,13 @@ parameters.removeOutliers = false;
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_randomPermutations.mat'};
-parameters.loop_list.things_to_load.response.variable= {'Covs_randomPermutations'}; 
+parameters.loop_list.things_to_load.response.filename= {'PLSR_', 'output_type', 's_randomPermutations.mat'};
+parameters.loop_list.things_to_load.response.variable= {'output_type', 's_randomPermutations'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations_', 'output_type', '.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -1302,6 +1317,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
@@ -1321,8 +1337,8 @@ parameters.concatenation_level = 'mouse';
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_randomPermutations.mat'};
-parameters.loop_list.things_to_load.response.variable= {'Covs_randomPermutations'}; 
+parameters.loop_list.things_to_load.response.filename= {'PLSR_' , 'output_type', 's_randomPermutations.mat'};
+parameters.loop_list.things_to_load.response.variable= {'output_type', 's_randomPermutations'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 % If multiplying by sigmas by animal, load zscoring info
 if isfield(parameters, 'sigma_byanimal') && parameters.sigma_byanimal
@@ -1333,7 +1349,7 @@ parameters.loop_list.things_to_load.dataset_info.level = 'mouse';
 end 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations_' , 'output_type', '.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -1349,6 +1365,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator';
                'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
 parameters.shufflesDim = 2; % After the EvaluateOnData reduction
 parameters.find_significance = true;
@@ -1368,18 +1385,18 @@ parameters.useFDR = true;
 % Inputs:
 %Test values (will grab only the intercepts with EvaluateOnData)
 parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_Cov.mat'};
+parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_' , 'output_type', '.mat'};
 parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.test_values.level = 'comparison';
 % Null distribution
 parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations_' , 'output_type', '.mat'};
 parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
 
 % Outputs
 parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_Cov_FDR.mat'};
+parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_' , 'output_type', '_FDR.mat'};
 parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
 parameters.loop_list.things_to_save.significance.level = 'comparison';
 
@@ -1396,6 +1413,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator';
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator' };
 
 parameters.shufflesDim = 2;
@@ -1416,18 +1434,18 @@ parameters.useFDR = true;
 % Inputs:
 % Test values
 parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_Cov.mat'};
+parameters.loop_list.things_to_load.test_values.filename= {'PLSR_dataset_info_', 'output_type', '.mat'};
 parameters.loop_list.things_to_load.test_values.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.test_values.level = 'comparison';
 % Null distribution
 parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_load.null_distribution.filename= {'PLSR_dataset_info_randomPermutations_', 'output_type', '.mat'};
 parameters.loop_list.things_to_load.null_distribution.variable= {'dataset_info.average_across_mice'}; 
 parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
 
 % Outputs
 parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_Cov_FDR.mat'};
+parameters.loop_list.things_to_save.significance.filename= {'PLSR_significance_randomPermutations_', 'output_type', '_FDR.mat'};
 parameters.loop_list.things_to_save.significance.variable= {'PLSR_significance'}; 
 parameters.loop_list.things_to_save.significance.level = 'comparison';
 
@@ -1442,87 +1460,96 @@ parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
 true_false_vector = {false, true};
 parameters.fromPLSR = true;
+parameters.plot_type = 'correlations';
+parameters.useColorRange = false;
 
-for i = 2 %1:numel(true_false_vector)
-    % Adjust beta values based on zscore sigmas?
-    parameters.adjustBetas = true_false_vector{i};
+for output_typei = 2 % 1:numel(parameters.loop_variables.output_types)
+    output_type = parameters.loop_variables.output_types{output_typei};
+    parameters.output_type = output_type; 
+    
+    for i = 2 %1:numel(true_false_vector)
+        % Adjust beta values based on zscore sigmas?
+        parameters.adjustBetas = true_false_vector{i};
+        parameters.multiply_by_average_sigma = true;
+    
+        for j = 2 %1:numel(true_false_vector)
+             % Only include significant betas?
+             parameters.useSignificance = true_false_vector{j};
+    
+            if isfield(parameters, 'loop_list')
+            parameters = rmfield(parameters,'loop_list');
+            end
+            
+            % Iterators
+            parameters.loop_list.iterators = {
+                           'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+    
+            % Averaging? 
+            parameters.averaging_across_mice = true;
+            parameters.removeOutliers = false;
+    
+            % Color range for all plots (if betas are adjusted).
+            %parameters.useColorRange = true;
+    
+            % Comparison type (continuous or continuous)
+            parameters.comparison_type = 'continuous';
+            parameters.this_comparison_set = parameters.comparisons_continuous;
+            
+            title = ['PLSR_' output_type 's_all_comparisons'];
 
-    for j = 2 %1:numel(true_false_vector)
-         % Only include significant betas?
-         parameters.useSignificance = true_false_vector{j};
-
-        if isfield(parameters, 'loop_list')
-        parameters = rmfield(parameters,'loop_list');
+            if parameters.adjustBetas
+                title = [title '_Adjusted'];
+            end
+            if parameters.useSignificance 
+                title = [title '_withSignificance_randomPermutation'];
+            end
+            title = [title '_FDR.fig'];
+            
+            % Input
+            parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
+            parameters.loop_list.things_to_load.average_across_mice.filename = {['PLSR_dataset_info_' output_type '.mat']};
+            parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
+            parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
+            % significance matrix
+            if parameters.useSignificance
+            parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\'], 'comparison', '\'};
+            parameters.loop_list.things_to_load.significance.filename= {['PLSR_significance_randomPermutations_' output_type '_FDR.mat']};
+            parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
+            parameters.loop_list.things_to_load.significance.level = 'comparison';
+            end
+            % Average sigmas.
+            if parameters.adjustBetas
+            parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
+            parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
+            parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
+            parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
+            end
+            
+            % Output
+            parameters.loop_list.things_to_save.speed_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+            parameters.loop_list.things_to_save.speed_fig.filename = {['speed_ ' title]};
+            parameters.loop_list.things_to_save.speed_fig.variable = {'speed_fig'};
+            parameters.loop_list.things_to_save.speed_fig.level = 'end';
+    
+            parameters.loop_list.things_to_save.accel_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+            parameters.loop_list.things_to_save.accel_fig.filename = {['accel_ ' title]};
+            parameters.loop_list.things_to_save.accel_fig.variable = {'accel_fig'};
+            parameters.loop_list.things_to_save.accel_fig.level = 'end';
+    
+            parameters.loop_list.things_to_save.duration_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+            parameters.loop_list.things_to_save.duration_fig.filename = {['duration_ ' title]};
+            parameters.loop_list.things_to_save.duration_fig.variable = {'duration_fig'};
+            parameters.loop_list.things_to_save.duration_fig.level = 'end';
+    
+            parameters.loop_list.things_to_save.pupil_diameter_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
+            parameters.loop_list.things_to_save.pupil_diameter_fig.filename = {['pupil_diameter_ ' title]};
+            parameters.loop_list.things_to_save.pupil_diameter_fig.variable = {'pupil_diameter_fig'};
+            parameters.loop_list.things_to_save.pupil_diameter_fig.level = 'end';
+            
+            RunAnalysis({@PlotBetasSecondLevel}, parameters);
         end
-        
-        % Iterators
-        parameters.loop_list.iterators = {
-                       'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-
-        % Averaging? 
-        parameters.averaging_across_mice = true;
-        parameters.removeOutliers = false;
-
-        % Color range for all plots (if betas are adjusted).
-        parameters.useColorRange = true;
-
-        % Comparison type (continuous or continuous)
-        parameters.comparison_type = 'continuous';
-        parameters.this_comparison_set = parameters.comparisons_continuous;
-        
-        title = 'PLSR_Covs_all_comparisons';
-        if parameters.adjustBetas
-            title = [title '_Adjusted'];
-        end
-        if parameters.useSignificance 
-            title = [title '_withSignificance_randomPermutation'];
-        end
-        title = [title '_FDR.fig'];
-        
-        % Input
-        parameters.loop_list.things_to_load.average_across_mice.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.average_across_mice.filename = {'PLSR_dataset_info_Cov.mat'};
-        parameters.loop_list.things_to_load.average_across_mice.variable = {'dataset_info.average_across_mice'};
-        parameters.loop_list.things_to_load.average_across_mice.level = 'comparison';
-        % significance matrix
-        if parameters.useSignificance
-        parameters.loop_list.things_to_load.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.significance.filename= {'PLSR_significance_randomPermutations_Cov_FDR.mat'};
-        parameters.loop_list.things_to_load.significance.variable= {'PLSR_significance.all'}; 
-        parameters.loop_list.things_to_load.significance.level = 'comparison';
-        end
-        % Average sigmas.
-        if parameters.adjustBetas
-        parameters.loop_list.things_to_load.average_sigmas.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 continuous\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.average_sigmas.filename= {'average_zscore_sigmas.mat'};
-        parameters.loop_list.things_to_load.average_sigmas.variable= {'average_zscore_sigmas'}; 
-        parameters.loop_list.things_to_load.average_sigmas.level = 'comparison';
-        end
-        
-        % Output
-        parameters.loop_list.things_to_save.speed_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
-        parameters.loop_list.things_to_save.speed_fig.filename = {['speed_ ' title]};
-        parameters.loop_list.things_to_save.speed_fig.variable = {'speed_fig'};
-        parameters.loop_list.things_to_save.speed_fig.level = 'end';
-
-        parameters.loop_list.things_to_save.accel_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
-        parameters.loop_list.things_to_save.accel_fig.filename = {['accel_ ' title]};
-        parameters.loop_list.things_to_save.accel_fig.variable = {'accel_fig'};
-        parameters.loop_list.things_to_save.accel_fig.level = 'end';
-
-        parameters.loop_list.things_to_save.duration_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
-        parameters.loop_list.things_to_save.duration_fig.filename = {['duration_ ' title]};
-        parameters.loop_list.things_to_save.duration_fig.variable = {'duration_fig'};
-        parameters.loop_list.things_to_save.duration_fig.level = 'end';
-
-        parameters.loop_list.things_to_save.pupil_diameter_fig.dir = {[parameters.dir_exper 'PLSR\results\level 2 continuous\']};
-        parameters.loop_list.things_to_save.pupil_diameter_fig.filename = {['pupil_diameter_ ' title]};
-        parameters.loop_list.things_to_save.pupil_diameter_fig.variable = {'pupil_diameter_fig'};
-        parameters.loop_list.things_to_save.pupil_diameter_fig.level = 'end';
-        
-        RunAnalysis({@PlotBetasSecondLevel}, parameters);
-    end
-end 
+    end 
+end
 %close all;
 clear i j true_false_vector;
 
@@ -1552,7 +1579,7 @@ for i = 2 %1:numel(true_false_vector)
         parameters.removeOutliers = false;
 
         % Color range for all plots (if betas are adjusted).
-        parameters.useColorRange = true;
+        parameters.useColorRange = false;
         
         % Comparison type (categorical or continuous)
         parameters.comparison_type = 'categorical';
@@ -1609,10 +1636,10 @@ if isfield(parameters, 'loop_list')
 end
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                'comparison_type', {'loop_variables.comparison_types'}, 'comparison_type_iterator';
                'comparison', {'loop_variables.comparisons_', 'comparison_type', '(:).name'}, 'comparison_iterator' };
 
-comparison_types = {'categorical', 'continuous'};
 parameters.loop_variables.comparison_types = {'categorical', 'continuous'}; 
 
 parameters.fromPLSR = true; 
@@ -1631,7 +1658,7 @@ parameters.multiply_by_average_sigma = true;
 
 % Input
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_Cov.mat'};
+parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_' , 'output_type', '.mat'};
 parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
 parameters.loop_list.things_to_load.data.level = 'comparison';
 % Average sigmas.
@@ -1645,12 +1672,12 @@ end
 % Output 
 % each mouse, as a matrix
 parameters.loop_list.things_to_save.node_averages.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_Cov.mat'};
+parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_' , 'output_type', '.mat'};
 parameters.loop_list.things_to_save.node_averages.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.node_averages.level = 'comparison';
 % Across mice.
 parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_Cov.mat'};
+parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_' , 'output_type', '.mat'};
 parameters.loop_list.things_to_save.average.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.average.level = 'comparison';
 
@@ -1666,6 +1693,7 @@ end
         
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                'comparison_type', {'loop_variables.comparison_types'}, 'comparison_type_iterator';
                'comparison', {'loop_variables.comparisons_', 'comparison_type', '(:).name'}, 'comparison_iterator' };
 
@@ -1685,7 +1713,7 @@ parameters.multiply_by_average_sigma = true;
 
 % Input
 parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\variable prep\datasets\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_load.data.filename = {'PLSR_dataset_info_randomPermutations_' , 'output_type', '.mat'};
 parameters.loop_list.things_to_load.data.variable = {'dataset_info.responseVariables'};
 parameters.loop_list.things_to_load.data.level = 'comparison';
 % Average sigmas.
@@ -1699,12 +1727,12 @@ end
 % Output 
 % each mouse, as a matrix
 parameters.loop_list.things_to_save.node_averages.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_save.node_averages.filename = {'average_by_nodes_randomPermutations_' , 'output_type', '.mat'};
 parameters.loop_list.things_to_save.node_averages.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.node_averages.level = 'comparison';
 % Across mice.
 parameters.loop_list.things_to_save.average.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], 'comparison_type', '\', 'comparison', '\'};
-parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_save.average.filename = {'average_by_nodes_allmice_randomPermutations_' , 'output_type', '.mat'};
 parameters.loop_list.things_to_save.average.variable = {'average_by_nodes'};
 parameters.loop_list.things_to_save.average.level = 'comparison';
 
@@ -1728,6 +1756,7 @@ for typei = 1:numel(comparison_types)
 
     % Iterators
     parameters.loop_list.iterators = {
+                   'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                    'comparison', {'loop_variables.comparisons_', comparison_type, '(:).name'}, 'comparison_iterator' };
     
     parameters.find_significance = true;
@@ -1759,19 +1788,19 @@ for typei = 1:numel(comparison_types)
     % Inputs:
     %Test values (will grab only the intercepts with EvaluateOnData)
     parameters.loop_list.things_to_load.test_values.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], comparison_type, '\', 'comparison', '\'};
-    parameters.loop_list.things_to_load.test_values.filename= {'average_by_nodes_allmice_Cov.mat'};
+    parameters.loop_list.things_to_load.test_values.filename= {'average_by_nodes_allmice_' , 'output_type', '.mat'};
     parameters.loop_list.things_to_load.test_values.variable= {'average_by_nodes'}; 
     parameters.loop_list.things_to_load.test_values.level = 'comparison';
     
     % Null distribution
     parameters.loop_list.things_to_load.null_distribution.dir = {[parameters.dir_exper 'PLSR\results\level 2 '], comparison_type, '\', 'comparison', '\'};
-    parameters.loop_list.things_to_load.null_distribution.filename= {'average_by_nodes_allmice_randomPermutations_Cov.mat'};
+    parameters.loop_list.things_to_load.null_distribution.filename= {'average_by_nodes_allmice_randomPermutations_' , 'output_type', '.mat'};
     parameters.loop_list.things_to_load.null_distribution.variable= {'average_by_nodes'}; 
     parameters.loop_list.things_to_load.null_distribution.level = 'comparison';
     
     % Output
     parameters.loop_list.things_to_save.significance.dir = {[parameters.dir_exper 'PLSR\results\level 2 '] , comparison_type, '\', 'comparison', '\'};
-    parameters.loop_list.things_to_save.significance.filename= {'average_by_nodes_significance_randomPermutations_Cov_FDR.mat'};
+    parameters.loop_list.things_to_save.significance.filename= {'average_by_nodes_significance_randomPermutations_' , 'output_type', '_FDR.mat'};
     parameters.loop_list.things_to_save.significance.variable= {'significance'}; 
     parameters.loop_list.things_to_save.significance.level = 'comparison';
     
@@ -2001,9 +2030,3 @@ parameters.loop_list.things_to_rename = { {'data_evaluated', 'data'};
                                           {'concatenated_data', 'data'}};
 
 RunAnalysis({@EvaluateOnData, @PadContinuousData, @ConcatenateData, @AverageData}, parameters);
-
-%% All variance of all continuous vars
-parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR\results\level 1 '], 'comparison_type', '\', 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.data.filename= {'variance_allVars.mat'};
-parameters.loop_list.things_to_load.data.variable= {'variance_allVars'}; 
-parameters.loop_list.things_to_load.data.level = 'mouse';
