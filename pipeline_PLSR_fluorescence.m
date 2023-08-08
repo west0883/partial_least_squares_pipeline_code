@@ -234,8 +234,8 @@ end
 parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'};
 
 % Variables to replicate
-parameters.response_variable_names = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'x_vector'};
-parameters.variables_static = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'duration_vector'};
+parameters.response_variable_names = {'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'x_vector'};
+parameters.variables_static = {'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'duration_vector'};
 parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
 % Additional variables -- pupil, tail, nose, FL, HL; always present & loaded in
 parameters.additional_variables = parameters.response_variable_names(7:end);
@@ -1195,6 +1195,7 @@ RunAnalysis({@AverageSigmas}, parameters);
 % Plot all the beta intercepts in a single plot 
 parameters.plotIndividually = false;
 % Do for each variation of significance & adjusted
+parameters.plot_type = 'fluorescence';
 
 for output_typei = 2 % 1:numel(parameters.loop_variables.output_types)
     output_type = parameters.loop_variables.output_types{output_typei};
@@ -1392,7 +1393,7 @@ for typei = 1:numel(comparison_types)
 
     comparison_type = comparison_types{typei};
 
-    for output_typei = 2 %1:numel(parameters.loop_variables.output_types)
+    for output_typei = 1:numel(parameters.loop_variables.output_types)
         output_type = parameters.loop_variables.output_types{output_typei};
     
 
@@ -1489,7 +1490,7 @@ end
 
 comparison_types = {'categorical', 'continuous'};
 
-for typei = 2 % 1:numel(comparison_types)
+for typei = 1 % 1:numel(comparison_types)
 
     comparison_type = comparison_types{typei};
 
