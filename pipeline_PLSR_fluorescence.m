@@ -807,6 +807,7 @@ end
 
 % Iterators
 parameters.loop_list.iterators = {
+               'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                'comparison', {'loop_variables.comparisons_categorical(:).name'}, 'comparison_iterator';
                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; };
 
@@ -824,12 +825,12 @@ parameters.concatenation_level = 'mouse';
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
 parameters.loop_list.things_to_load.response.filename= {'PLSR_results.mat'};
-parameters.loop_list.things_to_load.response.variable= {'PLSR_results.Cov'}; 
+parameters.loop_list.things_to_load.response.variable= {'PLSR_results.', 'output_type'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
-parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\datasets\level 2 categorical\\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_Cov.mat'};
+parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_', 'output_type', '.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
@@ -880,51 +881,50 @@ RunAnalysis({@DatasetPrepSecondLevel}, parameters);
 % Always clear loop list first. 
 do = true; 
 if do 
-    for output_typei = 2 % 1:numel(parameters.loop_variables.output_type)
 
-        output_type = parameters.loop_variables.output_types{output_typei};
 
-        parameters.permute_on = output_type;
-
-        if isfield(parameters, 'loop_list')
-        parameters = rmfield(parameters,'loop_list');
-        end
-        
-        % Iterators
-        parameters.loop_list.iterators = {
-                       'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
-                       'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
-        
-        % Do you want permutations?
-        parameters.permutationGeneration = true;
-        parameters.useBootstrapping = false;
-        parameters.n_permutations = 1000;
-        parameters.stratify = false;
-        parameters.comparison_type = 'continuous';
-        
-        % Input 
-        % dataset
-        parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
-        parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
-        parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
-        parameters.loop_list.things_to_load.dataset.level = 'comparison';
-        % optimized number of components to use.
-        parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 1 continuous\'], 'comparison', '\', 'mouse', '\'};
-        parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
-        parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
-        parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
+    if isfield(parameters, 'loop_list')
+    parameters = rmfield(parameters,'loop_list');
+    end
     
-        % Output
-        parameters.loop_list.things_to_save.Covs_randomPermutations.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
-        parameters.loop_list.things_to_save.Covs_randomPermutations.filename= {['PLSR_' output_type 's_randomPermutations.mat']};
-        parameters.loop_list.things_to_save.Covs_randomPermutations.variable= {[output_type 's_randomPermutations']}; 
-        parameters.loop_list.things_to_save.Covs_randomPermutations.level = 'comparison';
-        
-        RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
-        
-        parameters.permutationGeneration = false;
+    % Iterators
+    parameters.loop_list.iterators = {
+                   'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+                   'comparison', {'loop_variables.comparisons_continuous(:).name'}, 'comparison_iterator' };
+    
+    % Do you want permutations?
+    parameters.permutationGeneration = true;
+    parameters.useBootstrapping = false;
+    parameters.n_permutations = 1000;
+    parameters.stratify = false;
+    parameters.comparison_type = 'continuous';
+    
+    % Input 
+    % dataset
+    parameters.loop_list.things_to_load.dataset.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\datasets\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_load.dataset.filename= {'PLSR_dataset_info.mat'};
+    parameters.loop_list.things_to_load.dataset.variable= {'dataset_info'}; 
+    parameters.loop_list.things_to_load.dataset.level = 'comparison';
+    % optimized number of components to use.
+    parameters.loop_list.things_to_load.ncomponents_max.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 1 continuous\'], 'comparison', '\', 'mouse', '\'};
+    parameters.loop_list.things_to_load.ncomponents_max.filename= {'PLSR_results.mat'};
+    parameters.loop_list.things_to_load.ncomponents_max.variable= {'PLSR_results.ncomponents_used'}; 
+    parameters.loop_list.things_to_load.ncomponents_max.level = 'comparison';
 
-    end 
+    % Output
+    parameters.loop_list.things_to_save.Covs_randomPermutations.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_save.Covs_randomPermutations.filename= {['PLSR_Covs_randomPermutations.mat']};
+    parameters.loop_list.things_to_save.Covs_randomPermutations.variable= {[output_type 's_randomPermutations']}; 
+    parameters.loop_list.things_to_save.Covs_randomPermutations.level = 'comparison';
+    
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 1 continuous\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.filename= {'PLSR_BETAs_randomPermutations.mat'};
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.variable= {'BETAs_randomPermutations'}; 
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.level = 'comparison';
+    
+    RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
+    
+    parameters.permutationGeneration = false;
 end 
 
 %% Level 1 categorical -- run random permutations.
@@ -964,6 +964,11 @@ if do
     parameters.loop_list.things_to_save.Covs_randomPermutations.variable= {'Covs_randomPermutations'}; 
     parameters.loop_list.things_to_save.Covs_randomPermutations.level = 'comparison';
     
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.filename= {'PLSR_BETAs_randomPermutations.mat'};
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.variable= {'BETAs_randomPermutations'}; 
+    parameters.loop_list.things_to_save.BETAs_randomPermutations.level = 'comparison';
+   
     RunAnalysis({@PLSR_forRunAnalysis}, parameters);  
     
     parameters.permutationGeneration = false;
@@ -1032,13 +1037,13 @@ parameters.concatenation_level = 'mouse';
 
 % Input 
 parameters.loop_list.things_to_load.response.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 1 categorical\'], 'comparison', '\' 'mouse', '\'};
-parameters.loop_list.things_to_load.response.filename= {'PLSR_Covs_randomPermutations.mat'};
-parameters.loop_list.things_to_load.response.variable= {'Covs_randomPermutations'}; 
+parameters.loop_list.things_to_load.response.filename= {'PLSR_', 'output_type', 's_randomPermutations.mat'};
+parameters.loop_list.things_to_load.response.variable= {'output_type', 's_randomPermutations'}; 
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 % Output
 parameters.loop_list.things_to_save.dataset.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\datasets\level 2 categorical\'], 'comparison', '\'};
-parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations_Cov.mat'};
+parameters.loop_list.things_to_save.dataset.filename= {'PLSR_dataset_info_randomPermutations_', 'output_type', '.mat'};
 parameters.loop_list.things_to_save.dataset.variable= {'dataset_info'}; 
 parameters.loop_list.things_to_save.dataset.level = 'comparison';
 
