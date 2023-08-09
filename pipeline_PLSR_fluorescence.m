@@ -1441,27 +1441,25 @@ for typei = 1:numel(comparison_types)
 
     for output_typei = 1:numel(parameters.loop_variables.output_types)
         output_type = parameters.loop_variables.output_types{output_typei};
-    
-
-    
+        
         if isfield(parameters, 'loop_list')
         parameters = rmfield(parameters,'loop_list');
         end
     
         % Iterators
         parameters.loop_list.iterators = {
-                   
                        'comparison', {['loop_variables.comparisons_' comparison_type '(:).name']}, 'comparison_iterator' };
-        
-        if strcmp(output_type, 'Cov')
-             parameters.evaluation_instructions = {{'b = repmat(parameters.data, 2,1);'...
-                                                  'data_evaluated = reshape(b, size(parameters.data,2) * 2 , size(parameters.data,1));'}};
-        else
-             parameters.evaluation_instructions = {{'a = parameters.data;'...
-                                                  'a(1:parameters.number_of_sources + 1:end) = [];'...
-                                                  'b = repmat(a, 2,1);'...
-                                                  'data_evaluated = reshape(b, size(a,2) * 2 , size(a,1));'}};
-        end 
+%         
+%         if strcmp(output_type, 'Cov')
+%              parameters.evaluation_instructions = {{'b = repmat(parameters.data, 2,1);'...
+%                                                   'data_evaluated = reshape(b, size(parameters.data,2) * 2 , size(parameters.data,1));'}};
+%         else
+%              parameters.evaluation_instructions = {{'a = parameters.data;'...
+%                                                   'a(1:parameters.number_of_sources + 1:end) = [];'...
+%                                                   'b = repmat(a, 2,1);'...
+%                                                   'data_evaluated = reshape(b, size(a,2) * 2 , size(a,1));'}};
+%         end 
+        parameters.evaluation_instructions = {{'data_evaluated = parameters.data;'}};
 
         % Inputs 
         parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR fluorescence\variable prep\datasets\level 2 ' comparison_type '\'], 'comparison', '\'};
@@ -1486,7 +1484,7 @@ for typei = 1:numel(comparison_types)
 
     comparison_type = comparison_types{typei};
 
-    for output_typei = 2 %1:numel(parameters.loop_variables.output_types)
+    for output_typei = 1:numel(parameters.loop_variables.output_types)
         output_type = parameters.loop_variables.output_types{output_typei};
     
 
@@ -1496,31 +1494,30 @@ for typei = 1:numel(comparison_types)
     
         % Iterators
         parameters.loop_list.iterators = {
-                        'output_type', {'loop_variables.output_types(2)'}, 'output_type_iterator'; 
                        'comparison', {['loop_variables.comparisons_' comparison_type '(:).name']}, 'comparison_iterator' };
-        
-        
-        
-    
+
          
-        if strcmp(output_type, 'Cov')
-           parameters.evaluation_instructions = {{'b = repmat(parameters.data, 1, 2);'...
-                                              'data_evaluated = transpose(reshape(transpose(b), size(parameters.data,2), size(parameters.data,1) * 2));'}};
-        else
-             parameters.evaluation_instructions = {{'a = parameters.data;'...
-                                                  'a(1:parameters.number_of_sources + 1:end) = [];'...
-                                                  'b = repmat(a, 1, 2);'...
-                                                  'data_evaluated = transpose(reshape(transpose(b), size(a,2) , size(a, 1) * 2));'}};
-        end 
+%         if strcmp(output_type, 'Cov')
+%            parameters.evaluation_instructions = {{'b = repmat(parameters.data, 1, 2);'...
+%                                               'data_evaluated = transpose(reshape(transpose(b), size(parameters.data,2), size(parameters.data,1) * 2));'}};
+%         else
+%              parameters.evaluation_instructions = {{'a = parameters.data;'...
+%                                                   'a(1:parameters.number_of_sources + 1:end) = [];'...
+%                                                   'b = repmat(a, 1, 2);'...
+%                                                   'data_evaluated = transpose(reshape(transpose(b), size(a,2) , size(a, 1) * 2));'}};
+%         end 
+
+        parameters.evaluation_instructions = {{'data_evaluated = parameters.data;'}};
+        
         % Inputs 
         parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 2 ' comparison_type '\'], 'comparison', '\'};
-        parameters.loop_list.things_to_load.data.filename= {'PLSR_significance_randomPermutations_', 'output_type', '_FDR.mat'};
+        parameters.loop_list.things_to_load.data.filename= {['PLSR_significance_randomPermutations_', output_type '_FDR.mat']};
         parameters.loop_list.things_to_load.data.variable= {'PLSR_significance.all'}; 
         parameters.loop_list.things_to_load.data.level = 'comparison';
         
         % Outputs
         parameters.loop_list.things_to_save.data_evaluated.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 2 ' comparison_type '\'], 'comparison', '\'};
-        parameters.loop_list.things_to_save.data_evaluated.filename= {'significance_reshaped_', 'output_type', '.mat'};
+        parameters.loop_list.things_to_save.data_evaluated.filename= {['significance_reshaped_', output_type, '.mat']};
         parameters.loop_list.things_to_save.data_evaluated.variable= {'significance_reshaped'}; 
         parameters.loop_list.things_to_save.data_evaluated.level = 'comparison';
         
@@ -1536,7 +1533,7 @@ end
 
 comparison_types = {'categorical', 'continuous'};
 
-for typei = 1 % 1:numel(comparison_types)
+for typei = 1:numel(comparison_types)
 
     comparison_type = comparison_types{typei};
 
@@ -1546,20 +1543,35 @@ for typei = 1 % 1:numel(comparison_types)
             
     % Iterators
     parameters.loop_list.iterators = {
-                   'output_type', {'loop_variables.output_types(2)'}, 'output_type_iterator'; 
+                   'output_type', {'loop_variables.output_types'}, 'output_type_iterator'; 
                    'comparison', {'loop_variables.comparisons_' comparison_type '(:).name'}, 'comparison_iterator' };
     
     % Shape average sigmas to match results values, multiply results by average
     % sigmas.
     parameters.evaluation_instructions = {
-                                           {'b = repmat(transpose(parameters.average_sigmas), 1, 2);'...
-                                          'average_sigmas_reshaped = reshape(transpose(b), size(parameters.average_sigmas, 1), size(parameters.average_sigmas, 2) * 2);'...
-                                          'data = parameters.data;'... 
-                                          'data_evaluated = parameters.data .* transpose(average_sigmas_reshaped);'}
+                                           {['average_sigmas = parameters.average_sigmas;'... 
+                                            'if strcmp(parameters.values{strcmp(parameters.keywords, "output_type")}, "BETA");'...
+                                                'data = parameters.data;'...
+                                                'number = 1 + parameters.number_of_sources;'...
+                                                'data(1:number:end) = [];'...
+                                            'else;'... 
+                                                'data = parameters.data;'...
+                                            'end;'...
+                                            'data_evaluated = data .* average_sigmas;']}
     
-                                           {'data_evaluated = repmat(transpose(parameters.fluorescence_mean), size(parameters.data,1)./(parameters.number_of_sources * 2), 1);'}
-                                          
-                                          };
+                                           {'data_evaluated = transpose(repmat(transpose(parameters.fluorescence_mean), size(parameters.data,2)./(parameters.number_of_sources ), 1));'}
+%                                           
+%                                              {'if strcmp(parameters.values{strcmp(parameters.keywords, "output_type")}, "BETA");' ...
+%                                                 'data = parameters.data(2:end);'...
+%                                               'else;'...
+%                                                  'data = parameters.data;'...
+%                                               'end;'...
+%                                               'average_sigmas = parameters.average_sigmas;'...
+%                                               'data_evaluated = data .* average_sigmas;' };
+%                                               {'data_evaluated = parameters.fluorescence_mean;'}
+                                        {}
+                                        {'data_evaluated = transpose(parameters.DFF);'}
+                                        };
     
     % Inputs
     % PLSR COVs 
@@ -1583,14 +1595,20 @@ for typei = 1 % 1:numel(comparison_types)
     
     % Outputs
     % value multipliers
-    parameters.loop_list.things_to_save.DFF.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 2 ' comparison_type '\'], 'comparison', '\'};
-    parameters.loop_list.things_to_save.DFF.filename= {'results_DFF_', 'output_type', '.mat'};
-    parameters.loop_list.things_to_save.DFF.variable= {'results_DFF'}; 
-    parameters.loop_list.things_to_save.DFF.level = 'comparison';
+%     parameters.loop_list.things_to_save.DFF.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 2 ' comparison_type '\'], 'comparison', '\'};
+%     parameters.loop_list.things_to_save.DFF.filename= {'results_DFF_', 'output_type', '.mat'};
+%     parameters.loop_list.things_to_save.DFF.variable= {'results_DFF'}; 
+%     parameters.loop_list.things_to_save.DFF.level = 'comparison';
+
+    parameters.loop_list.things_to_save.data_evaluated.dir = {[parameters.dir_exper 'PLSR fluorescence\results\level 2 ' comparison_type '\'], 'comparison', '\'};
+    parameters.loop_list.things_to_save.data_evaluated.filename= {'results_DFF_', 'output_type', '.mat'};
+    parameters.loop_list.things_to_save.data_evaluated.variable= {'results_DFF'}; 
+    parameters.loop_list.things_to_save.data_evaluated.level = 'comparison';
     
     parameters.loop_list.things_to_rename = {{'data_evaluated', 'data'}; 
-                                             {'data_evaluated', 'fluorescence_mean'}};
+                                             {'data_evaluated', 'fluorescence_mean'};
+                                             {}};
     
-    RunAnalysis({@EvaluateOnData, @EvaluateOnData, @DFF}, parameters);
+    RunAnalysis({@EvaluateOnData, @EvaluateOnData, @DFF, @EvaluateOnData}, parameters);
 
 end
