@@ -365,7 +365,10 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                     case 4 % pupil diameter
                         units = 'per % max diameter';
 
-                    otherwise % tail, nose, FL, HL
+                    case 6 % nose 
+                        units = 'per pixel/s';
+
+                    otherwise % tail,FL, HL, x
                         if  isfield(parameters, 'convertToCM') && parameters.convertToCM
                             units = 'per cm/s';
                         else
