@@ -394,6 +394,18 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                     betas_separated = betas_separated./100;
                 end
 
+                % If un-normalizing the continuous response variable with
+                % the average std across mice,
+                if isfield(parameters, 'unNormalize') && parameters.unNormalize
+
+                    % Get the average std across mice for this variable
+                    std_multiplier = parameters.stds_together.(variable);
+
+                    % Divide betas by the std multiplier
+                    betas_separated = betas_separated ./ std_multiplier;
+
+                end 
+
                 % Convert certain variables from pixels/s to cm/s.
                 if isfield(parameters, 'convertToCM') && parameters.convertToCM
                     
