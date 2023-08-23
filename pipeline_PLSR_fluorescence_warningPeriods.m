@@ -556,6 +556,43 @@ RunAnalysis({@ResidualsFromContinuous}, parameters);
 parameters.removeOutliers = false; 
 parameters.imputeMissing =false;
 
+%% After removing continuous, average across hemispheres for categorical 
+if isfield(parameters, 'loop_list')
+parameters = rmfield(parameters,'loop_list');
+end
+
+% Iterators
+parameters.loop_list.iterators = {
+                'mouse', {'loop_variables.mice_all(:).name'}, 'mouse_iterator'; 
+                'period', {'loop_variables.periods'}, 'period_iterator';              
+               };
+
+parameters.evaluation_instructions = {{'data = parameters.data;'...
+                                       'b1 = data(1:2:32, 1,:);'...
+                                       'b2 = data(2:2:32, 1,:);'...  
+                                       'c = mean(cat(4,b1, b2), 4, "omitnan");'...
+                                       'd = NaN(size(data));'... 
+                                       'd(1:2:32, :, :) = c;'...
+                                       'd(2:2:32, :, :) = c;'...
+                                       'data_evaluated = d;'...
+                                        }};
+
+% Input 
+% continuous subtracted
+parameters.loop_list.things_to_load.data.dir = {[parameters.dir_exper 'PLSR fluorescence Warning Periods\variable prep\correlations\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.data.filename= {'correlations_continuousSubtracted_averageOptimizedComponents.mat'};
+parameters.loop_list.things_to_load.data.variable= {'correlations{', 'period_iterator', ', 1}'}; 
+parameters.loop_list.things_to_load.data.level = 'mouse';
+
+% Output 
+% averaged across hemispheres
+parameters.loop_list.things_to_save.data_evaluated.dir = {[parameters.dir_exper 'PLSR fluorescence Warning Periods\variable prep\correlations\'], 'mouse', '\'};
+parameters.loop_list.things_to_save.data_evaluated.filename= {'values_averagedHemispheres.mat'};
+parameters.loop_list.things_to_save.data_evaluated.variable= {'values{', 'period_iterator', ', 1}'}; 
+parameters.loop_list.things_to_save.data_evaluated.level = 'mouse';
+
+RunAnalysis({@EvaluateOnData}, parameters);
+
 %% Level 1 categorical -- Prepare datasets, continuous subtracted.
 if isfield(parameters, 'loop_list')
 parameters = rmfield(parameters,'loop_list');
@@ -583,8 +620,8 @@ parameters.loop_list.things_to_load.response.variable= {'response_variables'};
 parameters.loop_list.things_to_load.response.level = 'mouse';
 
 parameters.loop_list.things_to_load.explanatory.dir = {[parameters.dir_exper 'PLSR fluorescence Warning Periods\variable prep\correlations\'], 'mouse', '\'};
-parameters.loop_list.things_to_load.explanatory.filename= {'correlations_continuousSubtracted_averageOptimizedComponents.mat'};
-parameters.loop_list.things_to_load.explanatory.variable= {'correlations'}; 
+parameters.loop_list.things_to_load.explanatory.filename= {'values_averagedHemispheres.mat'};
+parameters.loop_list.things_to_load.explanatory.variable= {'values'}; 
 parameters.loop_list.things_to_load.explanatory.level = 'mouse';
 
 % Output
