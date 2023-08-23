@@ -253,31 +253,31 @@ parameters.loop_list.things_to_load.pupil_diameter_vector.variable= {'diameter_a
 parameters.loop_list.things_to_load.pupil_diameter_vector.level = 'mouse';
 
 % Tail 
-parameters.loop_list.things_to_load.tail_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\tail\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.tail_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\value per roll velocity\tail\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.tail_vector.filename= {'velocity_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.tail_vector.variable= {'velocity_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.tail_vector.level = 'mouse';
 
 % Nose 
-parameters.loop_list.things_to_load.nose_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\nose\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.nose_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\value per roll velocity\nose\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.nose_vector.filename= {'velocity_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.nose_vector.variable= {'velocity_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.nose_vector.level = 'mouse';
 
 % FL 
-parameters.loop_list.things_to_load.FL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\FL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.FL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\value per roll velocity\FL\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.FL_vector.filename= {'velocity_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.FL_vector.variable= {'velocity_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.FL_vector.level = 'mouse';
 
 % HL 
-parameters.loop_list.things_to_load.HL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\HL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.HL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\value per roll velocity\HL\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.HL_vector.filename= {'velocity_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.HL_vector.variable= {'velocity_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.HL_vector.level = 'mouse';
 
 % x 
-parameters.loop_list.things_to_load.x_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\value per roll velocity\FL\x\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.x_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\value per roll velocity\FL\x\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.x_vector.filename= {'velocity_averaged_by_instance.mat'};
 parameters.loop_list.things_to_load.x_vector.variable= {'velocity_averaged_by_instance'}; 
 parameters.loop_list.things_to_load.x_vector.level = 'mouse';

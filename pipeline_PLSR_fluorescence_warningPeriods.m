@@ -258,31 +258,31 @@ parameters.loop_list.things_to_load.pupil_diameter_vector.variable= {'diameter_f
 parameters.loop_list.things_to_load.pupil_diameter_vector.level = 'mouse';
 
 % Tail 
-parameters.loop_list.things_to_load.tail_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR Warning Periods\tail\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.tail_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\velocity for fluorescence PLSR Warning Periods\tail\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.tail_vector.filename= {'velocity_forFluorescence.mat'};
 parameters.loop_list.things_to_load.tail_vector.variable= {'velocity_forFluorescence'}; 
 parameters.loop_list.things_to_load.tail_vector.level = 'mouse';
 
 % Nose 
-parameters.loop_list.things_to_load.nose_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR Warning Periods\nose\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.nose_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\velocity for fluorescence PLSR Warning Periods\nose\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.nose_vector.filename= {'velocity_forFluorescence.mat'};
 parameters.loop_list.things_to_load.nose_vector.variable= {'velocity_forFluorescence'}; 
 parameters.loop_list.things_to_load.nose_vector.level = 'mouse';
 
 % FL 
-parameters.loop_list.things_to_load.FL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR Warning Periods\FL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.FL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\velocity for fluorescence PLSR Warning Periods\FL\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.FL_vector.filename= {'velocity_forFluorescence.mat'};
 parameters.loop_list.things_to_load.FL_vector.variable= {'velocity_forFluorescence'}; 
 parameters.loop_list.things_to_load.FL_vector.level = 'mouse';
 
 % HL 
-parameters.loop_list.things_to_load.HL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR Warning Periods\HL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.HL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\velocity for fluorescence PLSR Warning Periods\HL\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.HL_vector.filename= {'velocity_forFluorescence.mat'};
 parameters.loop_list.things_to_load.HL_vector.variable= {'velocity_forFluorescence'}; 
 parameters.loop_list.things_to_load.HL_vector.level = 'mouse';
 
 % x 
-parameters.loop_list.things_to_load.x_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR Warning Periods\FL\x\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.x_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\velocity for fluorescence PLSR Warning Periods\FL\x\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.x_vector.filename= {'velocity_forFluorescence.mat'};
 parameters.loop_list.things_to_load.x_vector.variable= {'velocity_forFluorescence'}; 
 parameters.loop_list.things_to_load.x_vector.level = 'mouse';

@@ -277,8 +277,7 @@ parameters.loop_list.iterators = {'mouse', {'loop_variables.mice_all(:).name'}, 
 % Variables to replicate
 parameters.response_variable_names = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'speed_vector', 'accel_vector', 'duration_vector', 'pupil_diameter_vector', 'tail_vector', 'nose_vector', 'FL_vector', 'HL_vector', 'x_vector'};
 parameters.variables_static = {'motorized_vs_spon_dummyvars_vector', 'type_dummyvars_vector', 'transition_or_not_dummyvars_vector', 'duration_vector'};
-parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous
-% Additional variables -- pupil, tail, nose, FL, HL, x; always present & loaded in
+parameters.motorized_variables_static = {'speed_vector', 'accel_vector'}; % These are the ones that are static in motorized, not static in spontaneous% Additional variables -- pupil, tail, nose, FL, HL, x; always present & loaded in
 parameters.additional_variables = parameters.response_variable_names(7:end);
 % Original order of spontaneous (for velocity & accel indexing)
 parameters.spontaneous_periods_order = {'rest', 'walk', 'prewalk', 'startwalk', 'stopwalk', 'postwalk'};
@@ -311,31 +310,31 @@ parameters.loop_list.things_to_load.pupil_diameter_vector.variable= {'diameter_f
 parameters.loop_list.things_to_load.pupil_diameter_vector.level = 'mouse';
 
 % Tail 
-parameters.loop_list.things_to_load.tail_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR\tail\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.tail_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\velocity for fluorescence PLSR\tail\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.tail_vector.filename= {'velocity_forFluorescence.mat'};
 parameters.loop_list.things_to_load.tail_vector.variable= {'velocity_forFluorescence'}; 
 parameters.loop_list.things_to_load.tail_vector.level = 'mouse';
 
 % Nose 
-parameters.loop_list.things_to_load.nose_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR\nose\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.nose_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\velocity for fluorescence PLSR\nose\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.nose_vector.filename= {'velocity_forFluorescence.mat'};
 parameters.loop_list.things_to_load.nose_vector.variable= {'velocity_forFluorescence'}; 
 parameters.loop_list.things_to_load.nose_vector.level = 'mouse';
 
 % FL 
-parameters.loop_list.things_to_load.FL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR\FL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.FL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\velocity for fluorescence PLSR\FL\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.FL_vector.filename= {'velocity_forFluorescence.mat'};
 parameters.loop_list.things_to_load.FL_vector.variable= {'velocity_forFluorescence'}; 
 parameters.loop_list.things_to_load.FL_vector.level = 'mouse';
 
 % HL 
-parameters.loop_list.things_to_load.HL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR\HL\total_magnitude\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.HL_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\velocity for fluorescence PLSR\HL\total_magnitude\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.HL_vector.filename= {'velocity_forFluorescence.mat'};
 parameters.loop_list.things_to_load.HL_vector.variable= {'velocity_forFluorescence'}; 
 parameters.loop_list.things_to_load.HL_vector.level = 'mouse';
 
 % x 
-parameters.loop_list.things_to_load.x_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with zscore\velocity for fluorescence PLSR\FL\x\'], 'mouse', '\'};
+parameters.loop_list.things_to_load.x_vector.dir = {[parameters.dir_exper 'behavior\body\normalized with std only\velocity for fluorescence PLSR\FL\x\'], 'mouse', '\'};
 parameters.loop_list.things_to_load.x_vector.filename= {'velocity_forFluorescence.mat'};
 parameters.loop_list.things_to_load.x_vector.variable= {'velocity_forFluorescence'}; 
 parameters.loop_list.things_to_load.x_vector.level = 'mouse';
