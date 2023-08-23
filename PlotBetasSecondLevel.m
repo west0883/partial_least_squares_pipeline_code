@@ -366,13 +366,18 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                         units = 'per % max diameter';
 
                     case 6 % nose 
-                        units = 'per pixel/s';
-
+                        if  isfield(parameters, 'unNormalize') && parameters.unNormalize
+                            units = 'per pixel/s';
+                        else
+                            units = 'per std'; %'per pixel/s';
+                        end
                     otherwise % tail,FL, HL, x
                         if  isfield(parameters, 'convertToCM') && parameters.convertToCM
                             units = 'per cm/s';
-                        else
+                        elseif isfield(parameters, 'unNormalize') && parameters.unNormalize
                             units = 'per pixel/s';
+                        else 
+                            units = 'per std'; %'per pixel/s';
                         end 
                 end
 
