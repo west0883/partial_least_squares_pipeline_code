@@ -9,6 +9,7 @@ function [parameters] = PlotBetasSecondLevel_Inverted(parameters)
     % Some things need to be done differently with the continuous vs
     % categorical comparisons. (Separate out each continuous variable)
 
+
     % Get number of subplot to use.
     % Just use the total number of comparisons.
     [subplot_rows, subplot_columns] = OptimizeSubplotNumbers(size(parameters.this_comparison_set, 2),4/5);
@@ -320,6 +321,9 @@ function [parameters] = PlotBetasSecondLevel_Inverted(parameters)
 
             end
 
+            % Save data (with all the modifications so far) that will be plotted
+            parameters.data_plotted = holder; 
+
             % Run through plotting function.
             [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_string, color_range_type, color_range_special);
            
@@ -331,7 +335,7 @@ function [parameters] = PlotBetasSecondLevel_Inverted(parameters)
             variablesToUse = parameters.this_comparison_set(comparison_iterator).variablesToUse;
 
             % For saving, 
-            parameters.dont_save = repmat({true}, numel(parameters.continuous_variable_names), 1);
+            parameters.dont_save = repmat({true}, numel(parameters.continuous_variable_names) .*2 , 1); % multiply by 2 to include the data_plotted
 
             % Make empty outputs for the variables that aren't used, so
             % RunAnalysis doesn't get mad.
@@ -390,6 +394,9 @@ function [parameters] = PlotBetasSecondLevel_Inverted(parameters)
                 % For saving, see if this variable is in the list of continuous
                 % variables. 
                 parameters.dont_save{strcmp(parameters.continuous_variable_names, variable)} = false;
+
+                % do this for data_plotted as well
+                parameters.dont_save{[logical(repmat(0, 1,numel(parameters.continuous_variable_names))) strcmp(parameters.continuous_variable_names, variable)]} = false;
     
                 % Make a 2D holder (because lists of indices are weird).
                 betas_separated = NaN(parameters.number_of_sources, parameters.number_of_sources);
@@ -445,6 +452,9 @@ function [parameters] = PlotBetasSecondLevel_Inverted(parameters)
                 else
                     color_range_special_new = [];
                 end
+
+                % Save data (with all the modifications so far) that will be plotted
+                parameters.([variable '_data_plotted']) = holder; 
 
                 % Run plotting function.
                 [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_string, color_range_type, color_range_special_new);
