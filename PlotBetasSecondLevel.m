@@ -30,12 +30,13 @@ function [parameters] = PlotBetasSecondLevel(parameters)
     if isfield(parameters, 'adjustBetas') && parameters.adjustBetas && isfield(parameters, 'multiply_by_average_sigma') && parameters.multiply_by_average_sigma
        
         % Remove intercepts from Betas in fluorescence
-        if strcmp(parameters.output_type, 'BETA') && strcmp(parameters.plot_type, 'fluorescence')
-
-           % Remove intercepts 
-           betas(1:parameters.number_of_sources + 1:end) = [];
-        
-        end 
+        % ( removed this step for Inverted version)
+%         if strcmp(parameters.output_type, 'BETA') && strcmp(parameters.plot_type, 'fluorescence')
+% 
+%            % Remove intercepts 
+%            betas(1:parameters.number_of_sources + 1:end) = [];
+%         
+%         end 
 
         % Remove intercepts from Betas in correlations
         if strcmp(parameters.output_type, 'BETA') && strcmp(parameters.plot_type, 'correlations')
@@ -391,8 +392,11 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 betas_separated = NaN(parameters.number_of_sources, parameters.number_of_sources);
                 
                 % Separate
+                try
                 betas_separated(parameters.indices) = betas_adjusted((variablei - 1) * numel(parameters.indices) + [1:numel(parameters.indices)]);
-
+                catch
+                    error('line 395')
+                end 
                 % If variable is pupil diameter, divide by 100 (to go from 0 to 1.0 scale to
                 % percents)
                 if strcmp(variable, 'pupil_diameter')
@@ -433,8 +437,8 @@ function [parameters] = PlotBetasSecondLevel(parameters)
                 % 
                 color_range_type = variable;
 
-                if ~isempty(color_range_special) && strcmp(color_range_type, color_range_special{1})
-                    color_range_special_new = color_range_special{2};
+                if ~isempty(color_range_special) && any(strcmp(color_range_type, color_range_special(:, 1)))
+                    color_range_special_new = color_range_special{find(strcmp(color_range_type, color_range_special(:, 1))), 2};
                 else
                     color_range_special_new = [];
                 end
@@ -576,7 +580,7 @@ function [parameters] = IndividualPlotSubFunction(parameters, holder, colorbar_s
     try
     Colorbar_handle = colorbar; caxis(color_range); colormap(cmap);
     catch
-        error('line 496');
+        disp('line 579 error!')
     end 
     % Scoot colorbar to right.
     Colorbar_handle.Position = Colorbar_handle.Position + [0.11 0 0 0];
